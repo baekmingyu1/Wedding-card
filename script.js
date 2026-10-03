@@ -178,8 +178,6 @@
       frame.style.opacity = visible ? "1" : "0";
       frame.style.visibility = visible ? "visible" : "hidden";
     });
-    const sceneName = sceneIndex === 0 ? "멀리서" : sceneIndex === frames.length - 1 ? "마주 선 순간" : "다가가는 중";
-    document.getElementById("opening-scene").textContent = `${String(sceneIndex + 1).padStart(2, "0")} / ${sceneName}`;
     document.getElementById("opening-count").textContent = `${String(sceneIndex + 1).padStart(2, "0")} / ${String(frames.length).padStart(2, "0")}`;
     openingCopy.style.opacity = motionReduced.matches ? "1" : Math.max(0, 1 - progress / (introEnd * .8));
     document.getElementById("opening-progress").style.width = `${sequenceProgress * 100}%`;
