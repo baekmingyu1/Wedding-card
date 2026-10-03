@@ -62,7 +62,25 @@
   const openingPhotos = (content.openingPhotos || []).filter(Boolean);
   if (!openingPhotos.length) openingPhotos.push("");
   openingPhotos.forEach((path, index) => addPhoto(frameHost, path, index, "opening"));
-  (content.galleryPhotos || []).forEach((path, index) => addPhoto(galleryHost, path, index, "gallery"));
+
+  const editorialPhotos = {
+    last: openingPhotos[openingPhotos.length - 1],
+    middle: openingPhotos[Math.floor((openingPhotos.length - 1) / 2)]
+  };
+  document.querySelectorAll("[data-editorial-photo]").forEach((image) => {
+    const path = editorialPhotos[image.dataset.editorialPhoto];
+    if (!path) return;
+    image.addEventListener("error", () => { image.hidden = true; });
+    image.src = path;
+    image.hidden = false;
+  });
+
+  const galleryPhotos = content.galleryPhotos?.length ? content.galleryPhotos : Array(6).fill("");
+  galleryPhotos.forEach((path, index) => {
+    const fallbackIndex = Math.round(index * (openingPhotos.length - 1) / Math.max(1, galleryPhotos.length - 1));
+    addPhoto(galleryHost, path || openingPhotos[fallbackIndex], index, "gallery");
+  });
+  document.querySelector(".section__count").textContent = `01 — ${String(galleryPhotos.length).padStart(2, "0")}`;
 
   function showToast(message) {
     toast.textContent = message;
@@ -178,9 +196,9 @@
       frame.style.opacity = visible ? "1" : "0";
       frame.style.visibility = visible ? "visible" : "hidden";
     });
-    document.getElementById("opening-count").textContent = `${String(sceneIndex + 1).padStart(2, "0")} / ${String(frames.length).padStart(2, "0")}`;
+    document.getElementById("opening-count").textContent = `SCENE ${String(sceneIndex + 1).padStart(2, "0")}`;
     openingCopy.style.opacity = motionReduced.matches ? "1" : Math.max(0, 1 - progress / (introEnd * .8));
-    document.getElementById("opening-progress").style.width = `${sequenceProgress * 100}%`;
+    document.getElementById("opening-progress").style.height = `${sequenceProgress * 100}%`;
 
     const showSideNav = contents.getBoundingClientRect().top <= 0;
     sideNav.classList.toggle("is-hidden", !showSideNav);
