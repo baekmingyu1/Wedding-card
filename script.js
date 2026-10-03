@@ -35,6 +35,10 @@
     wrapper.append(placeholder);
 
     if (path) {
+      if (kind === "opening") {
+        const photoUrl = new URL(path, document.baseURI).href;
+        wrapper.style.setProperty("--frame-image", `url(${JSON.stringify(photoUrl)})`);
+      }
       const img = document.createElement("img");
       img.hidden = true;
       img.alt = kind === "opening" ? "" : `두 사람의 사진 ${index + 1}`;
@@ -129,7 +133,8 @@
   }
 
   const opening = document.getElementById("opening");
-  opening.style.setProperty("--sequence-height", `${Math.max(300, 100 + openingPhotos.length * 22)}svh`);
+  // Reserve the first 70vh of scrolling for the invitation text and first photo.
+  opening.style.setProperty("--sequence-height", `${Math.max(300, 170 + openingPhotos.length * 22)}svh`);
   const frames = [...frameHost.children];
   const openingCopy = document.querySelector(".opening__copy");
   const sections = ["opening", "contents", "invitation", "gallery", "location", "account"]
@@ -141,9 +146,11 @@
     pending = false;
     const total = Math.max(1, opening.offsetHeight - window.innerHeight);
     const progress = Math.min(1, Math.max(0, -opening.getBoundingClientRect().top / total));
+    const introEnd = Math.min(.5, window.innerHeight * .7 / total);
+    const sequenceProgress = Math.min(1, Math.max(0, (progress - introEnd) / (1 - introEnd)));
     const sceneIndex = motionReduced.matches
       ? frames.length - 1
-      : Math.min(frames.length - 1, Math.floor(progress * frames.length));
+      : Math.min(frames.length - 1, Math.floor(sequenceProgress * frames.length));
     frames.forEach((frame, index) => {
       const visible = index === sceneIndex;
       frame.style.opacity = visible ? "1" : "0";
@@ -152,8 +159,8 @@
     const sceneName = sceneIndex === 0 ? "멀리서" : sceneIndex === frames.length - 1 ? "마주 선 순간" : "다가가는 중";
     document.getElementById("opening-scene").textContent = `${String(sceneIndex + 1).padStart(2, "0")} / ${sceneName}`;
     document.getElementById("opening-count").textContent = `${String(sceneIndex + 1).padStart(2, "0")} / ${String(frames.length).padStart(2, "0")}`;
-    openingCopy.style.opacity = motionReduced.matches ? "1" : Math.max(0, 1 - progress * 4);
-    document.getElementById("opening-progress").style.width = `${progress * 100}%`;
+    openingCopy.style.opacity = motionReduced.matches ? "1" : Math.max(0, 1 - progress / (introEnd * .8));
+    document.getElementById("opening-progress").style.width = `${sequenceProgress * 100}%`;
 
     let active = "opening";
     for (const section of sections) {
