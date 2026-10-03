@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f7f4ee">
+  <meta name="theme-color" content="#fffaf5">
   <meta name="description" content="소중한 날에 초대합니다. 모바일 청첩장">
   <title>우리의 시작 | 모바일 청첩장</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=5">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Gowun+Dodum&family=Pinyon+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=6">
   <script src="content.js?v=2" defer></script>
   <script src="script.js?v=4" defer></script>
 </head>
@@ -34,8 +34,8 @@
         <div class="opening__veil" aria-hidden="true"></div>
         <div class="opening__topline"><span>THE WEDDING INVITATION</span><span id="opening-count">01 / 15</span></div>
         <div class="opening__copy">
-          <span class="eyebrow opening__eyebrow">A LITTLE CLOSER, TOGETHER</span>
-          <h1>서로에게<br><em>다가가는</em> 순간</h1>
+          <span class="opening__script" aria-hidden="true">Our Wedding</span>
+          <h1>서로에게 <em>다가가는</em> 순간</h1>
           <p>우리의 새로운 시작에 초대합니다.</p>
           <span class="opening__couple" data-field="couple"></span>
         </div>
@@ -48,7 +48,7 @@
 
     <section class="section contents" id="contents" aria-labelledby="contents-title">
       <div class="section__inner">
-        <p class="eyebrow">OUR STORY, OUR DAY</p>
+        <p class="eyebrow">THE WEDDING STORY</p>
         <h2 id="contents-title">이 날의 <em>순서</em></h2>
         <p class="section__lead">천천히 내려가며 저희의 이야기를 만나 주세요.</p>
         <div class="contents__list">
@@ -61,10 +61,11 @@
     </section>
 
     <section class="section invitation" id="invitation" aria-labelledby="invitation-title">
+      <img class="invitation__art" src="assets/illustration/couple-line.svg" alt="" aria-hidden="true" loading="lazy">
       <div class="section__inner invitation__inner">
-        <p class="eyebrow">WITH ALL OUR HEARTS</p>
-        <div class="invitation__mark" aria-hidden="true">✳</div>
-        <h2 id="invitation-title">소중한 당신을<br><em>초대합니다</em></h2>
+        <p class="invitation__kicker">WEDDING INVITATION</p>
+        <span class="invitation__rule" aria-hidden="true"></span>
+        <h2 class="visually-hidden" id="invitation-title">소중한 당신을 초대합니다</h2>
         <div class="invitation__message" id="invitation-message"></div>
         <p class="invitation__names" data-field="couple"></p>
         <span class="invitation__date" data-field="date"></span>
@@ -84,7 +85,6 @@
         <p class="eyebrow">COME CELEBRATE WITH US</p>
         <h2 id="location-title">오시는 <em>길</em></h2>
         <div class="location__card">
-          <div class="location__stamp" aria-hidden="true">✳</div>
           <p class="location__date" data-field="date"></p>
           <h3 data-field="venue"></h3>
           <p class="location__address" data-field="address"></p>

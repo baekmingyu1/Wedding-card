@@ -18,6 +18,10 @@
 
 사진첩은 `assets/gallery/`에 사진을 넣고 `galleryPhotos`의 경로를 바꾸면 됩니다. 세로 사진을 권장하며, 웹에 맞게 크기와 용량을 줄여 주세요.
 
+## 종이 청첩장과 색감 맞추기
+
+아이보리, 주황색, 먹색은 `styles.css` 맨 위의 색상 변수로 조정합니다. 초대글 배경의 옅은 커플 선화는 `assets/illustration/couple-line.svg`입니다. 오프닝의 장식 영문은 사진과 겹치지 않도록 첫 장면에서만 보이다가 스크롤하면 사라집니다.
+
 ## 배포
 
 빌드와 서버가 필요하지 않습니다. `index.html`, `styles.css`, `script.js`, `content.js`, `assets/`를 함께 정적 호스팅에 올리면 됩니다. CSS와 JavaScript는 상대 경로를 사용합니다.
