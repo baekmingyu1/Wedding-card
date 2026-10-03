@@ -10,6 +10,7 @@
 }
 
 body { background: var(--paper); }
+body.opening-locked { position: fixed; inset: 0; width: 100%; overflow: hidden; }
 .eyebrow, .section__count, .side-nav__caption { letter-spacing: .18em; }
 .section { padding-block: clamp(88px, 10vw, 150px); }
 .side-nav a { position: relative; width: 30px; }
@@ -31,6 +32,22 @@ body { background: var(--paper); }
 .side-nav a[aria-current="location"] .side-nav__dot { transform: rotate(45deg) scale(1.25); }
 
 /* Opening keeps the existing 15-image scroll sequence. */
+.opening--short { height: 100svh; min-height: 0; }
+.opening--short .opening__sticky { min-height: 0; }
+.opening__copy { transition: opacity .35s ease; }
+.opening__controls { display: flex; max-width: 230px; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
+.opening__controls .opening__scroll { width: 100%; justify-content: flex-end; }
+.opening__control {
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255,255,255,.72);
+  border-radius: 0;
+  background: rgba(24,30,28,.45);
+  color: #fff;
+  cursor: pointer;
+  font-size: 11px;
+}
+.opening__control:hover { background: rgba(24,30,28,.75); }
 .opening__veil {
   background: linear-gradient(180deg, rgba(12, 19, 18, .65), rgba(12, 19, 18, .06) 51%, transparent 66%),
     linear-gradient(0deg, rgba(12, 19, 18, .57), transparent 23%);
@@ -165,6 +182,7 @@ body { background: var(--paper); }
   .opening h1 { font-size: clamp(58px, 16vw, 105px); }
   .opening__copy p { display: none; }
   .opening__final { right: 24px; bottom: 19svh; left: 24px; text-align: center; }
+  .opening__controls { max-width: 190px; }
   .section.story { padding-right: 42px; }
   .story__first { grid-template-columns: 1fr 25px; gap: 21px; margin-top: 72px; }
   .story__first .story__number { grid-column: 1 / -1; }

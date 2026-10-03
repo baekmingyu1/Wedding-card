@@ -10,9 +10,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=7">
-  <link rel="stylesheet" href="play-pause.css?v=1">
+  <link rel="stylesheet" href="play-pause.css?v=2">
   <script src="content.js?v=2" defer></script>
-  <script src="script.js?v=7" defer></script>
+  <script src="script.js?v=8" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#contents">본문으로 건너뛰기</a>
@@ -30,7 +30,7 @@
   </nav>
 
   <main>
-    <section class="opening" id="opening" aria-label="스크롤 사진 오프닝">
+    <section class="opening" id="opening" aria-label="자동 재생 사진 오프닝">
       <div class="opening__sticky">
         <div class="opening__frames" id="opening-frames" aria-hidden="true"></div>
         <div class="opening__veil" aria-hidden="true"></div>
@@ -45,7 +45,11 @@
         </div>
         <div class="opening__bottom">
           <span class="opening__couple" data-field="couple"></span>
-          <span class="opening__scroll">SCROLL TO MEET <span aria-hidden="true">↓</span></span>
+          <div class="opening__controls">
+            <span class="opening__scroll" id="opening-status" role="status" aria-live="polite">사진 준비 중</span>
+            <button class="opening__control" id="opening-pause" type="button" hidden>일시정지</button>
+            <button class="opening__control" id="opening-skip" type="button" hidden>건너뛰기</button>
+          </div>
         </div>
         <div class="opening__progress" aria-hidden="true"><span id="opening-progress"></span></div>
       </div>
