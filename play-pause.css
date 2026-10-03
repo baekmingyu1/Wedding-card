@@ -12,6 +12,21 @@
 body { background: var(--paper); }
 .eyebrow, .section__count, .side-nav__caption { letter-spacing: .18em; }
 .section { padding-block: clamp(88px, 10vw, 150px); }
+.side-nav a { position: relative; width: 30px; }
+.side-nav__label {
+  position: absolute;
+  top: 50%;
+  right: 24px;
+  width: max-content;
+  max-width: none;
+  padding: 5px 7px;
+  overflow: visible;
+  background: var(--paper);
+  transform: translateY(-50%);
+}
+.side-nav a:hover .side-nav__label,
+.side-nav a:focus-visible .side-nav__label,
+.side-nav a[aria-current="location"] .side-nav__label { max-width: none; }
 .side-nav__dot { border-radius: 2px; }
 .side-nav a[aria-current="location"] .side-nav__dot { transform: rotate(45deg) scale(1.25); }
 
