@@ -3,21 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#fffaf5">
+  <meta name="theme-color" content="#fbf8f2">
   <meta name="description" content="소중한 날에 초대합니다. 모바일 청첩장">
   <title>우리의 시작 | 모바일 청첩장</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Gowun+Dodum&family=Pinyon+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=6">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Gowun+Dodum&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=7">
   <script src="content.js?v=2" defer></script>
-  <script src="script.js?v=4" defer></script>
+  <script src="script.js?v=5" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#contents">본문으로 건너뛰기</a>
 
   <nav class="side-nav is-hidden" aria-label="청첩장 목차" aria-hidden="true" inert>
-    <span class="side-nav__caption">CONTENTS</span>
+    <span class="side-nav__caption">CHAPTERS</span>
     <a href="#opening" data-nav="opening" aria-label="오프닝으로 이동"><span class="side-nav__dot"></span><span class="side-nav__label">오프닝</span></a>
     <a href="#contents" data-nav="contents" aria-label="목차로 이동"><span class="side-nav__dot"></span><span class="side-nav__label">목차</span></a>
     <a href="#invitation" data-nav="invitation" aria-label="초대글로 이동"><span class="side-nav__dot"></span><span class="side-nav__label">초대글</span></a>
@@ -32,14 +32,13 @@
       <div class="opening__sticky">
         <div class="opening__frames" id="opening-frames" aria-hidden="true"></div>
         <div class="opening__veil" aria-hidden="true"></div>
-        <div class="opening__topline"><span>THE WEDDING INVITATION</span><span id="opening-count">01 / 15</span></div>
         <div class="opening__copy">
-          <span class="opening__script" aria-hidden="true">Our Wedding</span>
-          <h1>서로에게 <em>다가가는</em> 순간</h1>
-          <p>우리의 새로운 시작에 초대합니다.</p>
-          <span class="opening__couple" data-field="couple"></span>
+          <span class="opening__scene" id="opening-count">SCENE 01</span>
+          <h1>우리,<br>결혼합니다</h1>
+          <p>서로에게 다가가는 순간, 새로운 이야기가 시작됩니다.</p>
         </div>
         <div class="opening__bottom">
+          <span class="opening__couple" data-field="couple"></span>
           <span class="opening__scroll">SCROLL TO BEGIN <span aria-hidden="true">↓</span></span>
         </div>
         <div class="opening__progress" aria-hidden="true"><span id="opening-progress"></span></div>
@@ -47,10 +46,17 @@
     </section>
 
     <section class="section contents" id="contents" aria-labelledby="contents-title">
-      <div class="section__inner">
-        <p class="eyebrow">THE WEDDING STORY</p>
-        <h2 id="contents-title">이 날의 <em>순서</em></h2>
-        <p class="section__lead">천천히 내려가며 저희의 이야기를 만나 주세요.</p>
+      <div class="section__inner contents__inner">
+        <div class="contents__heading">
+          <p class="eyebrow">THE WEDDING FILM</p>
+          <h2 id="contents-title">우리의<br><em>장면들</em></h2>
+          <p class="section__lead">한 장면씩, 천천히 만나 주세요.</p>
+        </div>
+        <div class="contents__visual" aria-hidden="true">
+          <div class="contents__photo contents__photo--main"><img data-editorial-photo="last" alt="" hidden loading="lazy" decoding="async"></div>
+          <div class="contents__photo contents__photo--detail"><img data-editorial-photo="middle" alt="" hidden loading="lazy" decoding="async"></div>
+          <span class="contents__accent"></span>
+        </div>
         <div class="contents__list">
           <a href="#invitation"><span>01</span><strong>초대글</strong><span aria-hidden="true">↗</span></a>
           <a href="#gallery"><span>02</span><strong>사진첩</strong><span aria-hidden="true">↗</span></a>
@@ -61,37 +67,43 @@
     </section>
 
     <section class="section invitation" id="invitation" aria-labelledby="invitation-title">
-      <img class="invitation__art" src="assets/illustration/couple-line.svg" alt="" aria-hidden="true" loading="lazy">
       <div class="section__inner invitation__inner">
-        <p class="invitation__kicker">WEDDING INVITATION</p>
-        <span class="invitation__rule" aria-hidden="true"></span>
-        <h2 class="visually-hidden" id="invitation-title">소중한 당신을 초대합니다</h2>
-        <div class="invitation__message" id="invitation-message"></div>
-        <p class="invitation__names" data-field="couple"></p>
-        <span class="invitation__date" data-field="date"></span>
+        <p class="eyebrow">01 / INVITATION</p>
+        <div class="invitation__body">
+          <h2 id="invitation-title">초대합니다<span class="accent-period">.</span></h2>
+          <div class="invitation__message" id="invitation-message"></div>
+          <div class="invitation__signoff">
+            <p class="invitation__names" data-field="couple"></p>
+            <p class="invitation__date" data-field="date"></p>
+          </div>
+        </div>
       </div>
     </section>
 
     <section class="section gallery" id="gallery" aria-labelledby="gallery-title">
       <div class="section__inner">
-        <div class="section__heading"><div><p class="eyebrow">MOMENTS OF US</p><h2 id="gallery-title">우리의 <em>사진첩</em></h2></div><span class="section__count">01 — 06</span></div>
-        <p class="section__lead">함께 쌓아 온 순간들을 담았습니다.</p>
+        <div class="section__heading"><div><p class="eyebrow">02 / MOMENTS</p><h2 id="gallery-title">사진으로 남긴<br><em>우리</em></h2></div><span class="section__count">01 — 06</span></div>
+        <p class="section__lead">함께 걷고, 웃고, 마주 본 시간들.</p>
         <div class="gallery__grid" id="gallery-grid"></div>
       </div>
     </section>
 
     <section class="section location" id="location" aria-labelledby="location-title">
       <div class="section__inner">
-        <p class="eyebrow">COME CELEBRATE WITH US</p>
+        <p class="eyebrow">03 / LOCATION</p>
         <h2 id="location-title">오시는 <em>길</em></h2>
         <div class="location__card">
-          <p class="location__date" data-field="date"></p>
-          <h3 data-field="venue"></h3>
-          <p class="location__address" data-field="address"></p>
-          <p class="location__transport" data-field="transport"></p>
-          <div class="location__actions">
-            <a id="map-link" class="button" href="#location" hidden target="_blank" rel="noopener noreferrer">지도에서 보기 <span aria-hidden="true">↗</span></a>
-            <button id="copy-address" class="button button--light" type="button" disabled>주소 복사 <span aria-hidden="true">↗</span></button>
+          <div class="location__main">
+            <p class="location__date" data-field="date"></p>
+            <h3 data-field="venue"></h3>
+            <p class="location__address" data-field="address"></p>
+          </div>
+          <div class="location__details">
+            <p class="location__transport" data-field="transport"></p>
+            <div class="location__actions">
+              <a id="map-link" class="button" href="#location" hidden target="_blank" rel="noopener noreferrer">지도에서 보기 <span aria-hidden="true">↗</span></a>
+              <button id="copy-address" class="button button--light" type="button" disabled>주소 복사 <span aria-hidden="true">↗</span></button>
+            </div>
           </div>
         </div>
       </div>
@@ -99,7 +111,7 @@
 
     <section class="section account" id="account" aria-labelledby="account-title">
       <div class="section__inner">
-        <p class="eyebrow">WITH GRATITUDE</p>
+        <p class="eyebrow">04 / THANK YOU</p>
         <h2 id="account-title">마음 전하실 <em>곳</em></h2>
         <p class="section__lead">멀리서도 축하해 주시는 마음에 감사드립니다.</p>
         <div class="account__list" id="account-list"></div>
