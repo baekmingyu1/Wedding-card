@@ -198,6 +198,7 @@
   let playbackRun = 0;
   let hasLeftOpening = false;
   let paintedScene = -1;
+  let finalMessageReady = false;
   let pending = false;
 
   if (autoplayActive || motionReduced.matches) {
@@ -268,7 +269,8 @@
       openingCopy.style.opacity = motionReduced.matches ? "1" : autoplayActive || playbackComplete
         ? (sceneIndex === 0 ? "1" : "0")
         : Math.max(0, 1 - progress / (introEnd * .8));
-      const showFinal = !motionReduced.matches && sceneIndex === frames.length - 1 && openingVisible;
+      const showFinal = !motionReduced.matches && sceneIndex === frames.length - 1 && openingVisible
+        && (!autoplayActive || finalMessageReady);
       openingFinal.classList.toggle("is-visible", showFinal);
       openingFinal.setAttribute("aria-hidden", String(!showFinal));
       const frameProgress = autoplayActive || playbackComplete ? (sceneIndex + 1) / frames.length : sequenceProgress;
@@ -339,6 +341,7 @@
     playbackPaused = false;
     hasLeftOpening = false;
     autoplayIndex = 0;
+    finalMessageReady = false;
     opening.classList.add("opening--short");
     opening.style.removeProperty("--sequence-height");
     pauseButton.hidden = true;
@@ -425,7 +428,14 @@
         skipButton.hidden = false;
       }
       updateScroll();
-      await waitPlayback(index === 0 ? 1100 : index === frames.length - 1 ? 1500 : 240, run);
+      if (index === frames.length - 1) {
+        // Let the last photo settle before revealing the closing line.
+        await waitPlayback(900, run);
+        if (!autoplayActive || run !== playbackRun) return;
+        finalMessageReady = true;
+        updateScroll();
+      }
+      await waitPlayback(index === 0 ? 1500 : index === frames.length - 1 ? 1900 : 120, run);
     }
     if (run === playbackRun) finishOpening();
   }
