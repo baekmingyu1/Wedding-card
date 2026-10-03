@@ -46,6 +46,7 @@
         : [];
       let sourceIndex = 0;
       img.hidden = true;
+      img.decoding = "async";
       img.alt = kind === "opening" ? "" : `두 사람의 사진 ${index + 1}`;
       if (kind === "gallery") img.loading = "lazy";
       if (kind === "opening") img.fetchPriority = index === 0 ? "high" : "low";
@@ -178,6 +179,8 @@
   const frames = [...frameHost.children];
   const openingCopy = document.querySelector(".opening__copy");
   const openingFinal = document.getElementById("opening-final");
+  const openingCount = document.getElementById("opening-count");
+  const openingProgress = document.getElementById("opening-progress");
   const openingStatus = document.getElementById("opening-status");
   const pauseButton = document.getElementById("opening-pause");
   const skipButton = document.getElementById("opening-skip");
@@ -185,6 +188,7 @@
     .map((id) => document.getElementById(id));
   const contents = document.getElementById("contents");
   const sideNav = document.querySelector(".side-nav");
+  const navProgress = document.getElementById("nav-progress");
   const links = [...document.querySelectorAll("[data-nav]")];
   const startAtOpening = window.scrollY < 10 && (!location.hash || location.hash === "#opening");
   let autoplayActive = startAtOpening && !motionReduced.matches;
@@ -193,6 +197,7 @@
   let playbackPaused = false;
   let playbackRun = 0;
   let hasLeftOpening = false;
+  let paintedScene = -1;
   let pending = false;
 
   if (autoplayActive || motionReduced.matches) {
@@ -233,46 +238,54 @@
         : autoplayActive
           ? autoplayIndex
           : Math.min(frames.length - 1, Math.floor(sequenceProgress * frames.length));
-    if (!autoplayActive && !playbackComplete && openingRect.bottom > 0 && openingRect.top < window.innerHeight) {
-      loadOpeningFrame(sceneIndex, true);
-      if (sceneIndex === 0) loadOpeningFrame(frames.length - 1);
-      if (!motionReduced.matches) {
-        loadOpeningFrame(sceneIndex + 1);
-        loadOpeningFrame(sceneIndex + 2);
-      }
-    }
-    frames.forEach((frame, index) => {
-      const visible = index === sceneIndex;
-      frame.style.opacity = visible ? "1" : "0";
-      frame.style.visibility = visible ? "visible" : "hidden";
-    });
-    document.getElementById("opening-count").textContent = `${String(sceneIndex + 1).padStart(2, "0")} / ${String(frames.length).padStart(2, "0")}`;
-    openingCopy.style.opacity = motionReduced.matches ? "1" : autoplayActive || playbackComplete
-      ? (sceneIndex === 0 ? "1" : "0")
-      : Math.max(0, 1 - progress / (introEnd * .8));
-    const showFinal = !motionReduced.matches && sceneIndex === frames.length - 1 && openingRect.bottom > 0;
-    openingFinal.classList.toggle("is-visible", showFinal);
-    openingFinal.setAttribute("aria-hidden", String(!showFinal));
-    const frameProgress = autoplayActive || playbackComplete ? (sceneIndex + 1) / frames.length : sequenceProgress;
-    document.getElementById("opening-progress").style.height = `${frameProgress * 100}%`;
-
+    const openingVisible = openingRect.bottom > 0 && openingRect.top < window.innerHeight;
     const showSideNav = contents.getBoundingClientRect().top <= 0;
+    let active = "opening";
+    for (const section of sections) {
+      if (section.getBoundingClientRect().top <= window.innerHeight * .45) active = section.id;
+    }
+    const pageRange = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    const navProgressHeight = `${Math.min(100, window.scrollY / pageRange * 100)}%`;
+    if (openingVisible || autoplayActive) {
+      if (!autoplayActive && !playbackComplete) {
+        loadOpeningFrame(sceneIndex, true);
+        if (!motionReduced.matches) {
+          loadOpeningFrame(sceneIndex + 1);
+          loadOpeningFrame(sceneIndex + 2);
+        }
+      }
+      if (sceneIndex !== paintedScene) {
+        const previous = frames[paintedScene];
+        if (previous) {
+          previous.style.opacity = "0";
+          previous.style.visibility = "hidden";
+        }
+        frames[sceneIndex].style.opacity = "1";
+        frames[sceneIndex].style.visibility = "visible";
+        paintedScene = sceneIndex;
+        openingCount.textContent = `${String(sceneIndex + 1).padStart(2, "0")} / ${String(frames.length).padStart(2, "0")}`;
+      }
+      openingCopy.style.opacity = motionReduced.matches ? "1" : autoplayActive || playbackComplete
+        ? (sceneIndex === 0 ? "1" : "0")
+        : Math.max(0, 1 - progress / (introEnd * .8));
+      const showFinal = !motionReduced.matches && sceneIndex === frames.length - 1 && openingVisible;
+      openingFinal.classList.toggle("is-visible", showFinal);
+      openingFinal.setAttribute("aria-hidden", String(!showFinal));
+      const frameProgress = autoplayActive || playbackComplete ? (sceneIndex + 1) / frames.length : sequenceProgress;
+      openingProgress.style.height = `${frameProgress * 100}%`;
+    }
+
     if (playbackComplete && showSideNav) hasLeftOpening = true;
     sideNav.classList.toggle("is-hidden", !showSideNav);
     sideNav.toggleAttribute("inert", !showSideNav);
     if (showSideNav) sideNav.removeAttribute("aria-hidden");
     else sideNav.setAttribute("aria-hidden", "true");
 
-    let active = "opening";
-    for (const section of sections) {
-      if (section.getBoundingClientRect().top <= window.innerHeight * .45) active = section.id;
-    }
     links.forEach((link) => {
       if (link.dataset.nav === active) link.setAttribute("aria-current", "location");
       else link.removeAttribute("aria-current");
     });
-    const pageRange = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-    document.getElementById("nav-progress").style.height = `${Math.min(100, window.scrollY / pageRange * 100)}%`;
+    navProgress.style.height = navProgressHeight;
   }
 
   function scheduleUpdate() {
@@ -387,27 +400,30 @@
     }
   }
 
+  async function waitUntilActive(run) {
+    while ((playbackPaused || document.hidden) && autoplayActive && run === playbackRun) {
+      await new Promise((resolve) => window.setTimeout(resolve, 80));
+    }
+  }
+
   async function playOpening(run) {
     if (!autoplayActive || run !== playbackRun) return;
-    const settled = new Set(frames.filter((frame) => frame.dataset.status !== "loading"));
-    const report = (frame) => {
-      if (run !== playbackRun) return;
-      settled.add(frame);
-      openingStatus.textContent = `사진 준비 중 ${settled.size}/${frames.length}`;
-    };
-    frames.forEach((frame) => frame.addEventListener("frame-settled", () => report(frame)));
-    openingStatus.textContent = `사진 준비 중 ${settled.size}/${frames.length}`;
-
-    await waitForFrame(0);
-    if (!autoplayActive || run !== playbackRun) return;
-    await Promise.all(frames.slice(1).map((_, index) => waitForFrame(index + 1)));
-    if (!autoplayActive || run !== playbackRun) return;
-
-    openingStatus.textContent = "자동 재생 중";
-    pauseButton.hidden = false;
-    skipButton.hidden = false;
     for (let index = 0; index < frames.length && autoplayActive && run === playbackRun; index += 1) {
+      if (frames[index].dataset.status === "loading") {
+        openingStatus.textContent = `장면 준비 중 ${String(index + 1).padStart(2, "0")}/${frames.length}`;
+      }
+      await waitForFrame(index);
+      if (!autoplayActive || run !== playbackRun) return;
+      loadOpeningFrame(index + 1);
+      loadOpeningFrame(index + 2);
+      await waitUntilActive(run);
+      if (!autoplayActive || run !== playbackRun) return;
       autoplayIndex = index;
+      openingStatus.textContent = "자동 재생 중";
+      if (index === 0) {
+        pauseButton.hidden = false;
+        skipButton.hidden = false;
+      }
       updateScroll();
       await waitPlayback(index === 0 ? 1100 : index === frames.length - 1 ? 1500 : 240, run);
     }
