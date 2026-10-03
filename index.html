@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f4ee">
+  <meta name="description" content="소중한 날에 초대합니다. 모바일 청첩장">
+  <title>우리의 시작 | 모바일 청첩장</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="content.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#contents">본문으로 건너뛰기</a>
+
+  <nav class="side-nav" aria-label="청첩장 목차">
+    <span class="side-nav__caption">CONTENTS</span>
+    <a href="#opening" data-nav="opening" aria-label="오프닝으로 이동"><span class="side-nav__dot"></span><span class="side-nav__label">오프닝</span></a>
+    <a href="#contents" data-nav="contents" aria-label="목차로 이동"><span class="side-nav__dot"></span><span class="side-nav__label">목차</span></a>
+    <a href="#invitation" data-nav="invitation" aria-label="초대글로 이동"><span class="side-nav__dot"></span><span class="side-nav__label">초대글</span></a>
+    <a href="#gallery" data-nav="gallery" aria-label="사진첩으로 이동"><span class="side-nav__dot"></span><span class="side-nav__label">사진첩</span></a>
+    <a href="#location" data-nav="location" aria-label="오시는 길로 이동"><span class="side-nav__dot"></span><span class="side-nav__label">오시는 길</span></a>
+    <a href="#account" data-nav="account" aria-label="마음 전하실 곳으로 이동"><span class="side-nav__dot"></span><span class="side-nav__label">마음 전하실 곳</span></a>
+    <span class="side-nav__line" aria-hidden="true"><span id="nav-progress"></span></span>
+  </nav>
+
+  <main>
+    <section class="opening" id="opening" aria-label="스크롤 사진 오프닝">
+      <div class="opening__sticky">
+        <div class="opening__frames" id="opening-frames" aria-hidden="true"></div>
+        <div class="opening__veil" aria-hidden="true"></div>
+        <div class="opening__topline"><span>THE WEDDING INVITATION</span><span>01 / 04</span></div>
+        <div class="opening__copy">
+          <span class="eyebrow opening__eyebrow">A LITTLE CLOSER, TOGETHER</span>
+          <h1>서로에게<br><em>다가가는</em> 순간</h1>
+          <p>우리의 새로운 시작에 초대합니다.</p>
+          <span class="opening__couple" data-field="couple"></span>
+        </div>
+        <div class="opening__bottom">
+          <span class="opening__scene" id="opening-scene">01 / 멀리서</span>
+          <span class="opening__scroll">SCROLL TO BEGIN <span aria-hidden="true">↓</span></span>
+        </div>
+        <div class="opening__progress" aria-hidden="true"><span id="opening-progress"></span></div>
+      </div>
+    </section>
+
+    <section class="section contents" id="contents" aria-labelledby="contents-title">
+      <div class="section__inner">
+        <p class="eyebrow">OUR STORY, OUR DAY</p>
+        <h2 id="contents-title">이 날의 <em>순서</em></h2>
+        <p class="section__lead">천천히 내려가며 저희의 이야기를 만나 주세요.</p>
+        <div class="contents__list">
+          <a href="#invitation"><span>01</span><strong>초대글</strong><span aria-hidden="true">↗</span></a>
+          <a href="#gallery"><span>02</span><strong>사진첩</strong><span aria-hidden="true">↗</span></a>
+          <a href="#location"><span>03</span><strong>오시는 길</strong><span aria-hidden="true">↗</span></a>
+          <a href="#account"><span>04</span><strong>마음 전하실 곳</strong><span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section invitation" id="invitation" aria-labelledby="invitation-title">
+      <div class="section__inner invitation__inner">
+        <p class="eyebrow">WITH ALL OUR HEARTS</p>
+        <div class="invitation__mark" aria-hidden="true">✳</div>
+        <h2 id="invitation-title">소중한 당신을<br><em>초대합니다</em></h2>
+        <div class="invitation__message" id="invitation-message"></div>
+        <p class="invitation__names" data-field="couple"></p>
+        <span class="invitation__date" data-field="date"></span>
+      </div>
+    </section>
+
+    <section class="section gallery" id="gallery" aria-labelledby="gallery-title">
+      <div class="section__inner">
+        <div class="section__heading"><div><p class="eyebrow">MOMENTS OF US</p><h2 id="gallery-title">우리의 <em>사진첩</em></h2></div><span class="section__count">01 — 06</span></div>
+        <p class="section__lead">함께 쌓아 온 순간들을 담았습니다.</p>
+        <div class="gallery__grid" id="gallery-grid"></div>
+      </div>
+    </section>
+
+    <section class="section location" id="location" aria-labelledby="location-title">
+      <div class="section__inner">
+        <p class="eyebrow">COME CELEBRATE WITH US</p>
+        <h2 id="location-title">오시는 <em>길</em></h2>
+        <div class="location__card">
+          <div class="location__stamp" aria-hidden="true">✳</div>
+          <p class="location__date" data-field="date"></p>
+          <h3 data-field="venue"></h3>
+          <p class="location__address" data-field="address"></p>
+          <p class="location__transport" data-field="transport"></p>
+          <div class="location__actions">
+            <a id="map-link" class="button" href="#location" hidden target="_blank" rel="noopener noreferrer">지도에서 보기 <span aria-hidden="true">↗</span></a>
+            <button id="copy-address" class="button button--light" type="button" disabled>주소 복사 <span aria-hidden="true">↗</span></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section account" id="account" aria-labelledby="account-title">
+      <div class="section__inner">
+        <p class="eyebrow">WITH GRATITUDE</p>
+        <h2 id="account-title">마음 전하실 <em>곳</em></h2>
+        <p class="section__lead">멀리서도 축하해 주시는 마음에 감사드립니다.</p>
+        <div class="account__list" id="account-list"></div>
+        <p class="account__note">계좌 정보는 제공받은 뒤 표시됩니다.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer"><span>THANK YOU FOR BEING WITH US</span><strong data-field="couple"></strong><a href="#opening">맨 위로 ↑</a></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
