@@ -75,7 +75,7 @@ body.opening-locked { position: fixed; inset: 0; width: 100%; overflow: hidden; 
   opacity: 0;
   text-align: left;
   transform: translateY(16px);
-  transition: opacity .4s ease, transform .4s ease;
+  transition: opacity .8s ease, transform .8s ease;
   pointer-events: none;
 }
 .opening__final.is-visible { opacity: 1; transform: translateY(0); }
