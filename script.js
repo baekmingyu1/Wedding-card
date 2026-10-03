@@ -159,7 +159,8 @@
   opening.style.setProperty("--sequence-height", `${Math.max(300, 170 + openingPhotos.length * 22)}svh`);
   const frames = [...frameHost.children];
   const openingCopy = document.querySelector(".opening__copy");
-  const sections = ["opening", "contents", "invitation", "gallery", "location", "account"]
+  const openingFinal = document.getElementById("opening-final");
+  const sections = ["opening", "contents", "story", "invitation", "gallery", "location", "account"]
     .map((id) => document.getElementById(id));
   const contents = document.getElementById("contents");
   const sideNav = document.querySelector(".side-nav");
@@ -180,7 +181,9 @@
     const openingRect = opening.getBoundingClientRect();
     const progress = Math.min(1, Math.max(0, -openingRect.top / total));
     const introEnd = Math.min(.5, window.innerHeight * .7 / total);
-    const sequenceProgress = Math.min(1, Math.max(0, (progress - introEnd) / (1 - introEnd)));
+    // Hold the last photograph long enough for the closing line to be read.
+    const sequenceEnd = .86;
+    const sequenceProgress = Math.min(1, Math.max(0, (progress - introEnd) / (sequenceEnd - introEnd)));
     const sceneIndex = motionReduced.matches
       ? frames.length - 1
       : Math.min(frames.length - 1, Math.floor(sequenceProgress * frames.length));
@@ -196,8 +199,11 @@
       frame.style.opacity = visible ? "1" : "0";
       frame.style.visibility = visible ? "visible" : "hidden";
     });
-    document.getElementById("opening-count").textContent = `SCENE ${String(sceneIndex + 1).padStart(2, "0")}`;
+    document.getElementById("opening-count").textContent = `${String(sceneIndex + 1).padStart(2, "0")} / ${String(frames.length).padStart(2, "0")}`;
     openingCopy.style.opacity = motionReduced.matches ? "1" : Math.max(0, 1 - progress / (introEnd * .8));
+    const showFinal = !motionReduced.matches && sceneIndex === frames.length - 1 && openingRect.bottom > 0;
+    openingFinal.classList.toggle("is-visible", showFinal);
+    openingFinal.setAttribute("aria-hidden", String(!showFinal));
     document.getElementById("opening-progress").style.height = `${sequenceProgress * 100}%`;
 
     const showSideNav = contents.getBoundingClientRect().top <= 0;
