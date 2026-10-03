@@ -411,22 +411,24 @@
 
   async function playOpening(run) {
     if (!autoplayActive || run !== playbackRun) return;
-    for (let index = 0; index < frames.length && autoplayActive && run === playbackRun; index += 1) {
-      if (frames[index].dataset.status === "loading") {
-        openingStatus.textContent = `장면 준비 중 ${String(index + 1).padStart(2, "0")}/${frames.length}`;
+    let settled = 0;
+    openingStatus.textContent = `사진 준비 중 ${settled}/${frames.length}`;
+    await Promise.all(frames.map((_, index) => waitForFrame(index).then(() => {
+      settled += 1;
+      if (autoplayActive && run === playbackRun) {
+        openingStatus.textContent = `사진 준비 중 ${settled}/${frames.length}`;
       }
-      await waitForFrame(index);
-      if (!autoplayActive || run !== playbackRun) return;
-      loadOpeningFrame(index + 1);
-      loadOpeningFrame(index + 2);
+    })));
+    if (!autoplayActive || run !== playbackRun) return;
+    await waitUntilActive(run);
+    if (!autoplayActive || run !== playbackRun) return;
+    openingStatus.textContent = "자동 재생 중";
+    pauseButton.hidden = false;
+    skipButton.hidden = false;
+    for (let index = 0; index < frames.length && autoplayActive && run === playbackRun; index += 1) {
       await waitUntilActive(run);
       if (!autoplayActive || run !== playbackRun) return;
       autoplayIndex = index;
-      openingStatus.textContent = "자동 재생 중";
-      if (index === 0) {
-        pauseButton.hidden = false;
-        skipButton.hidden = false;
-      }
       updateScroll();
       if (index === frames.length - 1) {
         // Let the last photo settle before revealing the closing line.
