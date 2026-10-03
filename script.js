@@ -143,6 +143,8 @@
   const openingCopy = document.querySelector(".opening__copy");
   const sections = ["opening", "contents", "invitation", "gallery", "location", "account"]
     .map((id) => document.getElementById(id));
+  const contents = document.getElementById("contents");
+  const sideNav = document.querySelector(".side-nav");
   const links = [...document.querySelectorAll("[data-nav]")];
   let pending = false;
 
@@ -181,6 +183,12 @@
     document.getElementById("opening-count").textContent = `${String(sceneIndex + 1).padStart(2, "0")} / ${String(frames.length).padStart(2, "0")}`;
     openingCopy.style.opacity = motionReduced.matches ? "1" : Math.max(0, 1 - progress / (introEnd * .8));
     document.getElementById("opening-progress").style.width = `${sequenceProgress * 100}%`;
+
+    const showSideNav = contents.getBoundingClientRect().top <= 0;
+    sideNav.classList.toggle("is-hidden", !showSideNav);
+    sideNav.toggleAttribute("inert", !showSideNav);
+    if (showSideNav) sideNav.removeAttribute("aria-hidden");
+    else sideNav.setAttribute("aria-hidden", "true");
 
     let active = "opening";
     for (const section of sections) {
