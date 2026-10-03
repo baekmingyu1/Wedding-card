@@ -16,21 +16,21 @@ window.WEDDING_CONTENT = {
   ],
   // DSC09569.jpg부터 DSC09583.jpg까지, 파일명 순서대로 만든 웹용 사진입니다.
   openingPhotos: [
-    "assets/opening/frames/01.webp",
-    "assets/opening/frames/02.webp",
-    "assets/opening/frames/03.webp",
-    "assets/opening/frames/04.webp",
-    "assets/opening/frames/05.webp",
-    "assets/opening/frames/06.webp",
-    "assets/opening/frames/07.webp",
-    "assets/opening/frames/08.webp",
-    "assets/opening/frames/09.webp",
-    "assets/opening/frames/10.webp",
-    "assets/opening/frames/11.webp",
-    "assets/opening/frames/12.webp",
-    "assets/opening/frames/13.webp",
-    "assets/opening/frames/14.webp",
-    "assets/opening/frames/15.webp"
+    "assets/opening/frames/01.webp?v=2",
+    "assets/opening/frames/02.webp?v=2",
+    "assets/opening/frames/03.webp?v=2",
+    "assets/opening/frames/04.webp?v=2",
+    "assets/opening/frames/05.webp?v=2",
+    "assets/opening/frames/06.webp?v=2",
+    "assets/opening/frames/07.webp?v=2",
+    "assets/opening/frames/08.webp?v=2",
+    "assets/opening/frames/09.webp?v=2",
+    "assets/opening/frames/10.webp?v=2",
+    "assets/opening/frames/11.webp?v=2",
+    "assets/opening/frames/12.webp?v=2",
+    "assets/opening/frames/13.webp?v=2",
+    "assets/opening/frames/14.webp?v=2",
+    "assets/opening/frames/15.webp?v=2"
   ],
   galleryPhotos: ["", "", "", "", "", ""]
 };
