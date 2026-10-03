@@ -36,13 +36,21 @@
 
     if (path) {
       const img = document.createElement("img");
+      const openingAlternatives = kind === "opening"
+        ? [...new Set([
+            path,
+            path.split("?")[0],
+            content.openingPhotos?.[index - 1]?.split("?")[0]
+          ].filter(Boolean))]
+        : [];
+      let sourceIndex = 0;
       img.hidden = true;
       img.alt = kind === "opening" ? "" : `두 사람의 사진 ${index + 1}`;
       if (kind === "gallery") img.loading = "lazy";
       if (kind === "opening") img.fetchPriority = index === 0 ? "high" : "low";
       img.addEventListener("load", () => {
         if (kind === "opening") {
-          const photoUrl = new URL(path, document.baseURI).href;
+          const photoUrl = new URL(img.currentSrc || img.src, document.baseURI).href;
           wrapper.style.setProperty("--frame-image", `url(${JSON.stringify(photoUrl)})`);
         }
         img.hidden = false;
@@ -50,7 +58,12 @@
         wrapper.classList.remove("opening__frame--fallback");
       });
       img.addEventListener("error", () => {
-        if (kind === "opening") placeholder.textContent = `SCENE ${String(index + 1).padStart(2, "0")} · 사진을 불러올 수 없습니다`;
+        if (kind !== "opening") return;
+        if (sourceIndex + 1 < openingAlternatives.length) {
+          img.src = openingAlternatives[++sourceIndex];
+          return;
+        }
+        placeholder.textContent = `SCENE ${String(index + 1).padStart(2, "0")} · 사진을 불러올 수 없습니다`;
       });
       if (kind === "opening") img.dataset.src = path;
       else img.src = path;
@@ -189,6 +202,7 @@
       : Math.min(frames.length - 1, Math.floor(sequenceProgress * frames.length));
     if (openingRect.bottom > 0 && openingRect.top < window.innerHeight) {
       loadOpeningFrame(sceneIndex, true);
+      if (sceneIndex === 0) loadOpeningFrame(frames.length - 1);
       if (!motionReduced.matches) {
         loadOpeningFrame(sceneIndex + 1);
         loadOpeningFrame(sceneIndex + 2);
