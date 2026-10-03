@@ -3,3 +3,5 @@
 *.iml
 node_modules/
 dist/
+# Keep full-resolution source photos local; commit the optimized frames instead.
+assets/opening/DSC*.jpg

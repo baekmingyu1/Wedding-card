@@ -5,7 +5,6 @@
   if (!content) return;
 
   const motionReduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const sceneNames = ["멀리서", "한 걸음", "조금 더 가까이", "마주 선 순간"];
   const frameHost = document.getElementById("opening-frames");
   const galleryHost = document.getElementById("gallery-grid");
   const accountHost = document.getElementById("account-list");
@@ -40,6 +39,7 @@
       img.hidden = true;
       img.alt = kind === "opening" ? "" : `두 사람의 사진 ${index + 1}`;
       if (kind === "gallery") img.loading = "lazy";
+      if (kind === "opening") img.fetchPriority = index === 0 ? "high" : "low";
       img.addEventListener("load", () => {
         img.hidden = false;
         placeholder.remove();
@@ -51,8 +51,8 @@
     host.append(wrapper);
   }
 
-  const openingPhotos = (content.openingPhotos || []).slice(0, 4);
-  while (openingPhotos.length < 4) openingPhotos.push("");
+  const openingPhotos = (content.openingPhotos || []).filter(Boolean);
+  if (!openingPhotos.length) openingPhotos.push("");
   openingPhotos.forEach((path, index) => addPhoto(frameHost, path, index, "opening"));
   (content.galleryPhotos || []).forEach((path, index) => addPhoto(galleryHost, path, index, "gallery"));
 
@@ -129,7 +129,9 @@
   }
 
   const opening = document.getElementById("opening");
+  opening.style.setProperty("--sequence-height", `${Math.max(300, 100 + openingPhotos.length * 22)}svh`);
   const frames = [...frameHost.children];
+  const openingCopy = document.querySelector(".opening__copy");
   const sections = ["opening", "contents", "invitation", "gallery", "location", "account"]
     .map((id) => document.getElementById(id));
   const links = [...document.querySelectorAll("[data-nav]")];
@@ -139,18 +141,18 @@
     pending = false;
     const total = Math.max(1, opening.offsetHeight - window.innerHeight);
     const progress = Math.min(1, Math.max(0, -opening.getBoundingClientRect().top / total));
-    const position = progress * (frames.length - 1);
-    const first = Math.floor(position);
-    const blend = position - first;
+    const sceneIndex = motionReduced.matches
+      ? frames.length - 1
+      : Math.min(frames.length - 1, Math.floor(progress * frames.length));
     frames.forEach((frame, index) => {
-      const opacity = motionReduced.matches
-        ? (index === frames.length - 1 ? 1 : 0)
-        : index === first ? 1 - blend : index === first + 1 ? blend : 0;
-      frame.style.opacity = opacity;
-      frame.style.transform = motionReduced.matches ? "none" : `scale(${1.04 - progress * .04})`;
+      const visible = index === sceneIndex;
+      frame.style.opacity = visible ? "1" : "0";
+      frame.style.visibility = visible ? "visible" : "hidden";
     });
-    const sceneIndex = motionReduced.matches ? frames.length - 1 : Math.min(frames.length - 1, Math.round(position));
-    document.getElementById("opening-scene").textContent = `${String(sceneIndex + 1).padStart(2, "0")} / ${sceneNames[sceneIndex]}`;
+    const sceneName = sceneIndex === 0 ? "멀리서" : sceneIndex === frames.length - 1 ? "마주 선 순간" : "다가가는 중";
+    document.getElementById("opening-scene").textContent = `${String(sceneIndex + 1).padStart(2, "0")} / ${sceneName}`;
+    document.getElementById("opening-count").textContent = `${String(sceneIndex + 1).padStart(2, "0")} / ${String(frames.length).padStart(2, "0")}`;
+    openingCopy.style.opacity = motionReduced.matches ? "1" : Math.max(0, 1 - progress * 4);
     document.getElementById("opening-progress").style.width = `${progress * 100}%`;
 
     let active = "opening";
