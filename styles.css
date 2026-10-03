@@ -128,7 +128,7 @@ h1 em, h2 em { color: var(--olive); font-style: normal; }
 .toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
 
 @media (max-width: 760px) {
-  .side-nav { right: 11px; gap: 1px; padding: 8px 6px; border: 1px solid rgba(47,52,45,.08); border-radius: 24px; background: rgba(247,244,238,.9); backdrop-filter: blur(10px); }
+  .side-nav { right: 11px; gap: 1px; }
   .side-nav__caption, .side-nav__line, .side-nav__label { display: none; }
   .side-nav a { width: 29px; min-height: 35px; justify-content: center; }
   .side-nav__dot { width: 7px; height: 7px; margin: 0; }
