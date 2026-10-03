@@ -196,7 +196,7 @@
       frame.style.opacity = visible ? "1" : "0";
       frame.style.visibility = visible ? "visible" : "hidden";
     });
-    document.getElementById("opening-count").textContent = `SCENE ${String(sceneIndex + 1).padStart(2, "0")}`;
+    document.getElementById("opening-count").textContent = `PAGE ${String(sceneIndex + 1).padStart(2, "0")}`;
     openingCopy.style.opacity = motionReduced.matches ? "1" : Math.max(0, 1 - progress / (introEnd * .8));
     document.getElementById("opening-progress").style.height = `${sequenceProgress * 100}%`;
 
