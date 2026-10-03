@@ -1,0 +1,195 @@
+/* A reversible scrapbook skin layered over the film layout. */
+:root {
+  --paper: #faf3e9;
+  --cream: #f1e8da;
+  --ink: #40352e;
+  --muted: #6f6259;
+  --accent: #a14832;
+  --accent-bright: #df6b4b;
+  --sage: #dce2ce;
+  --tape: rgba(231, 212, 165, .82);
+  --line: rgba(64, 53, 46, .22);
+}
+
+body { background: var(--paper); }
+h1, h2, h3 { font-family: 'Gaegu', 'Gowun Dodum', cursive; }
+h2 { font-size: clamp(53px, 7vw, 88px); line-height: 1.05; letter-spacing: -.035em; }
+.eyebrow { font-size: 10px; letter-spacing: .16em; }
+.section__lead { font-size: 16px; }
+.section__count { font-family: 'Gaegu', cursive; font-size: 22px; letter-spacing: 0; }
+
+.side-nav__caption { font-family: 'Gaegu', cursive; font-size: 16px; letter-spacing: .06em; }
+.side-nav__dot { width: 8px; height: 8px; border-radius: 2px; background: #fffaf2; }
+.side-nav a[aria-current="location"] .side-nav__dot { transform: rotate(13deg) scale(1.4); }
+
+/* The first page sits lightly over the original scrolling photographs. */
+.opening__veil { background: linear-gradient(0deg, rgba(25,21,18,.5), transparent 26%); }
+.opening__copy {
+  top: clamp(85px, 13svh, 150px);
+  left: clamp(30px, 8vw, 120px);
+  width: min(480px, calc(100% - 100px));
+  padding: 43px 40px 39px;
+  background: rgba(255, 252, 246, .96);
+  box-shadow: 6px 12px 32px rgba(28, 22, 18, .22);
+  color: var(--ink);
+  text-align: left;
+  transform: rotate(-2deg);
+}
+.opening__copy::before,
+.invitation__inner::before,
+.contents__photo::after,
+.account__card::before,
+.location__card::before {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  width: 102px;
+  height: 27px;
+  background: var(--tape);
+  clip-path: polygon(3% 0, 99% 5%, 96% 100%, 0 93%);
+  pointer-events: none;
+}
+.opening__copy::before { top: -14px; left: 50%; transform: translateX(-50%) rotate(4deg); }
+.opening__scene { color: var(--accent); font-size: 10px; letter-spacing: .18em; }
+.opening__scene::after { display: none; }
+.opening h1 { margin-top: 16px; font-size: clamp(61px, 6.5vw, 84px); line-height: .99; letter-spacing: -.045em; }
+.opening__copy p { margin-top: 22px; font-size: 15px; line-height: 1.7; }
+.opening__progress { width: 3px; background: repeating-linear-gradient(to bottom, rgba(255,255,255,.8) 0 8px, transparent 8px 14px); }
+.opening__progress span { background: var(--accent-bright); }
+
+/* Overlapping keepsakes, handwritten note, and paper-strip chapter links. */
+.contents {
+  background-color: var(--cream);
+  background-image: radial-gradient(rgba(133, 111, 90, .12) .7px, transparent .7px);
+  background-size: 18px 18px;
+}
+.contents__heading h2 { font-size: clamp(65px, 7vw, 92px); }
+.contents__visual { min-height: 680px; }
+.contents__photo { overflow: visible; background: #fffdf8; box-shadow: 7px 11px 24px rgba(57, 43, 31, .18); }
+.contents__photo::before { content: ''; position: absolute; inset: 12px 12px 48px; background: linear-gradient(145deg, #d9bda4, #987a66); }
+.contents__photo img { position: absolute; top: 12px; left: 12px; width: calc(100% - 24px); height: calc(100% - 60px); }
+.contents__photo::after { top: -13px; left: 50%; transform: translateX(-50%) rotate(-3deg); }
+.contents__photo--main { top: 2%; right: 1%; width: 72%; height: 72%; transform: rotate(5deg); }
+.contents__photo--detail { bottom: 9%; left: 0; width: 58%; height: 55%; transform: rotate(-8deg); }
+.contents__photo--detail::after { width: 75px; transform: translateX(-50%) rotate(7deg); }
+.contents__note { position: absolute; right: 5%; bottom: 0; color: var(--accent); font-family: 'Gaegu', cursive; font-size: clamp(25px, 3.5vw, 38px); transform: rotate(-7deg); white-space: nowrap; }
+.contents__list { border: 0; }
+.contents__list a {
+  min-height: 77px;
+  margin-bottom: 9px;
+  padding: 0 15px;
+  border: 0;
+  background: #fffdf8;
+  box-shadow: 3px 5px 14px rgba(57, 43, 31, .1);
+  transform: rotate(-1deg);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.contents__list a:nth-child(even) { transform: rotate(1deg); }
+.contents__list a:hover,
+.contents__list a:focus-visible { padding: 0 15px; background: #fffdf8; box-shadow: 4px 9px 17px rgba(57, 43, 31, .16); transform: translateY(-3px) rotate(0); }
+.contents__list a span:first-child { display: grid; width: 32px; height: 32px; place-items: center; border-radius: 50%; background: #f4e0d3; font-family: 'Gaegu', cursive; font-size: 20px; }
+.contents__list a strong { font-family: 'Gaegu', cursive; font-size: clamp(25px, 2.8vw, 34px); }
+.contents__list a span:last-child { font-family: 'Gaegu', cursive; }
+
+/* A letter tucked into the scrapbook. */
+.invitation { background: var(--sage); color: var(--ink); }
+.invitation__inner {
+  position: relative;
+  display: block;
+  width: min(100%, 810px);
+  padding: clamp(58px, 7vw, 85px);
+  background: #fffdf8;
+  box-shadow: 8px 13px 25px rgba(57, 43, 31, .15);
+  transform: rotate(-1deg);
+}
+.invitation__inner::before { top: -15px; left: 50%; transform: translateX(-50%) rotate(3deg); }
+.invitation__inner::after { content: '♡'; position: absolute; top: 52px; right: 50px; color: var(--accent-bright); font-family: 'Gaegu', cursive; font-size: 72px; line-height: 1; transform: rotate(14deg); }
+.invitation .eyebrow { color: var(--accent); }
+.invitation__body h2 { margin: 23px 0 0; font-size: clamp(65px, 8vw, 100px); }
+.invitation__message { margin-top: 42px; }
+.invitation__message p { font-size: clamp(16px, 2vw, 19px); line-height: 1.9; }
+.invitation__signoff { margin-top: 60px; border-top: 1px dashed var(--line); }
+.invitation__date { color: var(--muted); }
+
+/* The gallery uses loose polaroid cards with room for future photos. */
+.gallery { background: var(--paper); }
+.gallery__grid { gap: 28px 22px; padding: 20px 11px 38px; }
+.gallery__item {
+  overflow: visible;
+  background: #fffdf8;
+  box-shadow: 6px 9px 21px rgba(57, 43, 31, .16);
+  transform: rotate(-3deg);
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.gallery__item:nth-child(2n) { transform: rotate(3deg); }
+.gallery__item:nth-child(3n) { transform: rotate(-1deg); }
+.gallery__item:hover { z-index: 2; box-shadow: 9px 14px 25px rgba(57, 43, 31, .21); transform: translateY(-5px) rotate(0); }
+.gallery__item img,
+.gallery__placeholder { position: absolute; top: 10px; left: 10px; width: calc(100% - 20px); height: calc(100% - 54px); }
+.gallery__item:nth-child(3n)::after { content: ''; position: absolute; z-index: 2; top: -12px; left: 50%; width: 82px; height: 24px; background: var(--tape); clip-path: polygon(3% 0, 99% 5%, 96% 100%, 0 93%); transform: translateX(-50%) rotate(6deg); pointer-events: none; }
+
+.location { background: #eadfcc; }
+.location__card {
+  position: relative;
+  gap: clamp(30px, 6vw, 80px);
+  margin-top: 58px;
+  padding: clamp(32px, 5vw, 65px);
+  border: 1px dashed #c5af9d;
+  background: #fffdf8;
+  box-shadow: 5px 8px 19px rgba(57, 43, 31, .1);
+  transform: rotate(1deg);
+}
+.location__card::before { top: -14px; left: 34px; width: 80px; transform: rotate(-8deg); }
+.location__main h3 { font-size: clamp(40px, 4.5vw, 60px); }
+.location__date { color: var(--accent); }
+.button { border-color: var(--accent); background: var(--accent); }
+.button--light { background: transparent; color: var(--accent); }
+
+.account { background: #f3eadd; }
+.account__list { gap: 28px; }
+.account__card { position: relative; padding: 32px; border: 0; background: #fffdf8; box-shadow: 4px 8px 18px rgba(57, 43, 31, .1); transform: rotate(-1deg); }
+.account__card:nth-child(even) { transform: rotate(1deg); }
+.account__card::before { top: -12px; right: 25px; width: 65px; transform: rotate(11deg); }
+.account__side { color: var(--accent); }
+.footer { background: #666c5d; }
+
+@media (max-width: 900px) {
+  .contents__visual { min-height: min(88vw, 650px); }
+}
+
+@media (max-width: 760px) {
+  .opening__copy { top: clamp(78px, 12svh, 120px); left: 25px; width: min(450px, calc(100% - 55px)); padding: 35px 30px 31px; transform: rotate(-2deg); }
+  .opening h1 { font-size: clamp(50px, 9vw, 72px); }
+  .opening__copy p { font-size: 14px; }
+  .contents__heading h2 { font-size: clamp(64px, 12vw, 85px); }
+  .contents__visual { min-height: min(121vw, 570px); }
+  .contents__photo::before { inset: 9px 9px 36px; }
+  .contents__photo img { top: 9px; left: 9px; width: calc(100% - 18px); height: calc(100% - 45px); }
+  .contents__note { bottom: -4px; font-size: 28px; }
+  .invitation__inner { width: 100%; padding: 54px 36px 48px; }
+  .invitation__inner::after { top: 42px; right: 28px; font-size: 52px; }
+  .invitation__body h2 { font-size: clamp(61px, 12vw, 83px); }
+  .gallery__grid { gap: 22px 16px; padding: 15px 5px 28px; }
+  .location__card { padding: 32px 25px; }
+  .account__card { padding: 28px; }
+}
+
+@media (max-width: 420px) {
+  .opening__copy { left: 21px; width: calc(100% - 42px); padding: 27px 20px 25px; }
+  .opening h1 { font-size: clamp(43px, 11vw, 56px); }
+  .opening__copy p { margin-top: 15px; font-size: 13px; }
+  .contents__visual { min-height: 115vw; }
+  .contents__note { right: 0; bottom: 0; font-size: 24px; }
+  .contents__list a { min-height: 70px; padding-inline: 10px; }
+  .contents__list a:hover, .contents__list a:focus-visible { padding-inline: 10px; }
+  .invitation__inner { padding: 52px 24px 40px; }
+  .invitation__inner::after { top: 36px; right: 18px; font-size: 40px; }
+  .invitation__body h2 { font-size: clamp(37px, 12vw, 58px); }
+  .gallery__grid { gap: 19px 12px; }
+  .gallery__item img, .gallery__placeholder { top: 7px; left: 7px; width: calc(100% - 14px); height: calc(100% - 43px); }
+  .location__main h3 { font-size: 42px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery__item, .contents__list a { transition: none; }
+}
