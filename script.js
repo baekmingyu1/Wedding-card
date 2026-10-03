@@ -430,7 +430,7 @@
       updateScroll();
       if (index === frames.length - 1) {
         // Let the last photo settle before revealing the closing line.
-        await waitPlayback(900, run);
+        await waitPlayback(500, run);
         if (!autoplayActive || run !== playbackRun) return;
         finalMessageReady = true;
         updateScroll();
