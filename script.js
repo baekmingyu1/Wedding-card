@@ -191,6 +191,8 @@
   let playbackComplete = false;
   let autoplayIndex = 0;
   let playbackPaused = false;
+  let playbackRun = 0;
+  let hasLeftOpening = false;
   let pending = false;
 
   if (autoplayActive || motionReduced.matches) {
@@ -213,6 +215,10 @@
 
   function updateScroll() {
     pending = false;
+    if (playbackComplete && hasLeftOpening && window.scrollY < 5) {
+      replayOpening();
+      return;
+    }
     const total = Math.max(1, opening.offsetHeight - window.innerHeight);
     const openingRect = opening.getBoundingClientRect();
     const progress = Math.min(1, Math.max(0, -openingRect.top / total));
@@ -220,11 +226,13 @@
     // Hold the last photograph long enough for the closing line to be read.
     const sequenceEnd = .86;
     const sequenceProgress = Math.min(1, Math.max(0, (progress - introEnd) / (sequenceEnd - introEnd)));
-    const sceneIndex = motionReduced.matches || playbackComplete
+    const sceneIndex = playbackComplete
       ? frames.length - 1
-      : autoplayActive
-        ? autoplayIndex
-        : Math.min(frames.length - 1, Math.floor(sequenceProgress * frames.length));
+      : motionReduced.matches
+        ? 0
+        : autoplayActive
+          ? autoplayIndex
+          : Math.min(frames.length - 1, Math.floor(sequenceProgress * frames.length));
     if (!autoplayActive && !playbackComplete && openingRect.bottom > 0 && openingRect.top < window.innerHeight) {
       loadOpeningFrame(sceneIndex, true);
       if (sceneIndex === 0) loadOpeningFrame(frames.length - 1);
@@ -249,6 +257,7 @@
     document.getElementById("opening-progress").style.height = `${frameProgress * 100}%`;
 
     const showSideNav = contents.getBoundingClientRect().top <= 0;
+    if (playbackComplete && showSideNav) hasLeftOpening = true;
     sideNav.classList.toggle("is-hidden", !showSideNav);
     sideNav.toggleAttribute("inert", !showSideNav);
     if (showSideNav) sideNav.removeAttribute("aria-hidden");
@@ -297,9 +306,11 @@
 
   function finishOpening() {
     if (!autoplayActive) return;
+    playbackRun += 1;
     autoplayActive = false;
     playbackComplete = true;
     playbackPaused = false;
+    hasLeftOpening = false;
     document.body.classList.remove("opening-locked");
     pauseButton.hidden = true;
     skipButton.hidden = true;
@@ -308,12 +319,48 @@
     window.requestAnimationFrame(() => contents.scrollIntoView({ behavior: "smooth" }));
   }
 
+  function replayOpening() {
+    playbackRun += 1;
+    autoplayActive = !motionReduced.matches;
+    playbackComplete = false;
+    playbackPaused = false;
+    hasLeftOpening = false;
+    autoplayIndex = 0;
+    opening.classList.add("opening--short");
+    opening.style.removeProperty("--sequence-height");
+    pauseButton.hidden = true;
+    skipButton.hidden = true;
+    pauseButton.textContent = "일시정지";
+    openingStatus.textContent = autoplayActive ? "사진 준비 중" : "아래로 스크롤 ↓";
+    const root = document.documentElement;
+    const previousScrollBehavior = root.style.scrollBehavior;
+    root.style.scrollBehavior = "auto";
+    window.scrollTo(0, 0);
+    root.style.scrollBehavior = previousScrollBehavior;
+    if (location.hash !== "#opening") {
+      try { history.replaceState(null, "", "#opening"); }
+      catch { /* Replay still works when local file history is unavailable. */ }
+    }
+    document.body.classList.toggle("opening-locked", autoplayActive);
+    loadOpeningFrame(0, true);
+    updateScroll();
+    if (autoplayActive) playOpening(playbackRun);
+  }
+
+  document.querySelectorAll('a[href="#opening"]').forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      replayOpening();
+    });
+  });
+
   document.querySelector(".skip-link").addEventListener("click", () => {
     if (autoplayActive) finishOpening();
   });
 
   motionReduced.addEventListener("change", () => {
     if (!motionReduced.matches || !autoplayActive) return;
+    playbackRun += 1;
     autoplayActive = false;
     playbackComplete = true;
     document.body.classList.remove("opening-locked");
@@ -331,19 +378,20 @@
   });
   skipButton.addEventListener("click", finishOpening);
 
-  async function waitPlayback(milliseconds) {
+  async function waitPlayback(milliseconds, run) {
     let remaining = milliseconds;
-    while (remaining > 0 && autoplayActive) {
+    while (remaining > 0 && autoplayActive && run === playbackRun) {
       const started = performance.now();
       await new Promise((resolve) => window.setTimeout(resolve, Math.min(remaining, 80)));
       if (!playbackPaused && !document.hidden) remaining -= performance.now() - started;
     }
   }
 
-  async function playOpening() {
-    if (!autoplayActive) return;
+  async function playOpening(run) {
+    if (!autoplayActive || run !== playbackRun) return;
     const settled = new Set(frames.filter((frame) => frame.dataset.status !== "loading"));
     const report = (frame) => {
+      if (run !== playbackRun) return;
       settled.add(frame);
       openingStatus.textContent = `사진 준비 중 ${settled.size}/${frames.length}`;
     };
@@ -351,20 +399,20 @@
     openingStatus.textContent = `사진 준비 중 ${settled.size}/${frames.length}`;
 
     await waitForFrame(0);
-    if (!autoplayActive) return;
+    if (!autoplayActive || run !== playbackRun) return;
     await Promise.all(frames.slice(1).map((_, index) => waitForFrame(index + 1)));
-    if (!autoplayActive) return;
+    if (!autoplayActive || run !== playbackRun) return;
 
     openingStatus.textContent = "자동 재생 중";
     pauseButton.hidden = false;
     skipButton.hidden = false;
-    for (let index = 0; index < frames.length && autoplayActive; index += 1) {
+    for (let index = 0; index < frames.length && autoplayActive && run === playbackRun; index += 1) {
       autoplayIndex = index;
       updateScroll();
-      await waitPlayback(index === 0 ? 1100 : index === frames.length - 1 ? 1500 : 240);
+      await waitPlayback(index === 0 ? 1100 : index === frames.length - 1 ? 1500 : 240, run);
     }
-    finishOpening();
+    if (run === playbackRun) finishOpening();
   }
 
-  if (autoplayActive) playOpening();
+  if (autoplayActive) playOpening(++playbackRun);
 })();
