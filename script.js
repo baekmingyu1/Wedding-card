@@ -30,26 +30,30 @@
     const placeholder = document.createElement("span");
     placeholder.className = kind === "opening" ? "opening__placeholder" : "gallery__placeholder";
     placeholder.textContent = kind === "opening"
-      ? `SCENE ${String(index + 1).padStart(2, "0")} · 사진 준비 중`
+      ? `SCENE ${String(index + 1).padStart(2, "0")} · ${path ? "불러오는 중" : "사진 준비 중"}`
       : `PHOTO ${String(index + 1).padStart(2, "0")}`;
     wrapper.append(placeholder);
 
     if (path) {
-      if (kind === "opening") {
-        const photoUrl = new URL(path, document.baseURI).href;
-        wrapper.style.setProperty("--frame-image", `url(${JSON.stringify(photoUrl)})`);
-      }
       const img = document.createElement("img");
       img.hidden = true;
       img.alt = kind === "opening" ? "" : `두 사람의 사진 ${index + 1}`;
       if (kind === "gallery") img.loading = "lazy";
       if (kind === "opening") img.fetchPriority = index === 0 ? "high" : "low";
       img.addEventListener("load", () => {
+        if (kind === "opening") {
+          const photoUrl = new URL(path, document.baseURI).href;
+          wrapper.style.setProperty("--frame-image", `url(${JSON.stringify(photoUrl)})`);
+        }
         img.hidden = false;
         placeholder.remove();
         wrapper.classList.remove("opening__frame--fallback");
       });
-      img.src = path;
+      img.addEventListener("error", () => {
+        if (kind === "opening") placeholder.textContent = `SCENE ${String(index + 1).padStart(2, "0")} · 사진을 불러올 수 없습니다`;
+      });
+      if (kind === "opening") img.dataset.src = path;
+      else img.src = path;
       wrapper.append(img);
     }
     host.append(wrapper);
@@ -142,15 +146,31 @@
   const links = [...document.querySelectorAll("[data-nav]")];
   let pending = false;
 
+  function loadOpeningFrame(index, highPriority = false) {
+    const image = frames[index]?.querySelector("img[data-src]");
+    if (!image) return;
+    if (highPriority) image.fetchPriority = "high";
+    image.src = image.dataset.src;
+    delete image.dataset.src;
+  }
+
   function updateScroll() {
     pending = false;
     const total = Math.max(1, opening.offsetHeight - window.innerHeight);
-    const progress = Math.min(1, Math.max(0, -opening.getBoundingClientRect().top / total));
+    const openingRect = opening.getBoundingClientRect();
+    const progress = Math.min(1, Math.max(0, -openingRect.top / total));
     const introEnd = Math.min(.5, window.innerHeight * .7 / total);
     const sequenceProgress = Math.min(1, Math.max(0, (progress - introEnd) / (1 - introEnd)));
     const sceneIndex = motionReduced.matches
       ? frames.length - 1
       : Math.min(frames.length - 1, Math.floor(sequenceProgress * frames.length));
+    if (openingRect.bottom > 0 && openingRect.top < window.innerHeight) {
+      loadOpeningFrame(sceneIndex, true);
+      if (!motionReduced.matches) {
+        loadOpeningFrame(sceneIndex + 1);
+        loadOpeningFrame(sceneIndex + 2);
+      }
+    }
     frames.forEach((frame, index) => {
       const visible = index === sceneIndex;
       frame.style.opacity = visible ? "1" : "0";
