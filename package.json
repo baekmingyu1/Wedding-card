@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "scripts": {
+    "images": "node tools/generate-opening-images.mjs",
+    "build": "node tools/build.mjs",
+    "check:dist": "node tools/check-dist.mjs"
+  },
+  "devDependencies": {
+    "sharp": "0.35.5"
+  }
+}

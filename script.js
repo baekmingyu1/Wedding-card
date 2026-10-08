@@ -21,12 +21,15 @@
     document.getElementById("invitation-message").append(paragraph);
   }
 
-  function addPhoto(host, path, index, kind) {
+  const photoUrl = (photo) => typeof photo === "string" ? photo : photo?.src;
+
+  function addPhoto(host, photo, index, kind) {
     const wrapper = document.createElement(kind === "opening" ? "div" : "figure");
     wrapper.className = kind === "opening"
       ? "opening__frame opening__frame--fallback"
       : "gallery__item";
-    if (kind === "opening") wrapper.dataset.status = path ? "loading" : "failed";
+    const path = photoUrl(photo);
+    if (kind === "opening") wrapper.dataset.status = path ? "pending" : "failed";
 
     const placeholder = document.createElement("span");
     placeholder.className = kind === "opening" ? "opening__placeholder" : "gallery__placeholder";
@@ -36,24 +39,34 @@
     wrapper.append(placeholder);
 
     if (path) {
+      const picture = document.createElement("picture");
       const img = document.createElement("img");
-      const openingAlternatives = kind === "opening"
-        ? [...new Set([
-            path,
-            path.split("?")[0],
-            content.openingPhotos?.[index - 1]?.split("?")[0]
-          ].filter(Boolean))]
-        : [];
-      let sourceIndex = 0;
+      if (photo.mobileSrcset) {
+        const source = document.createElement("source");
+        source.media = "(max-width: 760px)";
+        source.sizes = kind === "opening" ? "135vw" : "(max-width: 760px) 100vw, 50vw";
+        if (kind === "opening") source.dataset.srcset = photo.mobileSrcset;
+        else source.srcset = photo.mobileSrcset;
+        picture.append(source);
+      }
       img.hidden = true;
       img.decoding = "async";
       img.alt = kind === "opening" ? "" : `두 사람의 사진 ${index + 1}`;
       if (kind === "gallery") img.loading = "lazy";
       if (kind === "opening") img.fetchPriority = index === 0 ? "high" : "low";
+      if (photo.srcset) {
+        img.sizes = kind === "opening" ? "100vw" : "(max-width: 760px) 100vw, 50vw";
+        if (kind === "opening") img.dataset.srcset = photo.srcset;
+        else img.srcset = photo.srcset;
+      }
+      if (photo.width && photo.height) {
+        img.width = photo.width;
+        img.height = photo.height;
+      }
+      if (kind === "opening" && photo.blur) wrapper.dataset.blur = photo.blur;
       img.addEventListener("load", () => {
-        if (kind === "opening") {
-          const photoUrl = new URL(img.currentSrc || img.src, document.baseURI).href;
-          wrapper.style.setProperty("--frame-image", `url(${JSON.stringify(photoUrl)})`);
+        if (kind === "opening" && photo.blur) {
+          wrapper.style.setProperty("--frame-image", `url(${JSON.stringify(photo.blur)})`);
         }
         img.hidden = false;
         placeholder.remove();
@@ -64,18 +77,15 @@
         }
       });
       img.addEventListener("error", () => {
-        if (kind !== "opening") return;
-        if (sourceIndex + 1 < openingAlternatives.length) {
-          img.src = openingAlternatives[++sourceIndex];
-          return;
-        }
+        if (kind !== "opening") { wrapper.classList.add("gallery__item--failed"); return; }
         placeholder.textContent = `SCENE ${String(index + 1).padStart(2, "0")} · 사진을 불러올 수 없습니다`;
         wrapper.dataset.status = "failed";
         wrapper.dispatchEvent(new Event("frame-settled"));
       });
       if (kind === "opening") img.dataset.src = path;
       else img.src = path;
-      wrapper.append(img);
+      picture.append(img);
+      wrapper.append(picture);
     }
     host.append(wrapper);
   }
@@ -89,9 +99,16 @@
     middle: openingPhotos[Math.floor((openingPhotos.length - 1) / 2)]
   };
   document.querySelectorAll("[data-editorial-photo]").forEach((image) => {
-    const path = editorialPhotos[image.dataset.editorialPhoto];
+    const photo = editorialPhotos[image.dataset.editorialPhoto];
+    const path = photoUrl(photo);
     if (!path) return;
     image.addEventListener("error", () => { image.hidden = true; });
+    if (photo.srcset) {
+      image.srcset = photo.srcset;
+      image.sizes = "(max-width: 760px) 70vw, 35vw";
+      image.width = photo.width;
+      image.height = photo.height;
+    }
     image.src = path;
     image.hidden = false;
   });
@@ -200,6 +217,11 @@
   let paintedScene = -1;
   let finalMessageReady = false;
   let pending = false;
+  const loadQueue = [];
+  const frameRequests = new Map();
+  let activeLoads = 0;
+  let loadsEnabled = true;
+  const maxConcurrentLoads = 3;
 
   if (autoplayActive || motionReduced.matches) {
     opening.classList.add("opening--short");
@@ -208,19 +230,31 @@
     opening.style.setProperty("--sequence-height", `${Math.max(300, 170 + openingPhotos.length * 22)}svh`);
     openingStatus.textContent = "SCROLL TO MEET ↓";
   }
-  if (autoplayActive) document.body.classList.add("opening-locked");
   if (motionReduced.matches) openingStatus.textContent = "아래로 스크롤 ↓";
 
   function loadOpeningFrame(index, highPriority = false) {
     const image = frames[index]?.querySelector("img[data-src]");
     if (!image) return;
     if (highPriority) image.fetchPriority = "high";
+    const source = frames[index].querySelector("source[data-srcset]");
+    if (source) {
+      source.srcset = source.dataset.srcset;
+      delete source.dataset.srcset;
+    }
+    if (image.dataset.srcset) {
+      image.srcset = image.dataset.srcset;
+      delete image.dataset.srcset;
+    }
     image.src = image.dataset.src;
     delete image.dataset.src;
   }
 
   function updateScroll() {
     pending = false;
+    if (autoplayActive && window.scrollY > Math.max(80, window.innerHeight * .25)) {
+      finishOpening(false);
+      return;
+    }
     if (playbackComplete && hasLeftOpening && window.scrollY < 5) {
       replayOpening();
       return;
@@ -232,13 +266,11 @@
     // Hold the last photograph long enough for the closing line to be read.
     const sequenceEnd = .86;
     const sequenceProgress = Math.min(1, Math.max(0, (progress - introEnd) / (sequenceEnd - introEnd)));
-    const sceneIndex = playbackComplete
-      ? frames.length - 1
-      : motionReduced.matches
-        ? 0
-        : autoplayActive
-          ? autoplayIndex
-          : Math.min(frames.length - 1, Math.floor(sequenceProgress * frames.length));
+    const sceneIndex = motionReduced.matches
+      ? 0
+      : playbackComplete || autoplayActive
+        ? autoplayIndex
+        : Math.min(frames.length - 1, Math.floor(sequenceProgress * frames.length));
     const openingVisible = openingRect.bottom > 0 && openingRect.top < window.innerHeight;
     const showSideNav = contents.getBoundingClientRect().top <= 0;
     let active = "opening";
@@ -249,10 +281,10 @@
     const navProgressHeight = `${Math.min(100, window.scrollY / pageRange * 100)}%`;
     if (openingVisible || autoplayActive) {
       if (!autoplayActive && !playbackComplete) {
-        loadOpeningFrame(sceneIndex, true);
+        requestOpeningFrame(sceneIndex, true);
         if (!motionReduced.matches) {
-          loadOpeningFrame(sceneIndex + 1);
-          loadOpeningFrame(sceneIndex + 2);
+          requestOpeningFrame(sceneIndex + 1);
+          requestOpeningFrame(sceneIndex + 2);
         }
       }
       if (sceneIndex !== paintedScene) {
@@ -269,8 +301,9 @@
       openingCopy.style.opacity = motionReduced.matches ? "1" : autoplayActive || playbackComplete
         ? (sceneIndex === 0 ? "1" : "0")
         : Math.max(0, 1 - progress / (introEnd * .8));
-      const showFinal = !motionReduced.matches && sceneIndex === frames.length - 1 && openingVisible
-        && (!autoplayActive || finalMessageReady);
+      const showFinal = !motionReduced.matches && openingVisible && (
+        autoplayActive || playbackComplete ? finalMessageReady : sceneIndex === frames.length - 1
+      );
       openingFinal.classList.toggle("is-visible", showFinal);
       openingFinal.setAttribute("aria-hidden", String(!showFinal));
       const frameProgress = autoplayActive || playbackComplete ? (sceneIndex + 1) / frames.length : sequenceProgress;
@@ -300,38 +333,63 @@
   motionReduced.addEventListener("change", scheduleUpdate);
   updateScroll();
 
-  function waitForFrame(index) {
+  function requestOpeningFrame(index, highPriority = false) {
     const frame = frames[index];
-    if (!frame || frame.dataset.status !== "loading") return Promise.resolve();
-    return new Promise((resolve) => {
+    if (!frame || frame.dataset.status === "failed") return Promise.resolve(false);
+    if (frame.dataset.status === "ready") return Promise.resolve(true);
+    if (frameRequests.has(index)) return frameRequests.get(index);
+    let resolveRequest;
+    const promise = new Promise((resolve) => { resolveRequest = resolve; });
+    frameRequests.set(index, promise);
+    loadQueue.push({ index, highPriority, resolve: resolveRequest });
+    pumpOpeningLoads();
+    return promise;
+  }
+
+  function pumpOpeningLoads() {
+    while (loadsEnabled && activeLoads < maxConcurrentLoads && loadQueue.length) {
+      const job = loadQueue.shift();
+      const frame = frames[job.index];
+      activeLoads += 1;
+      frame.dataset.status = "loading";
       const timeout = window.setTimeout(() => {
         if (frame.dataset.status !== "loading") return;
         frame.dataset.status = "failed";
         const placeholder = frame.querySelector(".opening__placeholder");
-        if (placeholder) placeholder.textContent = `SCENE ${String(index + 1).padStart(2, "0")} · 사진을 불러올 수 없습니다`;
+        if (placeholder) placeholder.textContent = `SCENE ${String(job.index + 1).padStart(2, "0")} · 사진을 불러올 수 없습니다`;
         frame.dispatchEvent(new Event("frame-settled"));
-      }, 20000);
+      }, 8000);
       frame.addEventListener("frame-settled", () => {
         window.clearTimeout(timeout);
-        resolve();
+        activeLoads -= 1;
+        frameRequests.delete(job.index);
+        job.resolve(frame.dataset.status === "ready");
+        pumpOpeningLoads();
       }, { once: true });
-      loadOpeningFrame(index, index === 0);
-    });
+      loadOpeningFrame(job.index, job.highPriority);
+    }
   }
 
-  function finishOpening() {
+  function stopPendingOpeningLoads() {
+    loadsEnabled = false;
+    for (const job of loadQueue.splice(0)) {
+      frameRequests.delete(job.index);
+      job.resolve(false);
+    }
+  }
+
+  function finishOpening(navigate = true) {
     if (!autoplayActive) return;
     playbackRun += 1;
     autoplayActive = false;
     playbackComplete = true;
     playbackPaused = false;
     hasLeftOpening = false;
-    document.body.classList.remove("opening-locked");
+    stopPendingOpeningLoads();
     pauseButton.hidden = true;
-    skipButton.hidden = true;
     openingStatus.textContent = "";
     updateScroll();
-    window.requestAnimationFrame(() => contents.scrollIntoView({ behavior: "smooth" }));
+    if (navigate) window.requestAnimationFrame(() => contents.scrollIntoView({ behavior: "smooth" }));
   }
 
   function replayOpening() {
@@ -342,10 +400,11 @@
     hasLeftOpening = false;
     autoplayIndex = 0;
     finalMessageReady = false;
+    loadsEnabled = true;
+    pumpOpeningLoads();
     opening.classList.add("opening--short");
     opening.style.removeProperty("--sequence-height");
     pauseButton.hidden = true;
-    skipButton.hidden = true;
     pauseButton.textContent = "일시정지";
     openingStatus.textContent = autoplayActive ? "사진 준비 중" : "아래로 스크롤 ↓";
     const root = document.documentElement;
@@ -357,8 +416,7 @@
       try { history.replaceState(null, "", "#opening"); }
       catch { /* Replay still works when local file history is unavailable. */ }
     }
-    document.body.classList.toggle("opening-locked", autoplayActive);
-    loadOpeningFrame(0, true);
+    requestOpeningFrame(0, true);
     updateScroll();
     if (autoplayActive) playOpening(playbackRun);
   }
@@ -371,19 +429,15 @@
   });
 
   document.querySelector(".skip-link").addEventListener("click", () => {
-    if (autoplayActive) finishOpening();
+    if (autoplayActive) finishOpening(false);
   });
 
   motionReduced.addEventListener("change", () => {
     if (!motionReduced.matches || !autoplayActive) return;
-    playbackRun += 1;
-    autoplayActive = false;
-    playbackComplete = true;
-    document.body.classList.remove("opening-locked");
-    pauseButton.hidden = true;
-    skipButton.hidden = true;
+    finishOpening(false);
     openingStatus.textContent = "아래로 스크롤 ↓";
-    loadOpeningFrame(frames.length - 1, true);
+    loadsEnabled = true;
+    requestOpeningFrame(0, true);
     updateScroll();
   });
 
@@ -392,7 +446,7 @@
     pauseButton.textContent = playbackPaused ? "이어보기" : "일시정지";
     openingStatus.textContent = playbackPaused ? "일시정지" : "자동 재생 중";
   });
-  skipButton.addEventListener("click", finishOpening);
+  skipButton.addEventListener("click", () => finishOpening(false));
 
   async function waitPlayback(milliseconds, run) {
     let remaining = milliseconds;
@@ -411,25 +465,46 @@
 
   async function playOpening(run) {
     if (!autoplayActive || run !== playbackRun) return;
+    const initialCount = Math.min(frames.length, 5);
     let settled = 0;
-    openingStatus.textContent = `사진 준비 중 ${settled}/${frames.length}`;
-    await Promise.all(frames.map((_, index) => waitForFrame(index).then(() => {
-      settled += 1;
-      if (autoplayActive && run === playbackRun) {
-        openingStatus.textContent = `사진 준비 중 ${settled}/${frames.length}`;
-      }
-    })));
+    let buffering = true;
+    openingStatus.textContent = `사진 준비 중 ${settled}/${initialCount}`;
+    const initial = Array.from({ length: initialCount }, (_, index) =>
+      requestOpeningFrame(index, index === 0).then(() => {
+        settled += 1;
+        if (buffering && autoplayActive && run === playbackRun) {
+          openingStatus.textContent = `사진 준비 중 ${settled}/${initialCount}`;
+        }
+      })
+    );
+    await initial[0];
     if (!autoplayActive || run !== playbackRun) return;
+    // Start after a short buffer, with a fixed ceiling even on a slow connection.
+    await Promise.race([
+      Promise.all(initial.slice(1, Math.min(initialCount, 4))),
+      waitPlayback(900, run)
+    ]);
+    buffering = false;
     await waitUntilActive(run);
     if (!autoplayActive || run !== playbackRun) return;
+    const middleFrameMs = frames.slice(0, Math.min(initialCount, 4))
+      .every((frame) => frame.dataset.status === "ready") ? 120 : 260;
     openingStatus.textContent = "자동 재생 중";
     pauseButton.hidden = false;
-    skipButton.hidden = false;
     for (let index = 0; index < frames.length && autoplayActive && run === playbackRun; index += 1) {
+      for (let next = index + 1; next <= index + 5 && next < frames.length; next += 1) {
+        requestOpeningFrame(next);
+      }
       await waitUntilActive(run);
       if (!autoplayActive || run !== playbackRun) return;
-      autoplayIndex = index;
-      updateScroll();
+      if (frames[index].dataset.status !== "ready") {
+        await Promise.race([requestOpeningFrame(index), waitPlayback(450, run)]);
+      }
+      if (!autoplayActive || run !== playbackRun) return;
+      if (frames[index].dataset.status === "ready") {
+        autoplayIndex = index;
+        updateScroll();
+      }
       if (index === frames.length - 1) {
         // Let the last photo settle before revealing the closing line.
         await waitPlayback(500, run);
@@ -437,7 +512,7 @@
         finalMessageReady = true;
         updateScroll();
       }
-      await waitPlayback(index === 0 ? 1500 : index === frames.length - 1 ? 1900 : 120, run);
+      await waitPlayback(index === 0 ? 1500 : index === frames.length - 1 ? 1900 : middleFrameMs, run);
     }
     if (run === playbackRun) finishOpening();
   }
