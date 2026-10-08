@@ -63,17 +63,21 @@
         img.width = photo.width;
         img.height = photo.height;
       }
-      if (kind === "opening" && photo.blur) wrapper.dataset.blur = photo.blur;
-      img.addEventListener("load", () => {
-        if (kind === "opening" && photo.blur) {
-          wrapper.style.setProperty("--frame-image", `url(${JSON.stringify(photo.blur)})`);
+      if (kind === "opening" && photo.blur) {
+        wrapper.style.setProperty("--frame-image", `url(${JSON.stringify(photo.blur)})`);
+      }
+      img.addEventListener("load", async () => {
+        if (kind === "opening" && img.decode) {
+          try { await img.decode(); } catch { /* The loaded image can still be displayed. */ }
         }
+        if (kind === "opening" && wrapper.dataset.status === "failed") return;
         img.hidden = false;
         placeholder.remove();
         wrapper.classList.remove("opening__frame--fallback");
         if (kind === "opening") {
           wrapper.dataset.status = "ready";
           wrapper.dispatchEvent(new Event("frame-settled"));
+          scheduleUpdate();
         }
       });
       img.addEventListener("error", () => {
@@ -81,6 +85,7 @@
         placeholder.textContent = `SCENE ${String(index + 1).padStart(2, "0")} · 사진을 불러올 수 없습니다`;
         wrapper.dataset.status = "failed";
         wrapper.dispatchEvent(new Event("frame-settled"));
+        scheduleUpdate();
       });
       if (kind === "opening") img.dataset.src = path;
       else img.src = path;
@@ -215,6 +220,7 @@
   let playbackRun = 0;
   let hasLeftOpening = false;
   let paintedScene = -1;
+  let frameLayer = 0;
   let finalMessageReady = false;
   let pending = false;
   const loadQueue = [];
@@ -287,16 +293,24 @@
           requestOpeningFrame(sceneIndex + 2);
         }
       }
-      if (sceneIndex !== paintedScene) {
+      const displayIndex = frames[sceneIndex].dataset.status === "ready" ||
+        frames[sceneIndex].dataset.status === "failed" || paintedScene < 0
+        ? sceneIndex : paintedScene;
+      if (displayIndex !== paintedScene) {
         const previous = frames[paintedScene];
+        const next = frames[displayIndex];
+        next.style.zIndex = String(++frameLayer);
+        next.style.visibility = "visible";
+        next.style.opacity = "1";
+        paintedScene = displayIndex;
+        openingCount.textContent = `${String(displayIndex + 1).padStart(2, "0")} / ${String(frames.length).padStart(2, "0")}`;
         if (previous) {
-          previous.style.opacity = "0";
-          previous.style.visibility = "hidden";
+          window.setTimeout(() => {
+            if (previous === frames[paintedScene]) return;
+            previous.style.opacity = "0";
+            previous.style.visibility = "hidden";
+          }, 220);
         }
-        frames[sceneIndex].style.opacity = "1";
-        frames[sceneIndex].style.visibility = "visible";
-        paintedScene = sceneIndex;
-        openingCount.textContent = `${String(sceneIndex + 1).padStart(2, "0")} / ${String(frames.length).padStart(2, "0")}`;
       }
       openingCopy.style.opacity = motionReduced.matches ? "1" : autoplayActive || playbackComplete
         ? (sceneIndex === 0 ? "1" : "0")
@@ -465,41 +479,24 @@
 
   async function playOpening(run) {
     if (!autoplayActive || run !== playbackRun) return;
-    const initialCount = Math.min(frames.length, 5);
     let settled = 0;
-    let buffering = true;
-    openingStatus.textContent = `사진 준비 중 ${settled}/${initialCount}`;
-    const initial = Array.from({ length: initialCount }, (_, index) =>
+    openingStatus.textContent = `사진 준비 중 ${settled}/${frames.length}`;
+    const prepared = frames.map((_, index) =>
       requestOpeningFrame(index, index === 0).then(() => {
         settled += 1;
-        if (buffering && autoplayActive && run === playbackRun) {
-          openingStatus.textContent = `사진 준비 중 ${settled}/${initialCount}`;
+        if (autoplayActive && run === playbackRun) {
+          openingStatus.textContent = `사진 준비 중 ${settled}/${frames.length}`;
         }
       })
     );
-    await initial[0];
-    if (!autoplayActive || run !== playbackRun) return;
-    // Start after a short buffer, with a fixed ceiling even on a slow connection.
-    await Promise.race([
-      Promise.all(initial.slice(1, Math.min(initialCount, 4))),
-      waitPlayback(900, run)
-    ]);
-    buffering = false;
+    await Promise.all(prepared);
     await waitUntilActive(run);
     if (!autoplayActive || run !== playbackRun) return;
-    const middleFrameMs = frames.slice(0, Math.min(initialCount, 4))
-      .every((frame) => frame.dataset.status === "ready") ? 120 : 260;
+    const middleFrameMs = 360;
     openingStatus.textContent = "자동 재생 중";
     pauseButton.hidden = false;
     for (let index = 0; index < frames.length && autoplayActive && run === playbackRun; index += 1) {
-      for (let next = index + 1; next <= index + 5 && next < frames.length; next += 1) {
-        requestOpeningFrame(next);
-      }
       await waitUntilActive(run);
-      if (!autoplayActive || run !== playbackRun) return;
-      if (frames[index].dataset.status !== "ready") {
-        await Promise.race([requestOpeningFrame(index), waitPlayback(450, run)]);
-      }
       if (!autoplayActive || run !== playbackRun) return;
       if (frames[index].dataset.status === "ready") {
         autoplayIndex = index;

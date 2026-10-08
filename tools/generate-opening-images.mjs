@@ -37,7 +37,7 @@ for (const [index, name] of filenames.entries()) {
     .map(({ url, width }) => `${url} ${width}w`).join(", ");
   const largest = candidates.at(-1);
   manifest.push({ id, src: largest.url, srcset: desktop, mobileSrcset: mobile,
-    blur: `assets/opening/frames/${blurName}`, width: largest.width,
+    blur: `data:image/webp;base64,${blurBuffer.toString("base64")}`, width: largest.width,
     height: Math.round(metadata.height * largest.width / metadata.width) });
   console.log(`${id} ${name}: ${candidates.map(({ width, bytes }) => `${width}w ${Math.round(bytes / 1024)} KB`).join(", ")}`);
 }

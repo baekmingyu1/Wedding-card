@@ -26,7 +26,10 @@ runInNewContext(await readFile(join(output, manifestName), "utf8"), sandbox);
 const photos = sandbox.window.OPENING_IMAGES;
 if (!Array.isArray(photos) || !photos.length) throw new Error("오프닝 사진 목록이 비었습니다.");
 for (const photo of photos) {
-  const paths = [photo.src, photo.blur,
+  if (!/^data:image\/webp;base64,[A-Za-z0-9+/]+=*$/.test(photo.blur)) {
+    throw new Error("흐린 배경 이미지가 인라인 WebP가 아닙니다.");
+  }
+  const paths = [photo.src,
     ...photo.srcset.split(", ").map((candidate) => candidate.split(" ")[0]),
     ...photo.mobileSrcset.split(", ").map((candidate) => candidate.split(" ")[0])];
   for (const path of paths) await access(join(output, path));
