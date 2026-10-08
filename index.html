@@ -14,10 +14,10 @@
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=9">
-  <link rel="stylesheet" href="play-pause.css?v=4">
+  <link rel="stylesheet" href="play-pause.css?v=5">
   <script src="opening-images.js" defer></script>
   <script src="content.js?v=3" defer></script>
-  <script src="script.js?v=14" defer></script>
+  <script src="script.js?v=15" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#contents">본문으로 건너뛰기</a>
@@ -39,6 +39,12 @@
       <div class="opening__sticky">
         <div class="opening__frames" id="opening-frames" aria-hidden="true"></div>
         <div class="opening__veil" aria-hidden="true"></div>
+        <div class="opening__loader" id="opening-loader" aria-hidden="true">
+          <span class="opening__loader-kicker">OUR PACE, TOGETHER</span>
+          <strong class="opening__loader-mark">PLAY <span>/</span> PAUSE</strong>
+          <div class="opening__loader-track"><span id="opening-loader-progress"></span></div>
+          <p>우리의 장면을 준비하고 있어요 <span id="opening-loader-count">00 / 15</span></p>
+        </div>
         <div class="opening__copy">
           <span class="opening__scene" id="opening-count">01 / 15</span>
           <h1>PLAY <span class="opening__slash">/</span><br>PAUSE</h1>

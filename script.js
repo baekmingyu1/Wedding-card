@@ -201,6 +201,9 @@
   const frames = [...frameHost.children];
   const openingCopy = document.querySelector(".opening__copy");
   const openingFinal = document.getElementById("opening-final");
+  const openingLoader = document.getElementById("opening-loader");
+  const loaderCount = document.getElementById("opening-loader-count");
+  const loaderProgress = document.getElementById("opening-loader-progress");
   const openingCount = document.getElementById("opening-count");
   const openingProgress = document.getElementById("opening-progress");
   const openingStatus = document.getElementById("opening-status");
@@ -228,6 +231,7 @@
   let activeLoads = 0;
   let loadsEnabled = true;
   const maxConcurrentLoads = 3;
+  openingLoader.hidden = !autoplayActive;
 
   if (autoplayActive || motionReduced.matches) {
     opening.classList.add("opening--short");
@@ -400,6 +404,8 @@
     playbackPaused = false;
     hasLeftOpening = false;
     stopPendingOpeningLoads();
+    openingLoader.hidden = true;
+    openingLoader.classList.remove("is-exiting");
     pauseButton.hidden = true;
     openingStatus.textContent = "";
     updateScroll();
@@ -421,6 +427,8 @@
     pauseButton.hidden = true;
     pauseButton.textContent = "일시정지";
     openingStatus.textContent = autoplayActive ? "사진 준비 중" : "아래로 스크롤 ↓";
+    openingLoader.classList.remove("is-exiting");
+    openingLoader.hidden = !autoplayActive || frames.every((frame) => ["ready", "failed"].includes(frame.dataset.status));
     const root = document.documentElement;
     const previousScrollBehavior = root.style.scrollBehavior;
     root.style.scrollBehavior = "auto";
@@ -480,11 +488,15 @@
   async function playOpening(run) {
     if (!autoplayActive || run !== playbackRun) return;
     let settled = 0;
+    loaderCount.textContent = `00 / ${String(frames.length).padStart(2, "0")}`;
+    loaderProgress.style.width = "0%";
     openingStatus.textContent = `사진 준비 중 ${settled}/${frames.length}`;
     const prepared = frames.map((_, index) =>
       requestOpeningFrame(index, index === 0).then(() => {
         settled += 1;
         if (autoplayActive && run === playbackRun) {
+          loaderCount.textContent = `${String(settled).padStart(2, "0")} / ${String(frames.length).padStart(2, "0")}`;
+          loaderProgress.style.width = `${settled / frames.length * 100}%`;
           openingStatus.textContent = `사진 준비 중 ${settled}/${frames.length}`;
         }
       })
@@ -492,6 +504,12 @@
     await Promise.all(prepared);
     await waitUntilActive(run);
     if (!autoplayActive || run !== playbackRun) return;
+    if (!openingLoader.hidden) {
+      openingLoader.classList.add("is-exiting");
+      await waitPlayback(550, run);
+      if (!autoplayActive || run !== playbackRun) return;
+      openingLoader.hidden = true;
+    }
     const middleFrameMs = 360;
     openingStatus.textContent = "자동 재생 중";
     pauseButton.hidden = false;
