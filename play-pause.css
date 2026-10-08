@@ -10,7 +10,6 @@
 }
 
 body { background: var(--paper); }
-body.opening-locked { position: fixed; inset: 0; width: 100%; overflow: hidden; }
 .eyebrow, .section__count, .side-nav__caption { letter-spacing: .18em; }
 .section { padding-block: clamp(88px, 10vw, 150px); }
 .side-nav a { position: relative; width: 30px; }
@@ -38,6 +37,9 @@ body.opening-locked { position: fixed; inset: 0; width: 100%; overflow: hidden; 
 .opening__controls { display: flex; max-width: 230px; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
 .opening__controls .opening__scroll { width: 100%; justify-content: flex-end; }
 .opening__control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 44px;
   padding: 6px 10px;
   border: 1px solid rgba(255,255,255,.72);
@@ -46,6 +48,7 @@ body.opening-locked { position: fixed; inset: 0; width: 100%; overflow: hidden; 
   color: #fff;
   cursor: pointer;
   font-size: 11px;
+  text-decoration: none;
 }
 .opening__control:hover { background: rgba(24,30,28,.75); }
 .opening__veil {

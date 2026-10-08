@@ -8,12 +8,16 @@
   <title>PLAY / PAUSE | 우리의 초대장</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="image" href="assets/opening/frames/01.webp?v=2" fetchpriority="high">
+  <!-- OPENING_PRELOAD_START -->
+  <link rel="preload" as="image" media="(max-width: 760px)" href="assets/opening/frames/01-1024-2442ce091a.webp" imagesrcset="assets/opening/frames/01-480-4ff597cf5f.webp 480w, assets/opening/frames/01-768-32b972d6aa.webp 768w, assets/opening/frames/01-1024-2442ce091a.webp 1024w" imagesizes="135vw" fetchpriority="high">
+  <link rel="preload" as="image" media="(min-width: 761px)" href="assets/opening/frames/01-1600-bffa7b263d.webp" imagesrcset="assets/opening/frames/01-480-4ff597cf5f.webp 480w, assets/opening/frames/01-768-32b972d6aa.webp 768w, assets/opening/frames/01-1024-2442ce091a.webp 1024w, assets/opening/frames/01-1600-bffa7b263d.webp 1600w" imagesizes="100vw" fetchpriority="high">
+  <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=7">
-  <link rel="stylesheet" href="play-pause.css?v=3">
-  <script src="content.js?v=2" defer></script>
-  <script src="script.js?v=12" defer></script>
+  <link rel="stylesheet" href="styles.css?v=8">
+  <link rel="stylesheet" href="play-pause.css?v=4">
+  <script src="opening-images.js" defer></script>
+  <script src="content.js?v=3" defer></script>
+  <script src="script.js?v=13" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#contents">본문으로 건너뛰기</a>
@@ -49,7 +53,7 @@
           <div class="opening__controls">
             <span class="opening__scroll" id="opening-status" role="status" aria-live="polite">사진 준비 중</span>
             <button class="opening__control" id="opening-pause" type="button" hidden>일시정지</button>
-            <button class="opening__control" id="opening-skip" type="button" hidden>건너뛰기</button>
+            <a class="opening__control" id="opening-skip" href="#contents">청첩장 바로 보기 ↘</a>
           </div>
         </div>
         <div class="opening__progress" aria-hidden="true"><span id="opening-progress"></span></div>
