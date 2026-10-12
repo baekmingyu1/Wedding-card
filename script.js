@@ -23,7 +23,7 @@
 
   const photoUrl = (photo) => typeof photo === "string" ? photo : photo?.src;
 
-  function addPhoto(host, photo, index, kind) {
+  function addPhoto(host, photo, index, kind, sizes = "100vw") {
     const wrapper = document.createElement(kind === "opening" ? "div" : "figure");
     wrapper.className = kind === "opening"
       ? "opening__frame opening__frame--fallback"
@@ -44,7 +44,7 @@
       if (photo.mobileSrcset) {
         const source = document.createElement("source");
         source.media = "(max-width: 760px)";
-        source.sizes = kind === "opening" ? "135vw" : "(max-width: 760px) 100vw, 50vw";
+        source.sizes = kind === "opening" ? "135vw" : sizes;
         if (kind === "opening") source.dataset.srcset = photo.mobileSrcset;
         else source.srcset = photo.mobileSrcset;
         picture.append(source);
@@ -56,7 +56,7 @@
       if (kind === "gallery") img.loading = "lazy";
       if (kind === "opening") img.fetchPriority = index === 0 ? "high" : "low";
       if (photo.srcset) {
-        img.sizes = kind === "opening" ? "100vw" : "(max-width: 760px) 100vw, 50vw";
+        img.sizes = kind === "opening" ? "100vw" : sizes;
         if (kind === "opening") img.dataset.srcset = photo.srcset;
         else img.srcset = photo.srcset;
       }
@@ -94,6 +94,16 @@
       picture.append(img);
       wrapper.append(picture);
     }
+    if (kind === "gallery" && path) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "gallery__open";
+      button.setAttribute("aria-label", "사진 " + (index + 1) + " 확대 보기");
+      button.setAttribute("aria-haspopup", "dialog");
+      button.addEventListener("click", () => openGalleryPhoto(index));
+      while (wrapper.firstChild) button.append(wrapper.firstChild);
+      wrapper.append(button);
+    }
     host.append(wrapper);
   }
 
@@ -106,35 +116,97 @@
   const galleryPageSize = 9;
   const galleryPageCount = Math.ceil(galleryPhotos.length / galleryPageSize);
 
+  const galleryDialog = document.getElementById("gallery-dialog");
+  const photoStage = document.getElementById("gallery-photo-stage");
+  const photoStatus = document.getElementById("gallery-photo-status");
+  const photoCounter = document.getElementById("gallery-photo-counter");
+  const photoPrevious = document.getElementById("gallery-photo-previous");
+  const photoNext = document.getElementById("gallery-photo-next");
+  let activePhoto = 0;
+  let previousBodyOverflow = "";
+  const resolveGalleryPhoto = (index) => galleryPhotos[index] || openingPhotos[
+    Math.round(index * (openingPhotos.length - 1) / Math.max(1, galleryPhotos.length - 1))
+  ];
+
+  function showGalleryPhoto(index) {
+    activePhoto = index;
+    photoCounter.textContent = (index + 1) + " / " + galleryPhotos.length;
+    photoPrevious.disabled = index === 0;
+    photoNext.disabled = index === galleryPhotos.length - 1;
+    photoStatus.textContent = "사진을 불러오는 중입니다.";
+    const img = new Image();
+    img.alt = "두 사람의 사진 " + (index + 1);
+    img.decoding = "async";
+    img.hidden = true;
+    img.addEventListener("load", () => {
+      if (!img.isConnected) return;
+      img.hidden = false;
+      photoStatus.textContent = "";
+    });
+    img.addEventListener("error", () => {
+      if (img.isConnected) photoStatus.textContent = "사진을 불러오지 못했습니다. 잠시 후 다시 열어 주세요.";
+    });
+    photoStage.replaceChildren(img);
+    img.src = photoUrl(resolveGalleryPhoto(index)) || "";
+  }
+
+  function openGalleryPhoto(index) {
+    previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    galleryDialog.showModal();
+    showGalleryPhoto(index);
+  }
+  document.getElementById("gallery-photo-close").addEventListener("click", () => galleryDialog.close());
+  galleryDialog.addEventListener("close", () => {
+    document.body.style.overflow = previousBodyOverflow;
+    photoStage.replaceChildren();
+  });
+  photoPrevious.addEventListener("click", () => showGalleryPhoto(activePhoto - 1));
+  photoNext.addEventListener("click", () => showGalleryPhoto(activePhoto + 1));
+  galleryDialog.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft" && activePhoto > 0) {
+      event.preventDefault();
+      showGalleryPhoto(activePhoto - 1);
+    } else if (event.key === "ArrowRight" && activePhoto < galleryPhotos.length - 1) {
+      event.preventDefault();
+      showGalleryPhoto(activePhoto + 1);
+    }
+  });
+
+  let galleryPage = 0;
+  const previous = document.createElement("button");
+  previous.type = "button";
+  previous.textContent = "이전";
+  previous.addEventListener("click", () => renderGalleryPage(galleryPage - 1, true));
+  const status = document.createElement("span");
+  status.className = "gallery__page-status";
+  status.setAttribute("aria-live", "polite");
+  const next = document.createElement("button");
+  next.type = "button";
+  next.textContent = "다음";
+  next.addEventListener("click", () => renderGalleryPage(galleryPage + 1, true));
+  galleryPager.append(previous, status, next);
+  galleryPager.hidden = galleryPageCount <= 1;
+
   function renderGalleryPage(page, scrollToGallery = false) {
+    galleryPage = page;
     galleryHost.replaceChildren();
     const start = page * galleryPageSize;
-    galleryPhotos.slice(start, start + galleryPageSize).forEach((photo, offset) => {
+    const photos = galleryPhotos.slice(start, start + galleryPageSize);
+    galleryHost.classList.toggle("gallery__grid--odd", photos.length % 2 === 1);
+    photos.forEach((photo, offset) => {
       const index = start + offset;
-      const fallbackIndex = Math.round(index * (openingPhotos.length - 1) / Math.max(1, galleryPhotos.length - 1));
-      addPhoto(galleryHost, photo || openingPhotos[fallbackIndex], index, "gallery");
+      const mobileSize = offset === 0 && photos.length % 2 === 1
+        ? "calc(100vw - 104px)" : "calc((100vw - 114px) / 2)";
+      const sizes = "(max-width: 760px) " + mobileSize + ", (max-width: 1220px) calc((100vw - 88px) / 3), 378px";
+      addPhoto(galleryHost, resolveGalleryPhoto(index), index, "gallery", sizes);
     });
-
-    galleryPager.replaceChildren();
-    galleryPager.hidden = galleryPageCount <= 1;
-    if (galleryPageCount > 1) {
-      const previous = document.createElement("button");
-      previous.type = "button";
-      previous.textContent = "이전";
-      previous.disabled = page === 0;
-      previous.addEventListener("click", () => renderGalleryPage(page - 1, true));
-      const status = document.createElement("span");
-      status.className = "gallery__page-status";
-      status.setAttribute("aria-live", "polite");
-      status.textContent = `${page + 1} / ${galleryPageCount}`;
-      const next = document.createElement("button");
-      next.type = "button";
-      next.textContent = "다음";
-      next.disabled = page === galleryPageCount - 1;
-      next.addEventListener("click", () => renderGalleryPage(page + 1, true));
-      galleryPager.append(previous, status, next);
-    }
+    previous.disabled = page === 0;
+    next.disabled = page === galleryPageCount - 1;
+    status.textContent = (page + 1) + " / " + galleryPageCount;
     if (scrollToGallery) {
+      if (document.activeElement === next && next.disabled) previous.focus({ preventScroll: true });
+      if (document.activeElement === previous && previous.disabled) next.focus({ preventScroll: true });
       document.getElementById("gallery").scrollIntoView({ behavior: motionReduced.matches ? "auto" : "smooth", block: "start" });
     }
   }
