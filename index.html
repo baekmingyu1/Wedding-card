@@ -20,12 +20,12 @@
   <link rel="preload" as="image" media="(min-width: 761px)" href="assets/opening/frames/01-1600-bffa7b263d.webp" imagesrcset="assets/opening/frames/01-480-4ff597cf5f.webp 480w, assets/opening/frames/01-768-32b972d6aa.webp 768w, assets/opening/frames/01-1024-2442ce091a.webp 1024w, assets/opening/frames/01-1600-bffa7b263d.webp 1600w" imagesizes="100vw" fetchpriority="high">
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=12">
+  <link rel="stylesheet" href="styles.css?v=13">
   <link rel="stylesheet" href="play-pause.css?v=21">
   <script src="opening-images.js" defer></script>
   <script src="gallery-images.js" defer></script>
   <script src="content.js?v=12" defer></script>
-  <script src="script.js?v=23" defer></script>
+  <script src="script.js?v=24" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#invitation">본문으로 건너뛰기</a>
@@ -166,6 +166,11 @@
   </main>
 
   <footer class="footer"><span>OUR PACE / PLAY · PAUSE · TOGETHER</span><strong data-field="couple"></strong><a href="#opening">처음부터 다시 보기 ↑</a></footer>
+  <dialog id="gallery-dialog" class="gallery-dialog" aria-label="사진 확대 보기">
+    <div class="gallery-dialog__header"><span id="gallery-photo-counter" aria-live="polite"></span><button id="gallery-photo-close" type="button" autofocus>닫기 ×</button></div>
+    <div class="gallery-dialog__viewport"><div id="gallery-photo-stage" class="gallery-dialog__stage"></div><p id="gallery-photo-status" class="gallery-dialog__status" role="status"></p></div>
+    <div class="gallery-dialog__controls"><button id="gallery-photo-previous" type="button" aria-label="이전 사진">← 이전</button><button id="gallery-photo-next" type="button" aria-label="다음 사진">다음 →</button></div>
+  </dialog>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
