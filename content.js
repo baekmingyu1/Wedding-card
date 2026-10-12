@@ -1,19 +1,32 @@
-// 확정된 정보와 사진을 받으면 이 파일의 값만 교체하세요.
+// 예식 정보는 제공된 종이 청첩장 시안을 기준으로 입력했습니다.
+// 참석 응답 링크와 계좌 정보는 확정 후 이 파일에서 교체하세요.
 window.WEDDING_CONTENT = {
-  couple: "신랑 · 신부",
-  date: "예식 날짜와 시간을 입력해 주세요",
-  // 아래 문구는 두 분이 알려준 이야기로 만든 시안입니다. 실제 표현에 맞게 바꿔 주세요.
-  firstMeet: "소개로 처음 만난 날, 양식집에서 마주 앉았습니다. 그날부터 우리만의 이야기가 시작됐습니다.",
-  play: "가만히 있기보다 함께 움직일 때 더 즐거운 우리. 액티비티와 스포츠로 데이트를 채웠습니다.",
-  pause: "그러다 아무것도 하지 않고 나란히 쉬는 시간도 좋아졌습니다. 같이 있으면 쉼도 우리다운 시간이 됩니다.",
+  couple: "백민규 · 박지해",
+  groomName: "백민규",
+  brideName: "박지해",
+  groomFather: "백인봉",
+  groomMother: "박은희",
+  brideFather: "박명환",
+  brideMother: "전영숙",
+  date: "2026년 12월 12일 토요일 오후 4시 30분",
+  eventDate: "2026-12-12T16:30:00+09:00",
+  calendarMessage: "12월 12일, 함께 시작하는 날에 뵙겠습니다.",
   invitation: [
-    "함께 뛰고, 함께 쉬며 우리만의 페이스를 찾아왔습니다.",
-    "이제 같은 방향으로 걸어가려 합니다. 소중한 분들과 이 시작을 나누고 싶습니다."
+    "처음 마주 앉은 한 식탁에서 우리의 이야기가 시작됐습니다.",
+    "함께 움직이는 날도, 나란히 쉬는 날도 좋았습니다. 이제 앞으로의 날들을 함께 이어가려 합니다.",
+    "소중한 분들을 모시고 그 첫날을 맞이하고 싶습니다."
   ],
-  venue: "예식장 이름을 입력해 주세요",
-  address: "예식장 주소를 입력해 주세요",
-  transport: "주차 및 대중교통 안내를 입력해 주세요",
-  mapUrl: "",
+  venue: "아르베 웨딩",
+  address: "서울 강남구 봉은사로 302",
+  naverMapUrl: "https://map.naver.com/p/search/%EC%84%9C%EC%9A%B8%20%EA%B0%95%EB%82%A8%EA%B5%AC%20%EB%B4%89%EC%9D%80%EC%82%AC%EB%A1%9C%20302",
+  // Naver Cloud Maps > Static Map의 공개 API Key ID. Secret Key는 절대 넣지 마세요.
+  naverStaticMapKeyId: "vr5i2viwvu",
+  naverStaticMapCenter: "127.039411,37.508679",
+  kakaoMapUrl: "https://map.kakao.com/?q=%EC%84%9C%EC%9A%B8%20%EA%B0%95%EB%82%A8%EA%B5%AC%20%EB%B4%89%EC%9D%80%EC%82%AC%EB%A1%9C%20302",
+  googleMapUrl: "https://www.google.com/maps/search/?api=1&query=%EC%84%9C%EC%9A%B8%20%EA%B0%95%EB%82%A8%EA%B5%AC%20%EB%B4%89%EC%9D%80%EC%82%AC%EB%A1%9C%20302",
+  rsvpMessage: "참석 여부를 알려주시면 정성껏 자리를 준비하겠습니다.",
+  rsvpUrl: "",
+  wreathMessage: "축하해 주시는 마음만으로 충분합니다. 화환은 정중히 사양하오니 너른 양해 부탁드립니다.",
   accounts: [
     { side: "신랑 측", bank: "", number: "", holder: "" },
     { side: "신부 측", bank: "", number: "", holder: "" }
