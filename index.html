@@ -20,7 +20,7 @@
   <link rel="preload" as="image" media="(min-width: 761px)" href="assets/opening/frames/01-1600-bffa7b263d.webp" imagesrcset="assets/opening/frames/01-480-4ff597cf5f.webp 480w, assets/opening/frames/01-768-32b972d6aa.webp 768w, assets/opening/frames/01-1024-2442ce091a.webp 1024w, assets/opening/frames/01-1600-bffa7b263d.webp 1600w" imagesizes="100vw" fetchpriority="high">
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=15">
+  <link rel="stylesheet" href="styles.css?v=16">
   <link rel="stylesheet" href="play-pause.css?v=21">
   <script src="opening-images.js" defer></script>
   <script src="gallery-images.js" defer></script>
@@ -152,12 +152,15 @@
       <div class="section__inner"><p class="section__lead">멀리서도 축하해 주시는 마음에 감사드립니다.</p><div class="account__list" id="account-list"></div></div>
     </section>
 
-    <section class="section location" id="location" aria-label="예식 장소">
-      <div class="section__inner"><div class="location__card"><div class="location__main"><p class="location__date" data-field="date"></p><h3 data-field="venue"></h3><p class="location__address" data-field="address"></p></div><div class="location__details"><p class="location__transport">아르베웨딩 건물 내부는 등록 차량만 주차할 수 있습니다.</p><p class="location__contact">아르베웨딩 고객센터 <a href="tel:025647031">02-564-7031</a><span>팩스 02-565-7032</span></p><button id="copy-address" class="button button--light" type="button" disabled>주소 복사 <span aria-hidden="true">↗</span></button></div></div></div>
-    </section>
-
-    <section class="section directions" id="directions" aria-label="오시는 방법">
+    <section class="section directions" id="location" aria-label="예식 장소와 오시는 방법">
       <div class="section__inner directions__content">
+        <div class="location__main location__map-heading">
+          <p class="location__date" data-field="date"></p>
+          <h3 data-field="venue"></h3>
+          <p class="location__address" data-field="address"></p>
+          <button id="copy-address" class="button button--light" type="button" disabled>주소 복사 <span aria-hidden="true">↗</span></button>
+        </div>
+        <div id="directions" aria-label="지도와 교통 안내">
         <div class="directions__map" id="naver-static-map" hidden>
           <a id="naver-static-map-preview" href="#directions" target="_blank" rel="noopener noreferrer" aria-label="네이버 지도에서 아르베웨딩 위치 보기">
             <img id="naver-static-map-image" alt="아르베웨딩 위치를 표시한 네이버 정적 지도" loading="lazy" decoding="async" width="900" height="580">
@@ -165,11 +168,12 @@
         </div>
         <div class="directions__links"><a id="naver-map-link" class="button" href="#directions" hidden target="_blank" rel="noopener noreferrer">네이버 지도 <span aria-hidden="true">↗</span></a><a id="kakao-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer">카카오맵 <span aria-hidden="true">↗</span></a><a id="google-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer">구글 지도 <span aria-hidden="true">↗</span></a><p class="section__pending" id="map-pending">지도 링크를 준비하고 있습니다.</p></div>
         <div class="directions__list">
-          <div class="directions__item"><h3>자가용</h3><div><p>외부 주차장에 먼저 주차한 뒤 웨딩홀로 이동해 주세요. 도보 약 5분, 2시간 무료 주차입니다.</p><p class="directions__detail">제1주차장 · 서울시 강남구 논현동 237-12 경복주차장<br>제2주차장 · 서울시 강남구 언주로 603 국민은행</p><p class="directions__aside">외부 주차장은 토·일요일 이용 가능합니다.</p></div></div>
+          <div class="directions__item"><h3>자가용</h3><div><p>외부 주차장에 먼저 주차한 뒤 웨딩홀로 이동해 주세요.</p><p class="directions__detail"> 도보 약 5분, 2시간 무료 주차입니다.</p><p class="directions__detail">제1주차장 · 서울시 강남구 논현동 237-12 경복주차장<br>제2주차장 · 서울시 강남구 언주로 603 국민은행</p><p class="directions__aside">외부 주차장은 토·일요일 이용 가능합니다.</p></div></div>
           <div class="directions__item"><h3>버스</h3><div><p>아크로힐스논현 (구 경복아파트)<br><span class="directions__detail">정류장 23-138, 23-273 · 지선버스 3412, 6411</span></p><p>스포월드, 라움아트센터 (구 경복아파트)<br><span class="directions__detail">정류장 23-271, 23-272 · 간선버스 141, 242</span></p></div></div>
           <div class="directions__item"><h3>지하철</h3><div><p>9호선 선정릉역 4번 출구 · 도보 5분</p><p>9호선 언주역 5번 출구 · 도보 5분</p></div></div>
         </div>
         <p class="directions__notice">주차 혼잡이 예상되오니 가급적 대중교통을 이용해 주세요.</p>
+        </div>
       </div>
     </section>
 
