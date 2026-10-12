@@ -1,12 +1,12 @@
 /* PLAY / PAUSE — a quiet editorial rhythm built around the couple's story. */
 :root {
-  --paper: #f6f2eb;
-  --cream: #eae5dc;
-  --ink: #212522;
-  --muted: #5b5f59;
-  --accent: #a74625;
-  --accent-bright: #ed6a32;
-  --line: rgba(33, 37, 34, .2);
+  --paper: #fffdf8;
+  --cream: #faf3e9;
+  --ink: #51463f;
+  --muted: #75675d;
+  --accent: #b85024;
+  --accent-bright: #f47735;
+  --line: rgba(112, 85, 62, .18);
 }
 
 body { background: var(--paper); }
@@ -432,3 +432,28 @@ body { background: var(--paper); }
   .couple__child span { font-size: 14px; }
   .couple__child strong { font-size: clamp(22px, 5.6vw, 30px); }
 }
+
+/* Warm ivory palette, paired with the orange of the printed invitation. */
+.invitation, .wreath { background: var(--cream); color: var(--ink); }
+.invitation__date, .countdown .section__lead { color: var(--muted); }
+.invitation__signoff { border-color: var(--line); }
+.countdown { background: #fff1e3; color: var(--accent); }
+.gallery, .share { background: var(--paper); }
+.calendar__sheet, .couple__person { background: #fffaf2; }
+.couple__person { border-color: var(--line); }
+.couple__person:nth-child(2) { background: #fff1e5; }
+.footer { background: var(--cream); color: var(--muted); border-top: 1px solid var(--line); }
+.button { background: var(--accent); border-color: var(--accent); color: #fff; }
+.button--light { background: transparent; color: var(--accent); }
+.opening__loader { background: radial-gradient(circle at 50% 35%, #fffdf8, #f8ead8 85%); color: var(--ink); }
+.opening__loader-track { background: var(--line); }
+.opening__frame--fallback { background: linear-gradient(145deg, #f7e8d5, #e6ceaf); }
+.opening__placeholder { background: rgba(255,253,248,.9); color: var(--ink); }
+.opening__veil { background: linear-gradient(180deg, rgba(52,37,25,.32), transparent 55%), linear-gradient(0deg, rgba(52,37,25,.35), transparent 25%); }
+.opening__copy, .opening__bottom, .opening__final { text-shadow: 0 2px 10px rgba(35,24,17,.65); }
+.opening__control { background: rgba(255,253,248,.94); color: var(--ink); border-color: rgba(255,253,248,.8); text-shadow: none; }
+.opening__control:hover { background: #fffdf8; }
+.gallery-dialog, .gallery-dialog::backdrop { background: var(--paper); color: var(--ink); }
+.gallery-dialog button { border-color: var(--line); color: var(--ink); }
+.gallery-dialog button:focus-visible { outline-color: var(--accent); }
+.gallery-dialog .gallery-dialog__thumbnail[aria-current="true"] { border-color: var(--accent); }
