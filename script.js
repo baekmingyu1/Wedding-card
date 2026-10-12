@@ -126,6 +126,13 @@
   let swipeStart = null;
   let activePhoto = 0;
   let previousBodyOverflow = "";
+  let photoDialogActive = false;
+  let photoHistoryPending = false;
+  const photoHistoryKey = "weddingGalleryPhoto";
+  const historyPhotoIndex = () => {
+    const index = history.state?.[photoHistoryKey];
+    return Number.isInteger(index) && index >= 0 && index < galleryPhotos.length ? index : null;
+  };
   const resolveGalleryPhoto = (index) => galleryPhotos[index] || openingPhotos[
     Math.round(index * (openingPhotos.length - 1) / Math.max(1, galleryPhotos.length - 1))
   ];
@@ -174,6 +181,9 @@
   async function showGalleryPhoto(index) {
     if (index < 0 || index >= galleryPhotos.length) return;
     activePhoto = index;
+    if (galleryDialog.open && historyPhotoIndex() !== null) {
+      history.replaceState({ ...history.state, [photoHistoryKey]: index }, "");
+    }
     Array.from(photoThumbnails.children).forEach((button, position) => {
       button.setAttribute("aria-current", position === index ? "true" : "false");
     });
@@ -216,10 +226,16 @@
     }
   }
 
-  function openGalleryPhoto(index) {
-    previousBodyOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    galleryDialog.showModal();
+  function openGalleryPhoto(index, fromHistory = false) {
+    // Closing traverses history asynchronously; do not create another entry meanwhile.
+    if (photoHistoryPending) return;
+    if (!galleryDialog.open) {
+      if (!fromHistory) history.pushState({ ...history.state, [photoHistoryKey]: index }, "");
+      previousBodyOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      photoDialogActive = true;
+      galleryDialog.showModal();
+    }
     if (!photoThumbnails.childElementCount) {
       galleryPhotos.forEach((photo, position) => {
         const button = document.createElement("button");
@@ -241,15 +257,83 @@
     }
     showGalleryPhoto(index);
   }
-  document.getElementById("gallery-photo-close").addEventListener("click", () => galleryDialog.close());
-  galleryDialog.addEventListener("close", () => {
+  function closeGalleryPhoto() {
+    if (!photoDialogActive) return;
+    photoDialogActive = false;
+    galleryDialog.close();
     document.body.style.overflow = previousBodyOverflow;
     ++photoRequest;
     window.clearTimeout(photoLoadingTimer);
     photoStatus.textContent = "";
     photoStage.replaceChildren();
     swipeStart = null;
+    lastPhotoTap = null;
+  }
+  function requestGalleryClose() {
+    if (!photoDialogActive || photoHistoryPending) return;
+    if (historyPhotoIndex() !== null) {
+      photoHistoryPending = true;
+      history.back();
+    }
+    closeGalleryPhoto();
+  }
+  document.getElementById("gallery-photo-close").addEventListener("click", requestGalleryClose);
+  galleryDialog.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    requestGalleryClose();
   });
+  galleryDialog.addEventListener("close", () => {
+    // Ignore a queued close event if the dialog has already been reopened.
+    if (!galleryDialog.open) requestGalleryClose();
+  });
+  galleryDialog.addEventListener("click", (event) => {
+    if (event.target === galleryDialog) requestGalleryClose();
+  });
+  window.addEventListener("popstate", () => {
+    photoHistoryPending = false;
+    const index = historyPhotoIndex();
+    if (index === null) closeGalleryPhoto();
+    else openGalleryPhoto(index, true);
+  });
+
+  // Older mobile webviews may ignore touch-action. Cancel zoom gestures only
+  // while this dialog is open; never restrict the page's viewport or zoom keys.
+  const preventPhotoPinch = (event) => {
+    if (!galleryDialog.open) return;
+    if (event.touches.length > 1) {
+      swipeStart = null;
+      lastPhotoTap = null;
+      event.preventDefault();
+    }
+  };
+  document.addEventListener("touchstart", preventPhotoPinch, { passive: false, capture: true });
+  document.addEventListener("touchmove", preventPhotoPinch, { passive: false, capture: true });
+  for (const type of ["gesturestart", "gesturechange"]) {
+    document.addEventListener(type, (event) => {
+      if (galleryDialog.open) event.preventDefault();
+    }, { passive: false, capture: true });
+  }
+  galleryDialog.addEventListener("wheel", (event) => {
+    if (event.ctrlKey) event.preventDefault();
+  }, { passive: false });
+  let lastPhotoTap = null;
+  galleryDialog.addEventListener("touchend", (event) => {
+    if (event.touches.length || event.changedTouches.length !== 1) {
+      lastPhotoTap = null;
+      return;
+    }
+    const touch = event.changedTouches[0];
+    const now = performance.now();
+    const isDoubleTap = lastPhotoTap && now - lastPhotoTap.time < 350 &&
+      Math.hypot(touch.clientX - lastPhotoTap.x, touch.clientY - lastPhotoTap.y) < 30;
+    lastPhotoTap = { time: now, x: touch.clientX, y: touch.clientY };
+    if (isDoubleTap) {
+      event.preventDefault();
+      // Cancel native double-tap zoom without losing a second control activation.
+      event.target.closest("button")?.click();
+    }
+  }, { passive: false });
+  galleryDialog.addEventListener("dblclick", (event) => event.preventDefault());
   photoPrevious.addEventListener("click", () => showGalleryPhoto(activePhoto - 1));
   photoNext.addEventListener("click", () => showGalleryPhoto(activePhoto + 1));
   galleryDialog.addEventListener("keydown", (event) => {
@@ -317,6 +401,7 @@
     }
   }
   renderGalleryPage(0);
+  if (historyPhotoIndex() !== null) openGalleryPhoto(historyPhotoIndex(), true);
   function showToast(message) {
     toast.textContent = message;
     toast.classList.add("is-visible");
