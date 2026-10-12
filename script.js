@@ -113,7 +113,7 @@
 
   const galleryPhotos = content.galleryPhotos?.length ? content.galleryPhotos : Array(6).fill("");
   const galleryPager = document.getElementById("gallery-pagination");
-  const galleryPageSize = 9;
+  const galleryPageSize = 8;
   const galleryPageCount = Math.ceil(galleryPhotos.length / galleryPageSize);
 
   const galleryDialog = document.getElementById("gallery-dialog");
