@@ -258,16 +258,18 @@
     details.className = "account__details";
     const name = document.createElement("strong");
     const ready = Boolean(account.bank && account.number && account.holder);
-    name.textContent = ready ? `${account.bank} ${account.number}` : "계좌 정보 준비 중";
+    name.textContent = ready ? account.number : "계좌 정보 준비 중";
     details.append(name);
-    if (ready) details.append(document.createTextNode(`예금주 ${account.holder}`));
+    if (ready) details.append(document.createTextNode(`${account.bank} · 예금주 ${account.holder}`));
     const button = document.createElement("button");
     button.className = "button button--light";
     button.type = "button";
-    button.textContent = "계좌번호 복사 ↗";
+    button.textContent = "복사 ↗";
+    button.setAttribute("aria-label", `${account.side} 계좌번호 복사`);
     button.disabled = !ready;
     if (ready) button.addEventListener("click", () => copyText(account.number));
-    card.append(side, details, button);
+    card.append(side, details);
+    if (ready) card.append(button);
     accountHost.append(card);
   }
   if ((content.accounts || []).some((account) => account.bank && account.number && account.holder)) {

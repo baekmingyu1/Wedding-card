@@ -349,7 +349,7 @@ body { background: var(--paper); }
 .directions__links .section__pending { grid-column: 1 / -1; }
 .wreath { background: var(--ink); color: var(--paper); }
 .wreath .eyebrow { color: #ff995d; }
-.wreath__inner > p:last-child { max-width: 670px; margin: 55px 0 0; font-size: clamp(18px, 2.5vw, 26px); line-height: 1.9; white-space: pre-line; }
+.wreath__inner > p:last-child { max-width: 670px; margin: 55px auto 0; font-size: clamp(18px, 2.5vw, 26px); line-height: 1.9; text-align: center; white-space: pre-line; }
 .share { background: var(--paper); }
 .share__actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 40px; }
 .share__actions .button { min-width: 190px; }
