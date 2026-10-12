@@ -372,7 +372,6 @@ body { background: var(--paper); }
 .invitation__inner, .rsvp__layout { display: block; }
 .invitation__body { max-width: 650px; margin-inline: auto; }
 .invitation__message { margin-top: 0; }
-.invitation__signoff { margin-top: 48px; }
 .calendar .section__lead, .gallery .section__lead, .account .section__lead,
 .directions .section__lead, .share .section__lead { margin-top: 0; }
 .countdown__value { margin-top: 0; }
@@ -387,9 +386,7 @@ body { background: var(--paper); }
 .opening__bottom { flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; }
 .opening__controls { justify-content: center; }
 .opening__controls .opening__scroll { justify-content: center; }
-.invitation__message, .invitation__signoff { margin-inline: auto; }
-.invitation__signoff { flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
-.invitation__date { text-align: center; }
+.invitation__message { margin-inline: auto; }
 .calendar__layout { grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 32px; }
 .calendar__sheet { width: min(100%, 440px); margin-inline: auto; }
 .rsvp__layout { max-width: 700px; margin-inline: auto; }
@@ -435,8 +432,7 @@ body { background: var(--paper); }
 
 /* Warm ivory palette, paired with the orange of the printed invitation. */
 .invitation, .wreath { background: var(--cream); color: var(--ink); }
-.invitation__date, .countdown .section__lead { color: var(--muted); }
-.invitation__signoff { border-color: var(--line); }
+.countdown .section__lead { color: var(--muted); }
 .countdown { background: #fff1e3; color: var(--accent); }
 .gallery, .share { background: var(--paper); }
 .calendar__sheet, .couple__person { background: #fffaf2; }

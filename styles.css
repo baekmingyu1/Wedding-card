@@ -96,10 +96,8 @@ h2 em { color: var(--accent); font-style: normal; }
 .invitation__body h2 { margin-top: -16px; font-size: clamp(58px, 7vw, 96px); }
 .accent-period { color: var(--accent-bright); }
 .invitation__message { max-width: 650px; margin-top: 76px; }
-.invitation__message p { margin: 0 0 16px; font-size: clamp(16px, 1.8vw, 20px); line-height: 2; }
-.invitation__signoff { display: flex; align-items: end; justify-content: space-between; gap: 24px; max-width: 650px; margin-top: 80px; padding-top: 24px; border-top: 1px solid rgba(251,248,242,.32); }
-.invitation__names, .invitation__date { margin: 0; font-size: 14px; }
-.invitation__date { color: #d5cec7; text-align: right; }
+.invitation__message p { margin: 0 0 28px; font-size: clamp(16px, 1.8vw, 20px); line-height: 2; white-space: pre-line; }
+.invitation__message p:last-child { margin-bottom: 0; }
 
 .gallery { background: var(--cream); }
 .gallery__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 56px; }
@@ -173,7 +171,6 @@ h2 em { color: var(--accent); font-style: normal; }
   .contents__visual { min-height: min(118vw, 560px); }
   .contents__heading h2 { font-size: clamp(46px, 10vw, 66px); }
   .invitation__message { margin-top: 42px; }
-  .invitation__signoff { margin-top: 55px; }
   .gallery__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .gallery__item, .gallery__item:nth-child(n) { grid-column: span 1; aspect-ratio: 3 / 4; }
   .gallery__grid--odd .gallery__item:first-child { grid-column: span 2; aspect-ratio: 4 / 3; }
@@ -183,6 +180,7 @@ h2 em { color: var(--accent); font-style: normal; }
 }
 
 @media (max-width: 420px) {
+  .section.invitation { padding-inline: 40px; }
   .opening__copy { width: calc(100% - 50px); }
   .opening h1 { font-size: clamp(42px, 11vw, 52px); }
   .opening__scene { font-size: 10px; }
@@ -195,8 +193,6 @@ h2 em { color: var(--accent); font-style: normal; }
   .contents__visual { min-height: 110vw; }
   .contents__list a { min-height: 68px; }
   .invitation__body h2 { font-size: clamp(36px, 11vw, 48px); }
-  .invitation__signoff { flex-direction: column; align-items: start; }
-  .invitation__date { text-align: left; }
 }
 
 @media (prefers-reduced-motion: reduce) {
