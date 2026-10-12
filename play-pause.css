@@ -331,8 +331,6 @@ body { background: var(--paper); }
 .directions__map[hidden] { display: none; }
 .directions__map a { color: inherit; text-decoration: none; }
 .directions__map img { display: block; width: 100%; height: auto; aspect-ratio: 900 / 580; border: 1px solid var(--line); background: #d5d5cf; }
-.directions__map-caption { display: flex; justify-content: space-between; margin-top: 10px; font-size: 13px; }
-.directions__map a:hover .directions__map-caption, .directions__map a:focus-visible .directions__map-caption { text-decoration: underline; text-underline-offset: 3px; }
 .directions__list { margin-top: 42px; border-top: 1px solid var(--line); }
 .directions__item { display: grid; grid-template-columns: minmax(110px, .3fr) minmax(0, 1fr); gap: 26px; padding: 28px 0; border-bottom: 1px solid var(--line); }
 .directions__item h3 { margin: 0; font-size: 17px; font-weight: 700; }
@@ -382,3 +380,44 @@ body { background: var(--paper); }
 .account__list { margin-top: 40px; }
 .location__card { margin-top: 0; }
 .wreath__inner > p:last-child { margin-top: 0; }
+
+/* Center the invitation content while keeping navigation and copy controls usable. */
+.section { text-align: center; }
+.section__lead { margin-inline: auto; }
+.opening__bottom { flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; }
+.opening__controls { justify-content: center; }
+.opening__controls .opening__scroll { justify-content: center; }
+.invitation__message, .invitation__signoff { margin-inline: auto; }
+.invitation__signoff { flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+.invitation__date { text-align: center; }
+.calendar__layout { grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 32px; }
+.calendar__sheet { width: min(100%, 440px); margin-inline: auto; }
+.rsvp__layout { max-width: 700px; margin-inline: auto; }
+.account__list { margin-inline: auto; }
+.account__group > summary { position: relative; justify-content: center; padding-inline: 40px; }
+.account__group > summary::after { position: absolute; right: 0; }
+.account__details { text-align: center; }
+.location__card { grid-template-columns: minmax(0, 1fr); justify-items: center; max-width: 700px; margin-inline: auto; }
+.location__details { display: flex; flex-direction: column; align-items: center; }
+.location__contact { justify-content: center; }
+.location__details .button { justify-content: center; }
+.directions__content { margin-inline: auto; }
+.directions__links { display: flex; flex-wrap: wrap; justify-content: center; }
+.directions__content .directions__links .button { min-width: min(100%, 180px); justify-content: center; }
+.directions__item { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+.share__actions { display: flex; justify-content: center; }
+.share__actions .button { justify-content: center; }
+.footer { flex-direction: column; justify-content: center; text-align: center; }
+/* Gallery paging and legible event date. */
+.calendar__caption { font-size: clamp(20px, 2.2vw, 26px); font-weight: 700; line-height: 1.6; }
+.gallery__pagination { display: flex; align-items: center; justify-content: center; gap: 18px; margin-top: 32px; }
+.gallery__pagination button { min-width: 64px; min-height: 44px; border: 1px solid var(--ink); background: transparent; color: var(--ink); cursor: pointer; }
+.gallery__pagination button:disabled { opacity: .4; cursor: not-allowed; }
+.gallery__pagination button:not(:disabled):hover { background: var(--ink); color: var(--paper); }
+.gallery__page-status { min-width: 52px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; }
+@media (max-width: 760px) {
+  .section, .section.calendar, .section.countdown, .section.rsvp, .section.couple,
+  .section.directions, .section.wreath, .section.share { padding-right: 52px; padding-left: 52px; }
+}
+.gallery__item picture { position: absolute; inset: 0; }
+.gallery__item img.is-loading { opacity: 0; }

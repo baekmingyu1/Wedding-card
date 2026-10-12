@@ -49,7 +49,8 @@
         else source.srcset = photo.mobileSrcset;
         picture.append(source);
       }
-      img.hidden = true;
+      if (kind === "opening") img.hidden = true;
+      else img.classList.add("is-loading");
       img.decoding = "async";
       img.alt = kind === "opening" ? "" : `두 사람의 사진 ${index + 1}`;
       if (kind === "gallery") img.loading = "lazy";
@@ -72,6 +73,7 @@
         }
         if (kind === "opening" && wrapper.dataset.status === "failed") return;
         img.hidden = false;
+        img.classList.remove("is-loading");
         placeholder.remove();
         wrapper.classList.remove("opening__frame--fallback");
         if (kind === "opening") {
@@ -100,11 +102,43 @@
   openingPhotos.forEach((path, index) => addPhoto(frameHost, path, index, "opening"));
 
   const galleryPhotos = content.galleryPhotos?.length ? content.galleryPhotos : Array(6).fill("");
-  galleryPhotos.forEach((path, index) => {
-    const fallbackIndex = Math.round(index * (openingPhotos.length - 1) / Math.max(1, galleryPhotos.length - 1));
-    addPhoto(galleryHost, path || openingPhotos[fallbackIndex], index, "gallery");
-  });
+  const galleryPager = document.getElementById("gallery-pagination");
+  const galleryPageSize = 9;
+  const galleryPageCount = Math.ceil(galleryPhotos.length / galleryPageSize);
 
+  function renderGalleryPage(page, scrollToGallery = false) {
+    galleryHost.replaceChildren();
+    const start = page * galleryPageSize;
+    galleryPhotos.slice(start, start + galleryPageSize).forEach((photo, offset) => {
+      const index = start + offset;
+      const fallbackIndex = Math.round(index * (openingPhotos.length - 1) / Math.max(1, galleryPhotos.length - 1));
+      addPhoto(galleryHost, photo || openingPhotos[fallbackIndex], index, "gallery");
+    });
+
+    galleryPager.replaceChildren();
+    galleryPager.hidden = galleryPageCount <= 1;
+    if (galleryPageCount > 1) {
+      const previous = document.createElement("button");
+      previous.type = "button";
+      previous.textContent = "이전";
+      previous.disabled = page === 0;
+      previous.addEventListener("click", () => renderGalleryPage(page - 1, true));
+      const status = document.createElement("span");
+      status.className = "gallery__page-status";
+      status.setAttribute("aria-live", "polite");
+      status.textContent = `${page + 1} / ${galleryPageCount}`;
+      const next = document.createElement("button");
+      next.type = "button";
+      next.textContent = "다음";
+      next.disabled = page === galleryPageCount - 1;
+      next.addEventListener("click", () => renderGalleryPage(page + 1, true));
+      galleryPager.append(previous, status, next);
+    }
+    if (scrollToGallery) {
+      document.getElementById("gallery").scrollIntoView({ behavior: motionReduced.matches ? "auto" : "smooth", block: "start" });
+    }
+  }
+  renderGalleryPage(0);
   function showToast(message) {
     toast.textContent = message;
     toast.classList.add("is-visible");

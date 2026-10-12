@@ -34,5 +34,5 @@ window.WEDDING_CONTENT = {
   ],
   // Generated from assets/opening/DSC*.jpg by npm run images.
   openingPhotos: window.OPENING_IMAGES || [],
-  galleryPhotos: ["", "", "", "", "", ""]
+  galleryPhotos: window.GALLERY_IMAGES || []
 };
