@@ -26,6 +26,8 @@ window.WEDDING_CONTENT = {
   googleMapUrl: "https://www.google.com/maps/search/?api=1&query=%EC%84%9C%EC%9A%B8%20%EA%B0%95%EB%82%A8%EA%B5%AC%20%EB%B4%89%EC%9D%80%EC%82%AC%EB%A1%9C%20302",
   rsvpMessage: "참석 여부를 알려주시면 정성껏 자리를 준비하겠습니다.",
   rsvpUrl: "",
+  // Google Apps Script 웹 앱의 /exec 주소 (비밀 키가 아닙니다).
+  rsvpEndpoint: "",
   wreathMessage: "환경을 위해 화환을 받지 않고 있습니다.\n축하해 주시는 마음만 감사히 받겠습니다.",
   accounts: [
     { side: "신랑 측", label: "신랑", bank: "기업은행", number: "569-024015-01-012", holder: "백민규" },
