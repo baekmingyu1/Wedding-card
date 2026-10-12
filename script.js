@@ -390,7 +390,71 @@
       naverStaticImage.src = `https://maps.apigw.ntruss.com/map-static/v2/raster-cors?${params}`;
     }
   }
-  document.getElementById("rsvp-pending").hidden = setExternalLink("rsvp-link", content.rsvpUrl);
+  const rsvpForm = document.getElementById("rsvp-form");
+  const rsvpFields = document.getElementById("rsvp-fields");
+  const rsvpStatus = document.getElementById("rsvp-status");
+  const rsvpSubmit = document.getElementById("rsvp-submit");
+  const rsvpPending = document.getElementById("rsvp-pending");
+  const endpoint = content.rsvpEndpoint || "";
+  const rsvpReady = /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(endpoint);
+  const externalRsvp = !rsvpReady && setExternalLink("rsvp-link", content.rsvpUrl);
+  rsvpForm.hidden = Boolean(externalRsvp);
+  rsvpFields.disabled = !rsvpReady;
+  rsvpPending.hidden = rsvpReady || externalRsvp;
+  let rsvpBusy = false;
+  let lastPayload = "";
+  let submissionId = "";
+  function updateAttendance() {
+    const attending = rsvpForm.elements.attendance.value === "참석";
+    document.getElementById("rsvp-attending").hidden = !attending;
+    for (const name of ["guests", "meal"]) {
+      rsvpForm.elements[name].disabled = !attending;
+      rsvpForm.elements[name].required = attending;
+    }
+  }
+  rsvpForm.elements.attendance.addEventListener("change", updateAttendance);
+  updateAttendance();
+  rsvpForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!rsvpReady || rsvpBusy || !rsvpForm.reportValidity()) return;
+    const values = Object.fromEntries(new FormData(rsvpForm));
+    values.name = values.name.trim();
+    values.message = values.message.trim();
+    if (!values.name) { rsvpStatus.textContent = "성함을 입력해 주세요."; return; }
+    const payload = JSON.stringify(values);
+    if (lastPayload !== payload) {
+      submissionId = crypto.randomUUID ? crypto.randomUUID() : Array.from(crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2, "0")).join("");
+      lastPayload = payload;
+    }
+    values.submissionId = submissionId;
+    rsvpBusy = true;
+    rsvpFields.disabled = true;
+    rsvpForm.setAttribute("aria-busy", "true");
+    rsvpSubmit.textContent = "전달 중…";
+    rsvpStatus.textContent = "참석 여부를 전달하고 있습니다.";
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), 20000);
+    try {
+      // A simple form POST avoids preflight. Never use no-cors: success must be confirmed.
+      const response = await fetch(endpoint, { method: "POST", body: new URLSearchParams(values), credentials: "omit", signal: controller.signal });
+      if (!response.ok) throw new Error("HTTP error");
+      const result = await response.json();
+      if (result.ok !== true || result.submissionId !== submissionId) throw new Error("Unconfirmed write");
+      rsvpStatus.textContent = "참석 여부가 전달되었습니다. 알려주셔서 감사합니다.";
+      rsvpForm.reset();
+      lastPayload = "";
+      submissionId = "";
+      updateAttendance();
+    } catch {
+      rsvpStatus.textContent = "저장 여부를 확인하지 못했습니다. 입력 내용은 유지됩니다. 잠시 후 다시 눌러 주세요.";
+    } finally {
+      window.clearTimeout(timer);
+      rsvpBusy = false;
+      rsvpFields.disabled = false;
+      rsvpForm.removeAttribute("aria-busy");
+      rsvpSubmit.textContent = "참석 여부 전달하기";
+    }
+  });
 
   const calendarGrid = document.getElementById("calendar-grid");
   const calendarMonth = document.getElementById("calendar-month");
