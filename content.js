@@ -28,9 +28,9 @@ window.WEDDING_CONTENT = {
   rsvpUrl: "",
   wreathMessage: "환경을 위해 화환을 받지 않고 있습니다.\n축하해 주시는 마음만 감사히 받겠습니다.",
   accounts: [
-    { side: "신랑", bank: "기업은행", number: "569-024015-01-012", holder: "백민규" },
-    { side: "신랑 아버지", bank: "KB국민은행", number: "703001-01-612595", holder: "백인봉" },
-    { side: "신부 측", bank: "", number: "", holder: "" }
+    { side: "신랑 측", label: "신랑", bank: "기업은행", number: "569-024015-01-012", holder: "백민규" },
+    { side: "신랑 측", label: "신랑 아버지", bank: "KB국민은행", number: "703001-01-612595", holder: "백인봉" },
+    { side: "신부 측", label: "", bank: "", number: "", holder: "" }
   ],
   // Generated from assets/opening/DSC*.jpg by npm run images.
   openingPhotos: window.OPENING_IMAGES || [],

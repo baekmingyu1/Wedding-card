@@ -248,32 +248,46 @@
     }
   });
 
-  for (const account of content.accounts || []) {
-    const card = document.createElement("article");
-    card.className = "account__card";
-    const side = document.createElement("p");
-    side.className = "account__side";
-    side.textContent = account.side;
-    const details = document.createElement("p");
-    details.className = "account__details";
-    const name = document.createElement("strong");
-    const ready = Boolean(account.bank && account.number && account.holder);
-    name.textContent = ready ? account.number : "계좌 정보 준비 중";
-    details.append(name);
-    if (ready) details.append(document.createTextNode(`${account.bank} · 예금주 ${account.holder}`));
-    const button = document.createElement("button");
-    button.className = "button button--light";
-    button.type = "button";
-    button.textContent = "복사 ↗";
-    button.setAttribute("aria-label", `${account.side} 계좌번호 복사`);
-    button.disabled = !ready;
-    if (ready) button.addEventListener("click", () => copyText(account.number));
-    card.append(side, details);
-    if (ready) card.append(button);
-    accountHost.append(card);
-  }
-  if ((content.accounts || []).some((account) => account.bank && account.number && account.holder)) {
-    document.querySelector(".account__note").hidden = true;
+  for (const groupName of ["신랑 측", "신부 측"]) {
+    const group = document.createElement("details");
+    group.className = "account__group";
+    const summary = document.createElement("summary");
+    summary.textContent = groupName;
+    const body = document.createElement("div");
+    body.className = "account__group-body";
+    const readyAccounts = (content.accounts || []).filter((account) =>
+      account.side === groupName && account.bank && account.number && account.holder
+    );
+
+    for (const account of readyAccounts) {
+      const card = document.createElement("article");
+      card.className = "account__card";
+      const label = document.createElement("p");
+      label.className = "account__side";
+      label.textContent = account.label || groupName;
+      const details = document.createElement("p");
+      details.className = "account__details";
+      const number = document.createElement("strong");
+      number.textContent = account.number;
+      details.append(number, document.createTextNode(`${account.bank} · 예금주 ${account.holder}`));
+      const button = document.createElement("button");
+      button.className = "button button--light";
+      button.type = "button";
+      button.textContent = "복사 ↗";
+      button.setAttribute("aria-label", `${account.label || groupName} 계좌번호 복사`);
+      button.addEventListener("click", () => copyText(account.number));
+      card.append(label, details, button);
+      body.append(card);
+    }
+
+    if (!readyAccounts.length) {
+      const empty = document.createElement("p");
+      empty.className = "account__empty";
+      empty.textContent = "계좌 정보 준비 중";
+      body.append(empty);
+    }
+    group.append(summary, body);
+    accountHost.append(group);
   }
 
   const opening = document.getElementById("opening");
