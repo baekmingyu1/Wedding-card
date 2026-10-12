@@ -130,9 +130,49 @@
     Math.round(index * (openingPhotos.length - 1) / Math.max(1, galleryPhotos.length - 1))
   ];
 
-  function showGalleryPhoto(index) {
+  // Keep only nearby decoded photos in memory; browser HTTP caching handles older ones.
+  const photoCache = new Map();
+  let photoRequest = 0;
+  let photoLoadingTimer;
+  function prepareGalleryPhoto(index, priority = "low") {
+    if (photoCache.has(index)) {
+      const cached = photoCache.get(index);
+      if (priority === "high") cached.img.fetchPriority = "high";
+      return cached;
+    }
+    const img = new Image();
+    img.alt = "두 사람의 사진 " + (index + 1);
+    img.decoding = "async";
+    img.draggable = false;
+    img.fetchPriority = priority;
+    const entry = { img, ready: false, promise: null };
+    entry.promise = new Promise((resolve, reject) => {
+      img.onload = async () => {
+        try { await img.decode(); } catch { /* Some webviews cannot decode explicitly. */ }
+        if (!img.naturalWidth) { reject(new Error("Invalid photo")); return; }
+        entry.ready = true;
+        resolve(img);
+      };
+      img.onerror = () => reject(new Error("Photo unavailable"));
+    });
+    photoCache.set(index, entry);
+    entry.promise.catch(() => { if (photoCache.get(index) === entry) photoCache.delete(index); });
+    img.src = photoUrl(resolveGalleryPhoto(index)) || "";
+    return entry;
+  }
+  function warmGalleryPhotos(index) {
+    for (const key of photoCache.keys()) {
+      if (Math.abs(key - index) > 2) photoCache.delete(key);
+    }
+    if (navigator.connection?.saveData) return;
+    for (const offset of [1, -1, 2, -2]) {
+      const neighbor = index + offset;
+      if (neighbor >= 0 && neighbor < galleryPhotos.length) prepareGalleryPhoto(neighbor);
+    }
+  }
+
+  async function showGalleryPhoto(index) {
     if (index < 0 || index >= galleryPhotos.length) return;
-    const direction = index >= activePhoto ? 1 : -1;
     activePhoto = index;
     Array.from(photoThumbnails.children).forEach((button, position) => {
       button.setAttribute("aria-current", position === index ? "true" : "false");
@@ -145,23 +185,35 @@
     photoCounter.textContent = (index + 1) + " / " + galleryPhotos.length;
     photoPrevious.disabled = index === 0;
     photoNext.disabled = index === galleryPhotos.length - 1;
-    photoStatus.textContent = "사진을 불러오는 중입니다.";
-    const img = new Image();
-    img.alt = "두 사람의 사진 " + (index + 1);
-    img.decoding = "async";
-    img.draggable = false;
-    img.hidden = true;
-    img.addEventListener("load", () => {
-      if (!img.isConnected) return;
-      img.hidden = false;
+    const request = ++photoRequest;
+    window.clearTimeout(photoLoadingTimer);
+    photoStatus.textContent = "";
+    const entry = prepareGalleryPhoto(index, "high");
+    // Keep the previous photo visible until the next full-size image is decoded.
+    if (!photoStage.firstChild) {
+      const thumbnail = photoThumbnails.children[index]?.querySelector("img");
+      if (thumbnail?.complete && thumbnail.naturalWidth) {
+        const preview = new Image();
+        preview.src = thumbnail.currentSrc;
+        preview.alt = entry.img.alt;
+        photoStage.replaceChildren(preview);
+      }
+    }
+    if (!entry.ready) photoLoadingTimer = window.setTimeout(() => {
+      if (request === photoRequest) photoStatus.textContent = "다음 사진을 준비하고 있습니다.";
+    }, 700);
+    try {
+      const img = entry.ready ? entry.img : await entry.promise;
+      if (request !== photoRequest || !galleryDialog.open) return;
+      window.clearTimeout(photoLoadingTimer);
       photoStatus.textContent = "";
-      if (!motionReduced.matches) img.animate([{ opacity: .5, transform: "translateX(" + (direction * 24) + "px)" }, { opacity: 1, transform: "translateX(0)" }], { duration: 180, easing: "ease-out" });
-    });
-    img.addEventListener("error", () => {
-      if (img.isConnected) photoStatus.textContent = "사진을 불러오지 못했습니다. 잠시 후 다시 열어 주세요.";
-    });
-    photoStage.replaceChildren(img);
-    img.src = photoUrl(resolveGalleryPhoto(index)) || "";
+      photoStage.replaceChildren(img);
+      warmGalleryPhotos(index);
+    } catch {
+      if (request !== photoRequest || !galleryDialog.open) return;
+      window.clearTimeout(photoLoadingTimer);
+      photoStatus.textContent = "사진을 불러오지 못했습니다. 썸네일을 눌러 다시 시도해 주세요.";
+    }
   }
 
   function openGalleryPhoto(index) {
@@ -192,6 +244,9 @@
   document.getElementById("gallery-photo-close").addEventListener("click", () => galleryDialog.close());
   galleryDialog.addEventListener("close", () => {
     document.body.style.overflow = previousBodyOverflow;
+    ++photoRequest;
+    window.clearTimeout(photoLoadingTimer);
+    photoStatus.textContent = "";
     photoStage.replaceChildren();
     swipeStart = null;
   });
