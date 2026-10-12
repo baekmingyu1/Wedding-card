@@ -122,6 +122,8 @@
   const photoCounter = document.getElementById("gallery-photo-counter");
   const photoPrevious = document.getElementById("gallery-photo-previous");
   const photoNext = document.getElementById("gallery-photo-next");
+  const photoThumbnails = document.getElementById("gallery-photo-thumbnails");
+  let swipeStart = null;
   let activePhoto = 0;
   let previousBodyOverflow = "";
   const resolveGalleryPhoto = (index) => galleryPhotos[index] || openingPhotos[
@@ -129,7 +131,17 @@
   ];
 
   function showGalleryPhoto(index) {
+    if (index < 0 || index >= galleryPhotos.length) return;
+    const direction = index >= activePhoto ? 1 : -1;
     activePhoto = index;
+    Array.from(photoThumbnails.children).forEach((button, position) => {
+      button.setAttribute("aria-current", position === index ? "true" : "false");
+    });
+    const selected = photoThumbnails.children[index];
+    if (selected) photoThumbnails.scrollTo({
+      left: selected.offsetLeft - photoThumbnails.offsetLeft - (photoThumbnails.clientWidth - selected.clientWidth) / 2,
+      behavior: motionReduced.matches ? "instant" : "smooth"
+    });
     photoCounter.textContent = (index + 1) + " / " + galleryPhotos.length;
     photoPrevious.disabled = index === 0;
     photoNext.disabled = index === galleryPhotos.length - 1;
@@ -137,11 +149,13 @@
     const img = new Image();
     img.alt = "두 사람의 사진 " + (index + 1);
     img.decoding = "async";
+    img.draggable = false;
     img.hidden = true;
     img.addEventListener("load", () => {
       if (!img.isConnected) return;
       img.hidden = false;
       photoStatus.textContent = "";
+      if (!motionReduced.matches) img.animate([{ opacity: .5, transform: "translateX(" + (direction * 24) + "px)" }, { opacity: 1, transform: "translateX(0)" }], { duration: 180, easing: "ease-out" });
     });
     img.addEventListener("error", () => {
       if (img.isConnected) photoStatus.textContent = "사진을 불러오지 못했습니다. 잠시 후 다시 열어 주세요.";
@@ -154,12 +168,32 @@
     previousBodyOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     galleryDialog.showModal();
+    if (!photoThumbnails.childElementCount) {
+      galleryPhotos.forEach((photo, position) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "gallery-dialog__thumbnail";
+        button.setAttribute("aria-label", "사진 " + (position + 1) + " 보기");
+        const img = new Image();
+        const source = resolveGalleryPhoto(position);
+        img.alt = "";
+        img.loading = "lazy";
+        img.decoding = "async";
+        img.draggable = false;
+        if (source.srcset) { img.sizes = "64px"; img.srcset = source.srcset; }
+        img.src = photoUrl(source) || "";
+        button.append(img);
+        button.addEventListener("click", () => showGalleryPhoto(position));
+        photoThumbnails.append(button);
+      });
+    }
     showGalleryPhoto(index);
   }
   document.getElementById("gallery-photo-close").addEventListener("click", () => galleryDialog.close());
   galleryDialog.addEventListener("close", () => {
     document.body.style.overflow = previousBodyOverflow;
     photoStage.replaceChildren();
+    swipeStart = null;
   });
   photoPrevious.addEventListener("click", () => showGalleryPhoto(activePhoto - 1));
   photoNext.addEventListener("click", () => showGalleryPhoto(activePhoto + 1));
@@ -172,6 +206,23 @@
       showGalleryPhoto(activePhoto + 1);
     }
   });
+
+  photoStage.addEventListener("pointerdown", (event) => {
+    if (!event.isPrimary || event.button !== 0) { swipeStart = null; return; }
+    if (window.visualViewport && window.visualViewport.scale > 1) return;
+    swipeStart = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    photoStage.setPointerCapture(event.pointerId);
+  });
+  photoStage.addEventListener("pointerup", (event) => {
+    if (!swipeStart || swipeStart.id !== event.pointerId) return;
+    const dx = event.clientX - swipeStart.x;
+    const dy = event.clientY - swipeStart.y;
+    swipeStart = null;
+    if (Math.abs(dx) >= 45 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+      showGalleryPhoto(activePhoto + (dx < 0 ? 1 : -1));
+    }
+  });
+  photoStage.addEventListener("pointercancel", () => { swipeStart = null; });
 
   let galleryPage = 0;
   const previous = document.createElement("button");
