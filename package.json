@@ -2,6 +2,7 @@
   "private": true,
   "scripts": {
     "images": "node tools/generate-opening-images.mjs",
+    "gallery:images": "node tools/generate-gallery-images.mjs",
     "build": "node tools/build.mjs",
     "check:dist": "node tools/check-dist.mjs"
   },

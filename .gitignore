@@ -5,3 +5,7 @@ node_modules/
 dist/
 # Keep full-resolution source photos local; commit the optimized frames instead.
 assets/opening/DSC*.jpg
+
+# Keep full-resolution gallery originals local; publish the optimized WebP files.
+assets/gallery/*.jpg
+assets/gallery/*.jpeg

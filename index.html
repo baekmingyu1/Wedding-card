@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f6f2eb">
   <meta name="description" content="한 식탁에서 시작해, 함께 움직이고 나란히 쉬며 만든 우리의 시간. 모바일 청첩장">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="백민규 · 박지해의 청첩장">
+  <meta property="og:description" content="2026년 12월 12일 토요일 오후 4시 30분 · 아르베 웨딩">
+  <meta property="og:image" content="https://raw.githubusercontent.com/baekmingyu1/Wedding-card/main/assets/share/kakao-thumbnail.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
   <title>OUR PACE | 우리의 초대장</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,10 +21,11 @@
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=12">
-  <link rel="stylesheet" href="play-pause.css?v=18">
+  <link rel="stylesheet" href="play-pause.css?v=21">
   <script src="opening-images.js" defer></script>
-  <script src="content.js?v=11" defer></script>
-  <script src="script.js?v=21" defer></script>
+  <script src="gallery-images.js" defer></script>
+  <script src="content.js?v=12" defer></script>
+  <script src="script.js?v=23" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#invitation">본문으로 건너뛰기</a>
@@ -97,7 +105,7 @@
     </section>
 
     <section class="section gallery" id="gallery" aria-label="갤러리">
-      <div class="section__inner"><p class="section__lead">함께 움직이고 나란히 쉬던 날의 사진을 모았습니다.</p><div class="gallery__grid" id="gallery-grid"></div></div>
+      <div class="section__inner"><p class="section__lead">함께 움직이고 나란히 쉬던 날의 사진을 모았습니다.</p><div class="gallery__grid" id="gallery-grid"></div><nav class="gallery__pagination" id="gallery-pagination" aria-label="갤러리 페이지"></nav></div>
     </section>
 
     <section class="section rsvp" id="rsvp" aria-label="참석 의사 전달">
@@ -136,7 +144,6 @@
         <div class="directions__map" id="naver-static-map" hidden>
           <a id="naver-static-map-preview" href="#directions" target="_blank" rel="noopener noreferrer" aria-label="네이버 지도에서 아르베웨딩 위치 보기">
             <img id="naver-static-map-image" alt="아르베웨딩 위치를 표시한 네이버 정적 지도" loading="lazy" decoding="async" width="900" height="580">
-            <span class="directions__map-caption">네이버 지도에서 크게 보기 <span aria-hidden="true">↗</span></span>
           </a>
         </div>
         <div class="directions__links"><a id="naver-map-link" class="button" href="#directions" hidden target="_blank" rel="noopener noreferrer">네이버 지도 <span aria-hidden="true">↗</span></a><a id="kakao-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer">카카오맵 <span aria-hidden="true">↗</span></a><a id="google-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer">구글 지도 <span aria-hidden="true">↗</span></a><p class="section__pending" id="map-pending">지도 링크를 준비하고 있습니다.</p></div>

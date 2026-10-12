@@ -8,7 +8,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const output = join(root, "dist");
 const html = await readFile(join(output, "index.html"), "utf8");
 const files = await readdir(output);
-const assets = ["styles", "play-pause", "opening-images", "content", "script"];
+const assets = ["styles", "play-pause", "opening-images", "gallery-images", "content", "script"];
 for (const name of assets) {
   const matching = files.filter((file) => file.startsWith(`${name}.`) && /\.[a-f0-9]{10}\.(?:css|js)$/.test(file));
   if (matching.length !== 1) throw new Error(`${name}의 해시 파일 수가 1개가 아닙니다.`);
@@ -40,8 +40,25 @@ if (!html.includes(photos[0].mobileSrcset) || !html.includes(photos[0].srcset)) 
 if ((await readdir(join(output, "assets", "opening"))).some((name) => /^DSC\d+\.jpg$/i.test(name))) {
   throw new Error("원본 JPG가 배포 폴더에 포함됐습니다.");
 }
+const galleryManifest = files.find((file) => /^gallery-images\.[a-f0-9]{10}\.js$/.test(file));
+const gallerySandbox = { window: {} };
+runInNewContext(await readFile(join(output, galleryManifest), "utf8"), gallerySandbox);
+const galleryPhotos = gallerySandbox.window.GALLERY_IMAGES;
+const sourceGalleryCount = (await readdir(join(root, "assets", "gallery"))).filter((name) => /^DSC.*\.jpe?g$/i.test(name)).length;
+if (!Array.isArray(galleryPhotos) || galleryPhotos.length !== sourceGalleryCount) {
+  throw new Error("갤러리 사진 목록과 원본 사진 수가 다릅니다.");
+}
+for (const photo of galleryPhotos) {
+  for (const path of photo.srcset.split(", ").map((candidate) => candidate.split(" ")[0])) {
+    await access(join(output, path));
+  }
+}
+if ((await readdir(join(output, "assets", "gallery"))).some((name) => /\.jpe?g$/i.test(name))) {
+  throw new Error("갤러리 원본 JPG가 배포 폴더에 포함됐습니다.");
+}
+await access(join(output, "assets", "share", "kakao-thumbnail.jpg"));
 const mobileBytes = (await Promise.all(photos.map(async (photo) => {
   const candidate = photo.mobileSrcset.split(", ").at(-1).split(" ")[0];
   return (await stat(join(output, candidate))).size;
 }))).reduce((sum, size) => sum + size, 0);
-console.log(`Checked ${photos.length} photos and hashed assets; 1024px opening total: ${mobileBytes} bytes.`);
+console.log(`Checked ${photos.length} opening and ${galleryPhotos.length} gallery photos and hashed assets; 1024px opening total: ${mobileBytes} bytes.`);
