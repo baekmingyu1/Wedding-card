@@ -99,31 +99,11 @@
   if (!openingPhotos.length) openingPhotos.push("");
   openingPhotos.forEach((path, index) => addPhoto(frameHost, path, index, "opening"));
 
-  const editorialPhotos = {
-    last: openingPhotos[openingPhotos.length - 1],
-    middle: openingPhotos[Math.floor((openingPhotos.length - 1) / 2)]
-  };
-  document.querySelectorAll("[data-editorial-photo]").forEach((image) => {
-    const photo = editorialPhotos[image.dataset.editorialPhoto];
-    const path = photoUrl(photo);
-    if (!path) return;
-    image.addEventListener("error", () => { image.hidden = true; });
-    if (photo.srcset) {
-      image.srcset = photo.srcset;
-      image.sizes = "(max-width: 760px) 70vw, 35vw";
-      image.width = photo.width;
-      image.height = photo.height;
-    }
-    image.src = path;
-    image.hidden = false;
-  });
-
   const galleryPhotos = content.galleryPhotos?.length ? content.galleryPhotos : Array(6).fill("");
   galleryPhotos.forEach((path, index) => {
     const fallbackIndex = Math.round(index * (openingPhotos.length - 1) / Math.max(1, galleryPhotos.length - 1));
     addPhoto(galleryHost, path || openingPhotos[fallbackIndex], index, "gallery");
   });
-  document.querySelector(".section__count").textContent = `01 — ${String(galleryPhotos.length).padStart(2, "0")}`;
 
   function showToast(message) {
     toast.textContent = message;
@@ -160,16 +140,113 @@
     addressButton.addEventListener("click", () => copyText(content.address));
   }
 
-  if (content.mapUrl) {
+  function setExternalLink(id, value) {
+    if (!value) return false;
     try {
-      const mapUrl = new URL(content.mapUrl);
-      if (["https:", "http:"].includes(mapUrl.protocol)) {
-        const mapLink = document.getElementById("map-link");
-        mapLink.href = mapUrl.href;
-        mapLink.hidden = false;
-      }
-    } catch { /* Keep the map link hidden until a valid URL is supplied. */ }
+      const url = new URL(value);
+      if (url.protocol !== "https:") return false;
+      const link = document.getElementById(id);
+      link.href = url.href;
+      link.hidden = false;
+      return true;
+    } catch { return false; }
   }
+
+  const hasMaps = [
+    setExternalLink("naver-map-link", content.naverMapUrl),
+    setExternalLink("kakao-map-link", content.kakaoMapUrl),
+    setExternalLink("google-map-link", content.googleMapUrl)
+  ].some(Boolean);
+  document.getElementById("map-pending").hidden = hasMaps;
+  const naverStaticMap = document.getElementById("naver-static-map");
+  const naverStaticImage = document.getElementById("naver-static-map-image");
+  const naverKeyId = content.naverStaticMapKeyId?.trim();
+  const naverCenter = content.naverStaticMapCenter?.trim();
+  if (naverKeyId && naverCenter && /^https?:$/.test(location.protocol)) {
+    const coordinates = naverCenter.split(",").map(Number);
+    if (coordinates.length === 2 && coordinates.every(Number.isFinite)) {
+      const [longitude, latitude] = coordinates;
+      const params = new URLSearchParams({
+        w: "900", h: "580", center: naverCenter, level: "16", lang: "ko",
+        markers: `type:d|size:mid|color:Orange|pos:${longitude} ${latitude}`,
+        "X-NCP-APIGW-API-KEY-ID": naverKeyId
+      });
+      const naverPreview = document.getElementById("naver-static-map-preview");
+      naverPreview.href = document.getElementById("naver-map-link").href;
+      naverStaticImage.addEventListener("error", () => { naverStaticMap.hidden = true; }, { once: true });
+      naverStaticMap.hidden = false;
+      naverStaticImage.src = `https://maps.apigw.ntruss.com/map-static/v2/raster-cors?${params}`;
+    }
+  }
+  document.getElementById("rsvp-pending").hidden = setExternalLink("rsvp-link", content.rsvpUrl);
+
+  const calendarGrid = document.getElementById("calendar-grid");
+  const calendarMonth = document.getElementById("calendar-month");
+  const countdownValue = document.getElementById("countdown-value");
+  const countdownCaption = document.getElementById("countdown-caption");
+  const eventDate = content.eventDate ? new Date(content.eventDate) : null;
+  const eventReady = eventDate && !Number.isNaN(eventDate.getTime());
+  const koreanParts = (date) => {
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: "Asia/Seoul", year: "numeric", month: "numeric", day: "numeric"
+    }).formatToParts(date);
+    return Object.fromEntries(parts.filter((part) => part.type !== "literal").map((part) => [part.type, Number(part.value)]));
+  };
+
+  if (eventReady) {
+    const { year, month, day } = koreanParts(eventDate);
+    calendarMonth.textContent = `${year}. ${String(month).padStart(2, "0")}`;
+    for (const weekday of ["일", "월", "화", "수", "목", "금", "토"]) {
+      const label = document.createElement("span");
+      label.className = "calendar__weekday";
+      label.textContent = weekday;
+      calendarGrid.append(label);
+    }
+    const firstWeekday = new Date(Date.UTC(year, month - 1, 1)).getUTCDay();
+    const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
+    for (let index = 0; index < firstWeekday; index += 1) {
+      const blank = document.createElement("span");
+      blank.setAttribute("aria-hidden", "true");
+      calendarGrid.append(blank);
+    }
+    for (let date = 1; date <= lastDay; date += 1) {
+      const cell = document.createElement("span");
+      cell.textContent = String(date);
+      if (date === day) {
+        cell.className = "calendar__day--event";
+        cell.setAttribute("aria-label", `${year}년 ${month}월 ${day}일 예식일`);
+      }
+      calendarGrid.append(cell);
+    }
+    const eventDay = Date.UTC(year, month - 1, day);
+    function updateCountdown() {
+      const now = new Date();
+      const current = koreanParts(now);
+      const today = Date.UTC(current.year, current.month - 1, current.day);
+      const days = Math.round((eventDay - today) / 86400000);
+      countdownValue.textContent = days > 0 ? `D-${days}` : days === 0 ? "D-DAY" : "THANK YOU";
+      countdownCaption.textContent = days > 0
+        ? `${content.couple}의 결혼식까지 ${days}일 남았습니다.`
+        : days === 0 ? "오늘, 함께 시작합니다." : "함께해 주셔서 감사합니다.";
+    }
+    updateCountdown();
+    window.setInterval(updateCountdown, 60000);
+  } else {
+    calendarMonth.textContent = "날짜 준비 중";
+    calendarGrid.textContent = "예식 날짜가 정해지면 달력이 표시됩니다.";
+  }
+
+  const invitationUrl = new URL(window.location.href);
+  invitationUrl.hash = "";
+  document.getElementById("copy-link").addEventListener("click", () => copyText(invitationUrl.href));
+  document.getElementById("share-invitation").addEventListener("click", async () => {
+    if (!navigator.share) { await copyText(invitationUrl.href); return; }
+    try {
+      await navigator.share({ title: `${content.couple}의 청첩장`, text: "결혼식에 초대합니다.", url: invitationUrl.href });
+    } catch (error) {
+      if (error?.name !== "AbortError") showToast("전달할 수 없습니다. 주소 복사를 이용해 주세요.");
+    }
+  });
 
   for (const account of content.accounts || []) {
     const card = document.createElement("article");
@@ -209,9 +286,9 @@
   const openingStatus = document.getElementById("opening-status");
   const pauseButton = document.getElementById("opening-pause");
   const skipButton = document.getElementById("opening-skip");
-  const sections = ["opening", "contents", "story", "invitation", "gallery", "location", "account"]
+  const sections = ["opening", "invitation", "calendar", "countdown", "gallery", "rsvp", "couple", "account", "location", "directions", "wreath", "share"]
     .map((id) => document.getElementById(id));
-  const contents = document.getElementById("contents");
+  const firstSection = document.getElementById("invitation");
   const sideNav = document.querySelector(".side-nav");
   const navProgress = document.getElementById("nav-progress");
   const links = [...document.querySelectorAll("[data-nav]")];
@@ -282,7 +359,7 @@
         ? autoplayIndex
         : Math.min(frames.length - 1, Math.floor(sequenceProgress * frames.length));
     const openingVisible = openingRect.bottom > 0 && openingRect.top < window.innerHeight;
-    const showSideNav = contents.getBoundingClientRect().top <= 0;
+    const showSideNav = firstSection.getBoundingClientRect().top <= 0;
     let active = "opening";
     for (const section of sections) {
       if (section.getBoundingClientRect().top <= window.innerHeight * .45) active = section.id;
@@ -409,7 +486,7 @@
     pauseButton.hidden = true;
     openingStatus.textContent = "";
     updateScroll();
-    if (navigate) window.requestAnimationFrame(() => contents.scrollIntoView({ behavior: "smooth" }));
+    if (navigate) window.requestAnimationFrame(() => firstSection.scrollIntoView({ behavior: "smooth" }));
   }
 
   function replayOpening() {
