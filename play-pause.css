@@ -356,7 +356,7 @@ body { background: var(--paper); }
   .section.calendar, .section.countdown, .section.rsvp, .section.couple, .section.directions, .section.wreath, .section.share { padding-right: 58px; }
   .calendar__layout, .rsvp__layout, .directions__layout { grid-template-columns: 1fr; gap: 34px; }
   .calendar__sheet { width: 100%; }
-  .couple__grid { grid-template-columns: 1fr; gap: 12px; }
+  .couple__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
   .directions__links { padding-top: 0; }
   .side-nav { max-height: calc(100svh - 20px); overflow-y: auto; scrollbar-width: none; }
   .side-nav::-webkit-scrollbar { display: none; }
@@ -421,3 +421,14 @@ body { background: var(--paper); }
 }
 .gallery__item picture { position: absolute; inset: 0; }
 .gallery__item img.is-loading { opacity: 0; }
+
+/* Keep the couple and account invitation visually connected. */
+.section.couple { padding-bottom: 28px; }
+.section.account { padding-top: 28px; }
+@media (max-width: 760px) {
+  .section.couple { padding-inline: 20px; }
+  .couple__person { min-height: 164px; padding: 20px 6px; }
+  .couple__parents { font-size: clamp(12px, 3vw, 16px); }
+  .couple__child span { font-size: 14px; }
+  .couple__child strong { font-size: clamp(22px, 5.6vw, 30px); }
+}
