@@ -512,6 +512,7 @@
   rsvpForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!rsvpReady || rsvpBusy || !rsvpForm.reportValidity()) return;
+    const submittedFromWelcome = welcomeDialog.open && welcomeRsvp.contains(rsvpForm);
     const values = Object.fromEntries(new FormData(rsvpForm));
     values.name = values.name.trim();
     values.message = values.message.trim();
@@ -540,6 +541,10 @@
       lastPayload = "";
       submissionId = "";
       updateAttendance();
+      if (submittedFromWelcome && welcomeDialog.open && welcomeRsvp.contains(rsvpForm)) {
+        enterOpening();
+        showToast("참석 여부가 전달되었습니다. 알려주셔서 감사합니다.");
+      }
     } catch {
       rsvpStatus.textContent = "저장 여부를 확인하지 못했습니다. 입력 내용은 유지됩니다. 잠시 후 다시 눌러 주세요.";
     } finally {
@@ -1176,6 +1181,14 @@
     }
     document.getElementById("welcome-next").textContent = storyIndex === quiz.length - 1 ? "참석 여부 알려주기" : "다음 이야기";
     showWelcomeStep("story");
+  }
+  function enterOpening() {
+    restoreRsvp();
+    welcomeDialog.close();
+    document.documentElement.classList.remove("welcome-open");
+    replayOpening();
+    opening.tabIndex = -1;
+    opening.focus({ preventScroll: true });
   }
   function enterInvitation() {
     restoreRsvp();
