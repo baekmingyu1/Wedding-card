@@ -282,3 +282,5 @@ html.welcome-open, html.welcome-open body { overflow: hidden; }
 .invitation__summary + .invitation__message { margin-top: 0; }
 
 .invitation:focus { outline: none; }
+
+#welcome-back { margin-top: 20px; font-size: 12px; }
