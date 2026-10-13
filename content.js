@@ -1,6 +1,12 @@
 // 예식 정보는 제공된 종이 청첩장 시안을 기준으로 입력했습니다.
 // 참석 응답 링크와 계좌 정보는 확정 후 이 파일에서 교체하세요.
 window.WEDDING_CONTENT = {
+  // 실제 질문·선택지·이야기를 받은 뒤 교체하세요. 빈 선택지는 준비 화면으로 표시합니다.
+  // 각 항목: { question: "질문", options: ["선택지", "선택지"], story: "선택 후 보여줄 이야기" }
+  welcomeQuiz: [
+    { question: "우리의 첫 만남은?", options: [], story: "" },
+    { question: "함께 쌓아 온 우리의 시간", options: [], story: "" }
+  ],
   couple: "백민규 · 박지해",
   groomName: "백민규",
   brideName: "박지해",

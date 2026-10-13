@@ -244,3 +244,29 @@ h2 em { color: var(--accent); font-style: normal; }
 
 /* Confine active intro navigation without changing modal overflow state. */
 html.opening-scroll-locked, html.opening-scroll-locked body { overflow: hidden; overscroll-behavior: none; }
+
+/* An optional welcome journey; the invitation remains available to everyone. */
+html.welcome-open, html.welcome-open body { overflow: hidden; }
+.welcome { width: 100%; max-width: none; height: 100%; height: 100dvh; max-height: none; margin: 0; padding: 32px 24px; padding-top: max(32px, env(safe-area-inset-top)); padding-bottom: max(24px, env(safe-area-inset-bottom)); border: 0; background: var(--paper); color: var(--ink); overflow-y: auto; overscroll-behavior: contain; text-align: center; }
+.welcome::backdrop { background: var(--paper); }
+.welcome__inner { width: 100%; max-width: 480px; min-height: 100%; margin: auto; display: flex; flex-direction: column; justify-content: center; }
+.welcome__eyebrow { margin: 0 0 18px; font: 600 11px 'DM Sans', sans-serif; letter-spacing: .2em; color: var(--accent); }
+.welcome__couple { margin: 0 0 40px; font-size: 16px; }
+.welcome h2 { margin: 0; font-size: clamp(25px, 5vw, 36px); line-height: 1.5; }
+.welcome__description, .welcome__step { color: var(--muted); font-size: 14px; line-height: 1.8; }
+.welcome__choices { display: grid; gap: 12px; margin: 32px 0 0; }
+.welcome__choices button { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; min-height: 64px; padding: 18px 22px; border: 1px solid var(--line); border-radius: 12px; background: #fffdf8; color: var(--ink); cursor: pointer; }
+.welcome__choices button:hover, .welcome__choices button[aria-pressed="true"] { border-color: var(--accent); background: var(--cream); }
+.welcome__story-card { margin: 28px 0; padding: 24px; border: 1px solid var(--line); border-radius: 16px; line-height: 1.9; }
+.welcome__story-card .welcome__choices { margin-top: 0; }
+.welcome__story-card p { white-space: pre-line; }
+.welcome__text-button { display: block; margin: 12px auto 0; min-height: 44px; padding: 10px 8px; background: none; border: 0; color: var(--muted); text-decoration: underline; text-underline-offset: 5px; cursor: pointer; }
+.welcome__footer { margin-top: 24px; }
+.welcome .button { min-height: 48px; justify-content: center; }
+.welcome .section__lead { margin-top: 24px; font-size: 16px; }
+@media (max-width: 360px) { .welcome { padding-inline: 18px; } .welcome__story-card { padding: 16px; } }
+
+.welcome h2:focus { outline: none; }
+
+.welcome__choices--guests { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.welcome__choices--guests button { justify-content: center; min-width: 0; padding: 18px 8px; font-size: clamp(13px, 3.5vw, 16px); word-break: keep-all; }

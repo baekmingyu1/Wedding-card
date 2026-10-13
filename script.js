@@ -4,6 +4,8 @@
   const content = window.WEDDING_CONTENT;
   if (!content) return;
 
+  const welcomeDialog = document.getElementById("welcome-dialog");
+  const welcomeWanted = window.scrollY < 10 && (!location.hash || location.hash === "#opening");
   const motionReduced = window.matchMedia("(prefers-reduced-motion: reduce)");
   const frameHost = document.getElementById("opening-frames");
   const galleryHost = document.getElementById("gallery-grid");
@@ -682,7 +684,7 @@
   const links = [...document.querySelectorAll("[data-nav]")];
   const startAtOpening = window.scrollY < 10 && (!location.hash || location.hash === "#opening") &&
     !galleryDialog.open;
-  let autoplayActive = startAtOpening && !motionReduced.matches;
+  let autoplayActive = startAtOpening && !welcomeWanted && !motionReduced.matches;
   let playbackComplete = false;
   let autoplayIndex = 0;
   let playbackPaused = false;
@@ -743,7 +745,7 @@
   setOpeningLocked(autoplayActive);
   openingLoader.hidden = !autoplayActive;
 
-  if (autoplayActive || motionReduced.matches) {
+  if (welcomeWanted || autoplayActive || motionReduced.matches) {
     opening.classList.add("opening--short");
   } else {
     // Keep the original scroll-driven sequence for deep links and restored scroll positions.
@@ -976,6 +978,7 @@
   }
 
   function replayOpening() {
+    opening.hidden = false;
     if (galleryDialog.open) return;
     playbackRun += 1;
     cancelFrameCleanup();
@@ -1119,5 +1122,96 @@
     if (run === playbackRun) finishOpening();
   }
 
+  const welcomeChoice = document.getElementById("welcome-choice");
+  const welcomeStory = document.getElementById("welcome-story");
+  const welcomeRsvp = document.getElementById("welcome-rsvp");
+  const welcomeBack = document.getElementById("welcome-back");
+  const welcomeEnter = document.getElementById("welcome-enter");
+  const rsvpHome = rsvpForm.parentElement.parentElement;
+  const rsvpContent = rsvpForm.parentElement;
+  const quiz = Array.isArray(content.welcomeQuiz) ? content.welcomeQuiz : [];
+  let storyIndex = 0;
+
+  function restoreRsvp() {
+    rsvpHome.append(rsvpContent);
+  }
+  function showWelcomeStep(step) {
+    welcomeChoice.hidden = step !== "choice";
+    welcomeStory.hidden = step !== "story";
+    welcomeRsvp.hidden = step !== "rsvp";
+    welcomeBack.hidden = step === "choice";
+    welcomeEnter.textContent = step === "rsvp" ? "청첩장 보기 · 응답은 나중에 해도 괜찮아요" : "청첩장 바로 보기";
+    welcomeDialog.scrollTop = 0;
+    const title = document.getElementById(step === "choice" ? "welcome-title" : step === "story" ? "welcome-question" : "welcome-rsvp-title");
+    welcomeDialog.setAttribute("aria-labelledby", title.id);
+    title.focus({ preventScroll: true });
+  }
+  function showWelcomeRsvp() {
+    document.getElementById("welcome-rsvp-slot").append(rsvpContent);
+    showWelcomeStep("rsvp");
+  }
+  function showStory() {
+    if (storyIndex >= quiz.length) { showWelcomeRsvp(); return; }
+    const item = quiz[storyIndex];
+    document.getElementById("welcome-question").textContent = item.question || "우리의 이야기";
+    document.getElementById("welcome-step").textContent = `${storyIndex + 1} / ${quiz.length} · 우리의 이야기`;
+    const answers = document.getElementById("welcome-answers");
+    const reveal = document.getElementById("welcome-reveal");
+    answers.replaceChildren();
+    reveal.hidden = true;
+    reveal.textContent = "";
+    const options = Array.isArray(item.options) ? item.options : [];
+    document.getElementById("welcome-story-pending").hidden = options.length > 0;
+    for (const option of options) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = option;
+      button.setAttribute("aria-pressed", "false");
+      button.addEventListener("click", () => {
+        for (const sibling of answers.children) sibling.setAttribute("aria-pressed", String(sibling === button));
+        reveal.textContent = item.story || "두 사람의 이야기를 준비하고 있어요.";
+        reveal.hidden = false;
+      });
+      answers.append(button);
+    }
+    document.getElementById("welcome-next").textContent = storyIndex === quiz.length - 1 ? "참석 여부 알려주기" : "다음 이야기";
+    showWelcomeStep("story");
+  }
+  function enterInvitation() {
+    restoreRsvp();
+    welcomeDialog.close();
+    document.documentElement.classList.remove("welcome-open");
+    // Enter directly, without starting the photo intro or an intermediate notice.
+    opening.hidden = true;
+    stopPendingOpeningLoads();
+    firstSection.tabIndex = -1;
+    firstSection.focus({ preventScroll: true });
+    firstSection.scrollIntoView({ behavior: "instant", block: "start" });
+    scheduleUpdate();
+  }
+  welcomeDialog.querySelectorAll("[data-guest]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (button.dataset.guest === "parents") { enterInvitation(); return; }
+      storyIndex = 0;
+      showStory();
+    });
+  });
+  document.getElementById("welcome-next").addEventListener("click", () => { storyIndex += 1; showStory(); });
+  document.getElementById("welcome-rsvp-skip").addEventListener("click", showWelcomeRsvp);
+  welcomeBack.addEventListener("click", () => {
+    restoreRsvp();
+    rsvpForm.elements.side.value = "";
+    showWelcomeStep("choice");
+  });
+  welcomeEnter.addEventListener("click", enterInvitation);
+  welcomeDialog.addEventListener("cancel", (event) => { event.preventDefault(); enterInvitation(); });
+  if (welcomeWanted && !galleryDialog.open) {
+    document.documentElement.classList.add("welcome-open");
+    welcomeDialog.showModal();
+    showWelcomeStep("choice");
+    // Reuse the real image elements and the existing three-request loading queue.
+    // Avoid downloading the entire sequence for data-saving connections.
+    if (!navigator.connection?.saveData) frames.forEach((_, index) => requestOpeningFrame(index));
+  }
   if (autoplayActive) playOpening(++playbackRun);
 })();

@@ -20,12 +20,12 @@
   <link rel="preload" as="image" media="(min-width: 761px)" href="assets/opening/frames/01-1600-bffa7b263d.webp" imagesrcset="assets/opening/frames/01-480-4ff597cf5f.webp 480w, assets/opening/frames/01-768-32b972d6aa.webp 768w, assets/opening/frames/01-1024-2442ce091a.webp 1024w, assets/opening/frames/01-1600-bffa7b263d.webp 1600w" imagesizes="100vw" fetchpriority="high">
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=16">
+  <link rel="stylesheet" href="styles.css?v=18">
   <link rel="stylesheet" href="play-pause.css?v=23">
   <script src="opening-images.js" defer></script>
   <script src="gallery-images.js" defer></script>
-  <script src="content.js?v=15" defer></script>
-  <script src="script.js?v=27" defer></script>
+  <script src="content.js?v=16" defer></script>
+  <script src="script.js?v=29" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#invitation">본문으로 건너뛰기</a>
@@ -46,6 +46,41 @@
     <a href="#share" data-nav="share" aria-label="청첩장 전달로 이동"><span class="side-nav__dot"></span><span class="side-nav__label">청첩장 전달</span></a>
     <span class="side-nav__line" aria-hidden="true"><span id="nav-progress"></span></span>
   </nav>
+
+  <dialog class="welcome" id="welcome-dialog" aria-labelledby="welcome-title">
+    <div class="welcome__inner">
+      <p class="welcome__eyebrow">OUR PACE · OUR PEOPLE</p>
+      <p class="welcome__couple" data-field="couple"></p>
+      <div id="welcome-choice">
+        <h2 id="welcome-title" tabindex="-1">어떤 인연으로 오셨나요?</h2>
+        <p class="welcome__description">소중한 당신을 우리의 날에 초대합니다.</p>
+        <div class="welcome__choices welcome__choices--guests">
+          <button type="button" data-guest="couple">신랑·신부의 지인</button>
+          <button type="button" data-guest="parents">혼주님의 지인</button>
+        </div>
+      </div>
+      <div id="welcome-story" hidden>
+        <p class="welcome__step" id="welcome-step"></p>
+        <h2 id="welcome-question" tabindex="-1"></h2>
+        <div class="welcome__story-card">
+          <p id="welcome-story-pending">두 사람의 이야기를 준비하고 있어요.</p>
+          <div class="welcome__choices" id="welcome-answers"></div>
+          <p id="welcome-reveal" role="status" hidden></p>
+        </div>
+        <button class="button" id="welcome-next" type="button">다음 이야기</button>
+        <button class="welcome__text-button" id="welcome-rsvp-skip" type="button">이야기 건너뛰고 참석 여부 알려주기</button>
+      </div>
+      <div id="welcome-rsvp" hidden>
+        <p class="welcome__step">함께할 우리의 다음 장</p>
+        <h2 id="welcome-rsvp-title" tabindex="-1">그날, 함께해 주실래요?</h2>
+        <div id="welcome-rsvp-slot"></div>
+      </div>
+      <div class="welcome__footer">
+        <button class="welcome__text-button" id="welcome-back" type="button" hidden>인연 다시 선택하기</button>
+        <button class="welcome__text-button" id="welcome-enter" type="button">청첩장 바로 보기</button>
+      </div>
+    </div>
+  </dialog>
 
   <main>
     <section class="opening" id="opening" aria-label="자동 재생 사진 오프닝">
