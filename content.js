@@ -18,12 +18,12 @@ window.WEDDING_CONTENT = {
   ],
   venue: "아르베 웨딩",
   address: "서울 강남구 봉은사로 302",
-  naverMapUrl: "https://map.naver.com/p/search/%EC%84%9C%EC%9A%B8%20%EA%B0%95%EB%82%A8%EA%B5%AC%20%EB%B4%89%EC%9D%80%EC%82%AC%EB%A1%9C%20302",
+  naverMapUrl: "https://naver.me/xsZ9NoRb",
   // Naver Cloud Maps > Static Map의 공개 API Key ID. Secret Key는 절대 넣지 마세요.
   naverStaticMapKeyId: "vr5i2viwvu",
   naverStaticMapCenter: "127.039411,37.508679",
-  kakaoMapUrl: "https://map.kakao.com/?q=%EC%84%9C%EC%9A%B8%20%EA%B0%95%EB%82%A8%EA%B5%AC%20%EB%B4%89%EC%9D%80%EC%82%AC%EB%A1%9C%20302",
-  googleMapUrl: "https://www.google.com/maps/search/?api=1&query=%EC%84%9C%EC%9A%B8%20%EA%B0%95%EB%82%A8%EA%B5%AC%20%EB%B4%89%EC%9D%80%EC%82%AC%EB%A1%9C%20302",
+  kakaoMapUrl: "https://place.map.kakao.com/191889847",
+  googleMapUrl: "https://www.google.com/maps/place/%EC%95%84%EB%A5%B4%EB%B2%A0%EC%9B%A8%EB%94%A9/data=!3m1!4b1!4m4!3m3!1s0x357ca3000cdb4565:0x3bf6331e47e5d979!16s%2Fg%2F11w4r2h2g4!20s8Q99G25Q%2BFQ7?entry=ttu&g_ep=EgoyMDI2MTAwNy4wIKXMDSoASAFQAw%3D%3D",
   rsvpMessage: "참석 여부를 알려주시면 정성껏 자리를 준비하겠습니다.",
   rsvpUrl: "",
   // Google Apps Script 웹 앱의 /exec 주소 (비밀 키가 아닙니다).
