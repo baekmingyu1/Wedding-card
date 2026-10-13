@@ -69,7 +69,15 @@
       }
       img.addEventListener("load", async () => {
         if (kind === "opening" && img.decode) {
-          try { await img.decode(); } catch { /* The loaded image can still be displayed. */ }
+          try { await img.decode(); } catch {
+            if (wrapper.dataset.status !== "failed") {
+              placeholder.textContent = `SCENE ${String(index + 1).padStart(2, "0")} · 사진을 불러올 수 없습니다`;
+              wrapper.dataset.status = "failed";
+              wrapper.dispatchEvent(new Event("frame-settled"));
+              scheduleUpdate();
+            }
+            return;
+          }
         }
         if (kind === "opening" && wrapper.dataset.status === "failed") return;
         img.hidden = false;
@@ -779,6 +787,7 @@
   let hasLeftOpening = false;
   let paintedScene = -1;
   let frameLayer = 0;
+  let cancelFrameCleanup = () => {};
   let finalMessageReady = false;
   let pending = false;
   const loadQueue = [];
@@ -857,6 +866,67 @@
     delete image.dataset.src;
   }
 
+  function keepPreviousUntilCovered(next) {
+    cancelFrameCleanup();
+    let timer;
+    let paint;
+    let cancelled = false;
+    const deadline = performance.now() + 1200;
+    const cleanup = () => {
+      cancelled = true;
+      clearTimeout(timer);
+      cancelAnimationFrame(paint);
+      next.removeEventListener("transitionend", checkCoverage);
+      next.removeEventListener("transitioncancel", checkCoverage);
+    };
+    function checkCoverage() {
+      if (cancelled || next !== frames[paintedScene]) return;
+      clearTimeout(timer);
+      if (!document.hidden && Number(getComputedStyle(next).opacity) >= 1) {
+        // Keep the old photo through a rendering opportunity after the fade.
+        if (!paint) paint = requestAnimationFrame(() => {
+          paint = 0;
+          if (cancelled || document.hidden || next !== frames[paintedScene]) { checkCoverage(); return; }
+          if (Number(getComputedStyle(next).opacity) < 1) { checkCoverage(); return; }
+          for (const frame of frames) {
+            if (frame === next) continue;
+            frame.style.opacity = "0";
+            frame.style.visibility = "hidden";
+          }
+          cleanup();
+        });
+      } else {
+        if (!document.hidden && performance.now() >= deadline) {
+          // A missing/cancelled transition must not stall playback or expose the backdrop.
+          const transition = next.style.transition;
+          next.style.transition = "none";
+          next.style.opacity = "1";
+          void getComputedStyle(next).opacity;
+          next.style.transition = transition;
+        }
+        timer = setTimeout(checkCoverage, 50);
+      }
+    }
+    cancelFrameCleanup = cleanup;
+    next.addEventListener("transitionend", checkCoverage);
+    next.addEventListener("transitioncancel", checkCoverage);
+    checkCoverage();
+  }
+
+  function decodeOpeningForPlayback(index) {
+    const frame = frames[index];
+    const image = frame?.querySelector("img");
+    if (frame?.dataset.status !== "ready" || !image?.complete || !image.naturalWidth) return Promise.resolve(false);
+    const source = image.currentSrc;
+    return new Promise((resolve) => {
+      const timer = setTimeout(() => resolve(false), 1800);
+      Promise.resolve().then(() => image.decode?.()).then(() => {
+        clearTimeout(timer);
+        resolve(image.complete && image.naturalWidth > 0 && image.currentSrc === source);
+      }, () => { clearTimeout(timer); resolve(false); });
+    });
+  }
+
   function updateScroll() {
     pending = false;
     if (openingLocked && window.scrollY !== 0) instantOpeningTop();
@@ -896,20 +966,13 @@
         frames[sceneIndex].dataset.status === "failed" || paintedScene < 0
         ? sceneIndex : paintedScene;
       if (displayIndex !== paintedScene) {
-        const previous = frames[paintedScene];
         const next = frames[displayIndex];
         next.style.zIndex = String(++frameLayer);
         next.style.visibility = "visible";
         next.style.opacity = "1";
         paintedScene = displayIndex;
         openingCount.textContent = `${String(displayIndex + 1).padStart(2, "0")} / ${String(frames.length).padStart(2, "0")}`;
-        if (previous) {
-          window.setTimeout(() => {
-            if (previous === frames[paintedScene]) return;
-            previous.style.opacity = "0";
-            previous.style.visibility = "hidden";
-          }, 220);
-        }
+        keepPreviousUntilCovered(next);
       }
       openingCopy.style.opacity = motionReduced.matches ? "1" : autoplayActive || playbackComplete
         ? (sceneIndex === 0 ? "1" : "0")
@@ -994,6 +1057,7 @@
   function finishOpening(navigate = true) {
     if (!autoplayActive) return;
     playbackRun += 1;
+    cancelFrameCleanup();
     autoplayActive = false;
     setOpeningLocked(false);
     playbackComplete = true;
@@ -1011,6 +1075,7 @@
   function replayOpening() {
     if (galleryDialog.open || calendarDialog.open) return;
     playbackRun += 1;
+    cancelFrameCleanup();
     autoplayActive = !motionReduced.matches;
     playbackComplete = false;
     playbackPaused = false;
@@ -1117,12 +1182,25 @@
       openingLoader.hidden = true;
     }
     const middleFrameMs = 360;
+    const preparedNext = new Map();
+    const warmNext = (index) => {
+      if (index < frames.length && !preparedNext.has(index)) preparedNext.set(index, decodeOpeningForPlayback(index));
+    };
+    warmNext(0);
     openingStatus.textContent = "자동 재생 중";
     pauseButton.hidden = false;
     for (let index = 0; index < frames.length && autoplayActive && run === playbackRun; index += 1) {
       await waitUntilActive(run);
       if (!autoplayActive || run !== playbackRun) return;
-      if (frames[index].dataset.status === "ready") {
+      // Prepare the next photo while the current one stays visible, then recheck
+      // decoding at handoff instead of relying on a much earlier preload.
+      warmNext(index);
+      const prepared = await preparedNext.get(index);
+      const ready = prepared && await decodeOpeningForPlayback(index);
+      await waitUntilActive(run);
+      if (!autoplayActive || run !== playbackRun) return;
+      warmNext(index + 1);
+      if (ready) {
         autoplayIndex = index;
         updateScroll();
       }
