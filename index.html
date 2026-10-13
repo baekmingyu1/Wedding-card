@@ -93,6 +93,7 @@
       <div class="section__inner calendar__layout">
         <div><p class="section__lead" data-field="calendarMessage"></p></div>
         <div class="calendar__sheet"><p class="calendar__month" id="calendar-month"></p><div class="calendar__grid" id="calendar-grid" aria-label="예식 월 달력"></div><p class="calendar__caption" data-field="date"></p></div>
+        <button id="calendar-save" class="button" type="button" aria-haspopup="dialog" hidden>내 일정에 저장 <span aria-hidden="true">＋</span></button>
       </div>
     </section>
 
@@ -183,6 +184,13 @@
   </main>
 
   <footer class="footer"><span>OUR PACE / PLAY · PAUSE · TOGETHER</span><strong data-field="couple"></strong><a href="#opening">처음부터 다시 보기 ↑</a></footer>
+  <dialog id="calendar-dialog" class="calendar-dialog" aria-label="일정 저장 방식 선택">
+    <div class="calendar-dialog__header"><button id="calendar-close" type="button" autofocus aria-label="일정 저장 창 닫기">닫기 ×</button></div>
+    <div class="calendar-dialog__options">
+      <a id="calendar-google" class="button" target="_blank" rel="noopener noreferrer">Google 캘린더 <span aria-hidden="true">↗</span></a>
+      <a id="calendar-file" class="button button--light" download="wedding.ics">일정 파일 다운로드 <span aria-hidden="true">↓</span></a>
+    </div>
+  </dialog>
   <dialog id="gallery-dialog" class="gallery-dialog" aria-label="사진 확대 보기">
     <div class="gallery-dialog__header"><span id="gallery-photo-counter" aria-live="polite"></span><button id="gallery-photo-close" type="button" autofocus>닫기 ×</button></div>
     <div class="gallery-dialog__viewport"><div id="gallery-photo-stage" class="gallery-dialog__stage"></div><p id="gallery-photo-status" class="gallery-dialog__status" role="status"></p></div>
