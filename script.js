@@ -1198,6 +1198,7 @@
     showWelcomeStep("story");
   }
   function enterOpening() {
+    rememberGuest(rememberedGuest || "direct");
     restoreRsvp();
     welcomeDialog.close();
     document.documentElement.classList.remove("welcome-open");
@@ -1234,7 +1235,7 @@
     rsvpForm.elements.side.value = "";
     showWelcomeStep("choice");
   });
-  welcomeEnter.addEventListener("click", enterInvitation);
+  welcomeEnter.addEventListener("click", enterOpening);
   welcomeDialog.addEventListener("cancel", (event) => { event.preventDefault(); enterInvitation(); });
   if (welcomeWanted && !galleryDialog.open) {
     document.documentElement.classList.add("welcome-open");
