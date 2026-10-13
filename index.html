@@ -20,12 +20,12 @@
   <link rel="preload" as="image" media="(min-width: 761px)" href="assets/opening/frames/01-1600-bffa7b263d.webp" imagesrcset="assets/opening/frames/01-480-4ff597cf5f.webp 480w, assets/opening/frames/01-768-32b972d6aa.webp 768w, assets/opening/frames/01-1024-2442ce091a.webp 1024w, assets/opening/frames/01-1600-bffa7b263d.webp 1600w" imagesizes="100vw" fetchpriority="high">
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=18">
+  <link rel="stylesheet" href="styles.css?v=19">
   <link rel="stylesheet" href="play-pause.css?v=23">
   <script src="opening-images.js" defer></script>
   <script src="gallery-images.js" defer></script>
   <script src="content.js?v=16" defer></script>
-  <script src="script.js?v=30" defer></script>
+  <script src="script.js?v=31" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#invitation">본문으로 건너뛰기</a>
@@ -67,7 +67,6 @@
           <div class="welcome__choices" id="welcome-answers"></div>
           <p id="welcome-reveal" role="status" hidden></p>
         </div>
-        <button class="button" id="welcome-next" type="button">다음 이야기</button>
         <button class="welcome__text-button" id="welcome-rsvp-skip" type="button">이야기 건너뛰고 참석 여부 알려주기</button>
       </div>
       <div id="welcome-rsvp" hidden>
@@ -77,7 +76,10 @@
       </div>
       <div class="welcome__footer">
         <button class="welcome__text-button" id="welcome-back" type="button" hidden>인연 다시 선택하기</button>
-        <button class="welcome__text-button" id="welcome-enter" type="button">청첩장 바로 보기</button>
+        <div class="welcome__actions">
+          <button class="button" id="welcome-next" type="button" hidden>다음 이야기</button>
+          <button class="welcome__text-button" id="welcome-enter" type="button">청첩장 보기</button>
+        </div>
       </div>
     </div>
   </dialog>
@@ -118,7 +120,12 @@
       <div class="section__inner invitation__inner">
 
         <div class="invitation__body">
-
+          <header class="invitation__summary">
+            <p class="invitation__eyebrow">우리의 결혼식에 초대합니다</p>
+            <h2 data-field="couple"></h2>
+            <p data-field="date"></p>
+            <p class="invitation__venue" data-field="venue"></p>
+          </header>
           <div class="invitation__message" id="invitation-message"></div>
         </div>
       </div>

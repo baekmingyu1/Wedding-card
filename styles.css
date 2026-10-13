@@ -270,3 +270,15 @@ html.welcome-open, html.welcome-open body { overflow: hidden; }
 
 .welcome__choices--guests { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .welcome__choices--guests button { justify-content: center; min-width: 0; padding: 18px 8px; font-size: clamp(13px, 3.5vw, 16px); word-break: keep-all; }
+
+.welcome__actions { display: flex; justify-content: center; gap: 12px; }
+.welcome__actions .button { flex: 1; padding: 14px 10px; font-size: 15px; }
+.welcome__actions .welcome__text-button { margin-top: 0; }
+.invitation__summary { margin-bottom: 40px; }
+.invitation__summary .invitation__eyebrow { margin: 0 0 20px; color: var(--muted); font-size: 14px; }
+.invitation__body .invitation__summary h2 { margin: 0 0 24px; font-size: clamp(28px, 5vw, 44px); line-height: 1.5; }
+.invitation__summary p { margin: 10px 0; font-size: clamp(14px, 2vw, 18px); line-height: 1.8; }
+.invitation__summary .invitation__venue { color: var(--accent); }
+.invitation__summary + .invitation__message { margin-top: 0; }
+
+.invitation:focus { outline: none; }

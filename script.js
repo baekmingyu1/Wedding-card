@@ -5,7 +5,19 @@
   if (!content) return;
 
   const welcomeDialog = document.getElementById("welcome-dialog");
-  const welcomeWanted = window.scrollY < 10 && (!location.hash || location.hash === "#opening");
+  const visitKey = "wedding-guest-visit";
+  let rememberedGuest = "";
+  try { rememberedGuest = sessionStorage.getItem(visitKey) || ""; } catch { /* Storage is optional. */ }
+  const atEntry = !location.hash || location.hash === "#opening";
+  const resumeInvitation = Boolean(rememberedGuest) && atEntry;
+  const welcomeWanted = !rememberedGuest && window.scrollY < 10 && atEntry;
+  function rememberGuest(value) {
+    rememberedGuest = value;
+    try {
+      if (value) sessionStorage.setItem(visitKey, value);
+      else sessionStorage.removeItem(visitKey);
+    } catch { /* Navigation also works when browser storage is unavailable. */ }
+  }
   const motionReduced = window.matchMedia("(prefers-reduced-motion: reduce)");
   const frameHost = document.getElementById("opening-frames");
   const galleryHost = document.getElementById("gallery-grid");
@@ -689,7 +701,7 @@
   const links = [...document.querySelectorAll("[data-nav]")];
   const startAtOpening = window.scrollY < 10 && (!location.hash || location.hash === "#opening") &&
     !galleryDialog.open;
-  let autoplayActive = startAtOpening && !welcomeWanted && !motionReduced.matches;
+  let autoplayActive = startAtOpening && !welcomeWanted && !resumeInvitation && !motionReduced.matches;
   let playbackComplete = false;
   let autoplayIndex = 0;
   let playbackPaused = false;
@@ -1122,7 +1134,7 @@
         finalMessageReady = true;
         updateScroll();
       }
-      await waitPlayback(index === 0 ? 1500 : index === frames.length - 1 ? 1900 : middleFrameMs, run);
+      await waitPlayback(index === 0 ? 1300 : index === frames.length - 1 ? 1600 : middleFrameMs, run);
     }
     if (run === playbackRun) finishOpening();
   }
@@ -1145,7 +1157,10 @@
     welcomeStory.hidden = step !== "story";
     welcomeRsvp.hidden = step !== "rsvp";
     welcomeBack.hidden = step === "choice";
-    welcomeEnter.textContent = step === "rsvp" ? "청첩장 보기 · 응답은 나중에 해도 괜찮아요" : "청첩장 바로 보기";
+    welcomeEnter.textContent = "청첩장 보기";
+    welcomeEnter.className = step === "choice" ? "welcome__text-button" : "button";
+    document.getElementById("welcome-next").hidden = step !== "story";
+    document.getElementById("welcome-rsvp-skip").hidden = storyIndex >= quiz.length - 1;
     welcomeDialog.scrollTop = 0;
     const title = document.getElementById(step === "choice" ? "welcome-title" : step === "story" ? "welcome-question" : "welcome-rsvp-title");
     welcomeDialog.setAttribute("aria-labelledby", title.id);
@@ -1191,6 +1206,7 @@
     opening.focus({ preventScroll: true });
   }
   function enterInvitation() {
+    rememberGuest(rememberedGuest || "direct");
     restoreRsvp();
     welcomeDialog.close();
     document.documentElement.classList.remove("welcome-open");
@@ -1204,6 +1220,7 @@
   }
   welcomeDialog.querySelectorAll("[data-guest]").forEach((button) => {
     button.addEventListener("click", () => {
+      rememberGuest(button.dataset.guest);
       if (button.dataset.guest === "parents") { enterInvitation(); return; }
       storyIndex = 0;
       showStory();
@@ -1212,6 +1229,7 @@
   document.getElementById("welcome-next").addEventListener("click", () => { storyIndex += 1; showStory(); });
   document.getElementById("welcome-rsvp-skip").addEventListener("click", showWelcomeRsvp);
   welcomeBack.addEventListener("click", () => {
+    rememberGuest("");
     restoreRsvp();
     rsvpForm.elements.side.value = "";
     showWelcomeStep("choice");
@@ -1226,5 +1244,6 @@
     // Avoid downloading the entire sequence for data-saving connections.
     if (!navigator.connection?.saveData) frames.forEach((_, index) => requestOpeningFrame(index));
   }
+  if (resumeInvitation && !galleryDialog.open) enterInvitation();
   if (autoplayActive) playOpening(++playbackRun);
 })();
