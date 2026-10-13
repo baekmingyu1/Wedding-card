@@ -3,11 +3,19 @@ import { access, readFile, readdir, stat } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { runInNewContext } from "node:vm";
+import { createCalendar, readCalendarContent } from "./generate-calendar.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const output = join(root, "dist");
 const html = await readFile(join(output, "index.html"), "utf8");
 const files = await readdir(output);
+const calendar = await readFile(join(output, "wedding.ics"), "utf8");
+const stamp = calendar.match(/^DTSTAMP:(\d{8}T\d{6}Z)\r?$/m)?.[1];
+if (!stamp || calendar !== createCalendar(await readCalendarContent(), stamp) ||
+    calendar !== await readFile(join(root, "wedding.ics"), "utf8") ||
+    !html.includes('href="wedding.ics"')) {
+  throw new Error("일정 파일 또는 HTML 링크가 현재 예식 정보와 일치하지 않습니다.");
+}
 const assets = ["styles", "play-pause", "opening-images", "gallery-images", "content", "script"];
 for (const name of assets) {
   const matching = files.filter((file) => file.startsWith(`${name}.`) && /\.[a-f0-9]{10}\.(?:css|js)$/.test(file));

@@ -50,7 +50,7 @@ h2 em { color: var(--accent); font-style: normal; }
 .opening__sticky { position: sticky; top: 0; height: 100svh; min-height: 580px; overflow: hidden; isolation: isolate; background: #d4c3b2; }
 .opening__frames, .opening__frame, .opening__veil { position: absolute; inset: 0; }
 .opening__frames { z-index: 0; pointer-events: none; }
-.opening__frame { overflow: hidden; opacity: 0; visibility: hidden; transition: opacity .18s ease; }
+.opening__frame { overflow: hidden; opacity: 0; visibility: hidden; transition: opacity .1s ease; }
 .opening__frame picture { display: block; width: 100%; height: 100%; }
 .opening__frame img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
 [hidden] { display: none !important; }
@@ -239,15 +239,8 @@ h2 em { color: var(--accent); font-style: normal; }
 .location__map-heading { margin: 0 auto 32px; text-align: center; }
 .location__map-heading .button { margin-top: 24px; justify-content: center; }
 
-/* Calendar saving is a choice; each calendar confirms the final save. */
+/* Keep the direct calendar file link centered below the calendar. */
 #calendar-save { justify-content: center; justify-self: center; }
-.calendar-dialog { box-sizing: border-box; width: min(440px, calc(100% - 32px)); max-height: calc(100dvh - 32px); padding: 24px; border: 1px solid var(--line); background: var(--paper); color: var(--ink); overflow-y: auto; text-align: center; }
-.calendar-dialog::backdrop { background: rgba(35,24,17,.5); }
-.calendar-dialog__header { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
-.calendar-dialog__header button { flex-shrink: 0; min-height: 44px; padding: 8px; border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }
-.calendar-dialog__options { display: grid; gap: 8px; margin-top: 24px; }
-.calendar-dialog__options .button { justify-content: center; gap: 8px; text-align: center; }
-.calendar-dialog :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
 /* Confine active intro navigation without changing modal overflow state. */
 html.opening-scroll-locked, html.opening-scroll-locked body { overflow: hidden; overscroll-behavior: none; }

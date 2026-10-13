@@ -608,104 +608,7 @@
   const invitationUrl = new URL(window.location.href);
   invitationUrl.hash = "";
   const calendarSave = document.getElementById("calendar-save");
-  const calendarDialog = document.getElementById("calendar-dialog");
-  const calendarHistoryKey = "weddingCalendarPicker";
-  let calendarActive = false;
-  let calendarHistoryPending = false;
-  let calendarBodyOverflow = "";
-
-  if (eventReady) {
-    const calendarTime = (date) => date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
-    const start = calendarTime(eventDate);
-    const title = `${content.couple} 결혼식 시작`;
-    const eventLocation = [content.venue, content.address].filter(Boolean).join(" · ");
-    const calendarPageUrl = new URL(invitationUrl.href);
-    calendarPageUrl.search = "";
-    const description = [
-      `예식 시작: ${content.date} (대한민국 / Asia/Seoul)`,
-      "종료 시간은 안내되지 않았습니다. 저장 전 확인해 주세요.",
-      ...( /^https?:$/.test(calendarPageUrl.protocol) ? [`청첩장: ${calendarPageUrl.href}`] : [])
-    ].join("\n");
-    const googleUrl = new URL("https://calendar.google.com/calendar/r/eventedit");
-    // A zero-duration start marker does not invent an end time for the ceremony.
-    googleUrl.search = new URLSearchParams({
-      action: "TEMPLATE", text: title, dates: `${start}/${start}`,
-      stz: "Asia/Seoul", etz: "Asia/Seoul", location: eventLocation, details: description
-    }).toString();
-    document.getElementById("calendar-google").href = googleUrl.href;
-
-    const escapeCalendarText = (value) => String(value).replace(/\\/g, "\\\\")
-      .replace(/\r\n|\r|\n/g, "\\n").replace(/;/g, "\\;").replace(/,/g, "\\,");
-    const encoder = new TextEncoder();
-    const foldCalendarLine = (line) => {
-      let folded = "";
-      let octets = 0;
-      for (const character of line) {
-        const length = encoder.encode(character).length;
-        if (octets + length > 75) { folded += "\r\n "; octets = 1; }
-        folded += character;
-        octets += length;
-      }
-      return folded;
-    };
-    const calendarFile = [
-      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Wedding Card//Wedding Calendar//KO",
-      "CALSCALE:GREGORIAN", "BEGIN:VEVENT",
-      `UID:wedding-${start}-${encodeURIComponent(content.couple)}`,
-      `DTSTAMP:${calendarTime(new Date())}`, `DTSTART:${start}`,
-      // RFC 5545: without DTEND/DURATION a DATE-TIME event is a start marker.
-      `SUMMARY:${escapeCalendarText(title)}`, `LOCATION:${escapeCalendarText(eventLocation)}`,
-      `DESCRIPTION:${escapeCalendarText(description)}`, "END:VEVENT", "END:VCALENDAR"
-    ].map(foldCalendarLine).join("\r\n") + "\r\n";
-    document.getElementById("calendar-file").href = URL.createObjectURL(
-      new Blob([calendarFile], { type: "text/calendar;charset=utf-8" })
-    );
-    calendarSave.hidden = false;
-  }
-
-  function openCalendarPicker(fromHistory = false) {
-    if (!eventReady || calendarDialog.open || calendarHistoryPending) return;
-    if (!fromHistory) history.pushState({ ...history.state, [calendarHistoryKey]: true }, "");
-    calendarBodyOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    calendarActive = true;
-    calendarDialog.showModal();
-  }
-  function closeCalendarPicker() {
-    if (!calendarActive) return;
-    calendarActive = false;
-    calendarDialog.close();
-    document.body.style.overflow = calendarBodyOverflow;
-  }
-  function requestCalendarClose() {
-    if (!calendarActive || calendarHistoryPending) return;
-    if (history.state?.[calendarHistoryKey] === true) {
-      calendarHistoryPending = true;
-      history.back();
-    }
-    closeCalendarPicker();
-  }
-  calendarSave.addEventListener("click", () => openCalendarPicker());
-  document.getElementById("calendar-close").addEventListener("click", requestCalendarClose);
-  calendarDialog.addEventListener("cancel", (event) => {
-    event.preventDefault();
-    requestCalendarClose();
-  });
-  calendarDialog.addEventListener("close", () => {
-    if (!calendarDialog.open) requestCalendarClose();
-  });
-  calendarDialog.addEventListener("click", (event) => {
-    const bounds = calendarDialog.getBoundingClientRect();
-    if (event.target === calendarDialog &&
-        (event.clientX < bounds.left || event.clientX > bounds.right ||
-         event.clientY < bounds.top || event.clientY > bounds.bottom)) requestCalendarClose();
-  });
-  window.addEventListener("popstate", () => {
-    calendarHistoryPending = false;
-    if (history.state?.[calendarHistoryKey] === true) openCalendarPicker(true);
-    else closeCalendarPicker();
-  });
-  if (history.state?.[calendarHistoryKey] === true) openCalendarPicker(true);
+  calendarSave.hidden = !eventReady;
 
   document.getElementById("copy-link").addEventListener("click", () => copyText(invitationUrl.href));
   document.getElementById("share-invitation").addEventListener("click", async () => {
@@ -778,7 +681,7 @@
   const navProgress = document.getElementById("nav-progress");
   const links = [...document.querySelectorAll("[data-nav]")];
   const startAtOpening = window.scrollY < 10 && (!location.hash || location.hash === "#opening") &&
-    !galleryDialog.open && !calendarDialog.open;
+    !galleryDialog.open;
   let autoplayActive = startAtOpening && !motionReduced.matches;
   let playbackComplete = false;
   let autoplayIndex = 0;
@@ -797,7 +700,7 @@
   const maxConcurrentLoads = 3;
   let openingLocked = false;
   const openingInertState = new Map();
-  const bodySections = [...document.querySelectorAll("main > :not(#opening), .footer, .side-nav, #gallery-dialog, #calendar-dialog")];
+  const bodySections = [...document.querySelectorAll("main > :not(#opening), .footer, .side-nav, #gallery-dialog")];
   const instantOpeningTop = () => window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   function setOpeningLocked(locked) {
     if (openingLocked === locked) return;
@@ -1073,7 +976,7 @@
   }
 
   function replayOpening() {
-    if (galleryDialog.open || calendarDialog.open) return;
+    if (galleryDialog.open) return;
     playbackRun += 1;
     cancelFrameCleanup();
     autoplayActive = !motionReduced.matches;
@@ -1181,7 +1084,7 @@
       if (!autoplayActive || run !== playbackRun) return;
       openingLoader.hidden = true;
     }
-    const middleFrameMs = 360;
+    const middleFrameMs = 200;
     const preparedNext = new Map();
     const warmNext = (index) => {
       if (index < frames.length && !preparedNext.has(index)) preparedNext.set(index, decodeOpeningForPlayback(index));
