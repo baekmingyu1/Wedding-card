@@ -469,6 +469,25 @@
     } catch { return false; }
   }
 
+  for (const [hostId, entries, titleKey, detailKey] of [
+    ["parking-locations", content.parkingLocations || [], "label", "address"],
+    ["subway-routes", content.subwayRoutes || [], "station", "directions"]
+  ]) {
+    const host = document.getElementById(hostId);
+    for (const entry of entries) {
+      const item = document.createElement("div");
+      item.className = "directions__place";
+      const title = document.createElement("p");
+      title.className = "directions__place-name";
+      title.textContent = entry[titleKey];
+      const detail = document.createElement("p");
+      detail.className = "directions__detail";
+      detail.textContent = entry[detailKey];
+      item.append(title, detail);
+      host.append(item);
+    }
+  }
+
   const busStopsHost = document.getElementById("bus-stops");
   for (const stop of content.busStops || []) {
     const block = document.createElement("div");
@@ -476,7 +495,14 @@
     const heading = document.createElement("p");
     heading.className = "directions__stop-heading";
     const name = document.createElement("span");
-    name.textContent = stop.name;
+    name.className = "directions__stop-name";
+    for (const [index, part] of stop.name.split("·").entries()) {
+      if (index) name.append(document.createTextNode(" · "));
+      const unit = document.createElement("span");
+      unit.className = "text-unit";
+      unit.textContent = part.trim();
+      name.append(unit);
+    }
     heading.append(name);
     try {
       const url = new URL(stop.mapUrl);
@@ -685,7 +711,7 @@
         }
       }
       countdownCaption.textContent = days > 0
-        ? `${content.couple}의 결혼식까지 ${days}일 남았습니다.`
+        ? `${content.couple}의 결혼식까지\n${days}일 남았습니다.`
         : days === 0 ? "오늘, 함께 시작합니다." : "함께해 주셔서 감사합니다.";
     }
     updateCountdown();
@@ -734,7 +760,13 @@
       details.className = "account__details";
       const number = document.createElement("strong");
       number.textContent = account.number;
-      details.append(number, document.createTextNode(`${account.bank} · 예금주 ${account.holder}`));
+      const bank = document.createElement("span");
+      bank.className = "account__bank";
+      bank.textContent = account.bank;
+      const holder = document.createElement("span");
+      holder.className = "account__holder";
+      holder.textContent = `예금주 ${account.holder}`;
+      details.append(number, bank, holder);
       const button = document.createElement("button");
       button.className = "button button--light";
       button.type = "button";
