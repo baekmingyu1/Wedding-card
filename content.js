@@ -39,7 +39,8 @@ window.WEDDING_CONTENT = {
     { side: "신랑 측", label: "신랑", bank: "기업은행", number: "569-024015-01-012", holder: "백민규" },
     { side: "신랑 측", label: "신랑 아버지", bank: "KB국민은행", number: "703001-01-612595", holder: "백인봉" },
     { side: "신부 측", label: "신부", bank: "신한은행", number: "110-420-427670", holder: "박지해" },
-    { side: "신부 측", label: "신부 아버지", bank: "농협은행", number: "100067-56-096708", holder: "박명환" }
+    { side: "신부 측", label: "신부 아버지", bank: "농협은행", number: "100067-56-096708", holder: "박명환" },
+    { side: "신부 측", label: "신부 어머니", bank: "농협", number: "421014-56-037167", holder: "전영숙" }
   ],
   // Generated from assets/opening/DSC*.jpg by npm run images.
   openingPhotos: window.OPENING_IMAGES || [],

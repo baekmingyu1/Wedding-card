@@ -468,6 +468,11 @@ body { background: var(--paper); }
 .rsvp-disclosure[open] > div { padding: 0 12px 24px; }
 
 /* A separate, quiet card marks the end of travel information. */
-.section.wreath { background: var(--paper); border-top: 1px solid var(--line); padding-block: clamp(56px, 8vw, 96px); }
+.section.wreath { background: var(--paper); border-top: 1px solid var(--line); padding-block: clamp(32px, 4vw, 48px); }
 .wreath__inner { max-width: 670px; padding: clamp(24px, 5vw, 48px) 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--cream); }
 .wreath__inner > p:last-child { font-size: clamp(16px, 2vw, 22px); }
+
+/* Use shorter pauses between the final travel, wreath and sharing blocks. */
+.section.directions { padding-bottom: clamp(40px, 6vw, 64px); }
+.section.share { padding-top: 24px; padding-bottom: clamp(40px, 6vw, 64px); }
+.share__actions { margin-top: 24px; }
