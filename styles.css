@@ -1,12 +1,12 @@
 :root {
   color-scheme: light;
-  --paper: #fbf8f2;
-  --cream: #f1ebe3;
-  --ink: #292622;
-  --muted: #706b66;
-  --accent: #ad4819;
-  --accent-bright: #e96322;
-  --line: rgba(41, 38, 34, .18);
+  --paper: #ffffff;
+  --cream: #f5f6f8;
+  --ink: #202124;
+  --muted: #5f636b;
+  --accent: #3157b7;
+  --accent-bright: #3157b7;
+  --line: #dfe2e7;
   --content: 1160px;
 }
 
@@ -18,7 +18,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 button { font: inherit; }
 a { color: inherit; }
 button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 4px; }
-::selection { background: #f3b28b; color: var(--ink); }
+::selection { background: #dce6fa; color: var(--ink); }
 h1, h2, h3, p { word-break: keep-all; overflow-wrap: break-word; }
 h1, h2, h3 { font-weight: 400; }
 h2 { margin: 16px 0 0; font-size: clamp(42px, 6vw, 76px); line-height: 1.17; letter-spacing: -.065em; }
@@ -101,11 +101,11 @@ h2 em { color: var(--accent); font-style: normal; }
 
 .gallery { background: var(--cream); }
 .gallery__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 56px; }
-.gallery__item { position: relative; overflow: hidden; aspect-ratio: 3 / 4; margin: 0; background: #d9c8b8; }
+.gallery__item { position: relative; overflow: hidden; aspect-ratio: 3 / 4; margin: 0; background: #e9edf2; }
 .gallery__item picture { display: block; width: 100%; height: 100%; }
 .gallery__item img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.gallery__placeholder { display: grid; width: 100%; height: 100%; place-items: center; background: linear-gradient(145deg, #e6d5c5, #c7a88c); color: var(--ink); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .16em; }
-.gallery__item:nth-child(even) .gallery__placeholder { background: linear-gradient(145deg, #e3cbb8, #d2bca9); }
+.gallery__placeholder { display: grid; width: 100%; height: 100%; place-items: center; background: linear-gradient(145deg, #f2f4f7, #dce1e8); color: var(--ink); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: .16em; }
+.gallery__item:nth-child(even) .gallery__placeholder { background: linear-gradient(145deg, #edf1f6, #dce3ed); }
 
 .location { background: var(--paper); }
 .location__card { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(35px, 6vw, 90px); margin-top: 65px; padding-top: 40px; border-top: 1px solid var(--line); }

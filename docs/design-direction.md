@@ -1,0 +1,37 @@
+# 청첩장 디자인 기준
+
+2026-10-14 검토. 방향은 화이트 배경, 차콜 타이포그래피, 제한적인 블루 포인트를 사용하는 사진 중심의 편집 디자인입니다. 두 사람의 실제 사진과 초대글이 정서를 담당하고, UI는 날짜·장소·참석 응답을 쉽게 찾도록 돕습니다.
+
+## 확인한 자료와 적용
+
+- [Radix Colors — Understanding the scale](https://www.radix-ui.com/colors/docs/palette-composition/understanding-the-scale): 배경, 컴포넌트 상태, 테두리, 본문색의 역할을 구분합니다. 본문 배경은 흰색, 보조 영역은 옅은 중성 회색, 선택 상태에만 강조색을 사용했습니다. 원문은 [공식 저장소](https://github.com/radix-ui/website/blob/main/data/colors/docs/palette-composition/understanding-the-scale.mdx)에서 확인했습니다.
+- [Radix Colors — Usage](https://www.radix-ui.com/colors/docs/overview/usage): CSS 변수로 역할별 색상을 적용하는 방식을 참고했습니다. 색상은 이 청첩장을 위해 선정했으며 패키지를 추가하지 않았습니다. [확인한 공식 원문](https://github.com/radix-ui/website/blob/main/data/colors/docs/overview/usage.mdx).
+- [W3C — Contrast (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html): 일반 본문 4.5:1, 큰 글자 3:1 기준을 참고해 주요 텍스트 조합을 점검합니다. [확인한 공식 원문](https://github.com/w3c/wcag/blob/main/understanding/20/contrast-minimum.html).
+
+Webflow 트렌드 글, Framer 웨딩 템플릿, Awwwards 웨딩 사례 페이지는 환경의 네트워크 제한으로 열리지 않았습니다. 따라서 이 방향을 ‘2026년 웨딩 디자인 유행 조사 결과’로 단정하지 않습니다. 위 공식 디자인 시스템의 원칙과 이 청첩장의 사용 목적에 따른 디자인 제안입니다.
+
+## 적용 기준
+
+| 요소 | 기준 |
+| --- | --- |
+| 배경 | `#ffffff`, 보조 영역 `#f5f6f8`; 크림색·주황색 배색 제거 |
+| 글자 | 차콜 `#202124`, 보조 글자 `#5f636b`; 한국어는 시스템 고딕체 |
+| 포인트 | `#3157b7`; 예식일·선택 상태·포커스에 제한적으로 사용 |
+| 버튼 | 주요 동작은 차콜, 보조 동작은 옅은 테두리. 지도 서비스 간 강조 차이 없음 |
+| 사진 | 원본 색감 유지, 갤러리 모서리 8px. 사진 위 밝은 문구에는 어두운 오버레이 유지 |
+| 카드 | 얇은 중성색 테두리, 12~16px 모서리, 최소한의 그림자 |
+| 전환 | 본문 320ms, 펼치기 260ms. 모션 감소 설정에서는 즉시 표시 |
+| 읽기 | 본문과 버튼의 명암, 모바일 줄바꿈, 최소 44px 터치 영역 확인 |
+
+계좌 정보, 예식 정보, 참석 응답, 인트로 재생, 방문 흐름은 이 테마 변경으로 바꾸지 않습니다. 외부 UI 라이브러리나 새 폰트 다운로드를 추가하지 않습니다.
+
+## 주요 텍스트 명암비 검증
+
+WCAG 상대 휘도 공식으로 계산한 결과입니다. 전체 접근성 적합성 인증을 뜻하지 않으며, 사진 위 텍스트·비활성 상태 등은 별도 시각 확인 대상입니다.
+
+| 조합 | 전경 / 배경 | 명암비 |
+| --- | --- | --- |
+| 본문 | `#202124` / `#ffffff` | 16.10:1 |
+| 보조 글자 | `#5f636b` / `#f5f6f8` | 5.57:1 |
+| 블루 포인트 | `#3157b7` / `#ffffff` | 6.61:1 |
+| 주요 버튼 | `#ffffff` / `#202124` | 16.10:1 |

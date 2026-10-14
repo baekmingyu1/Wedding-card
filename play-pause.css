@@ -1,12 +1,12 @@
 /* PLAY / PAUSE — a quiet editorial rhythm built around the couple's story. */
 :root {
-  --paper: #fffdf8;
-  --cream: #faf3e9;
-  --ink: #352f2a;
-  --muted: #62574e;
-  --accent: #b85024;
-  --accent-bright: #f47735;
-  --line: rgba(112, 85, 62, .18);
+  --paper: #ffffff;
+  --cream: #f5f6f8;
+  --ink: #202124;
+  --muted: #5f636b;
+  --accent: #3157b7;
+  --accent-bright: #3157b7;
+  --line: #dfe2e7;
 }
 
 body { background: var(--paper); }
@@ -430,25 +430,25 @@ body { background: var(--paper); }
   .couple__child strong { font-size: clamp(22px, 5.6vw, 30px); }
 }
 
-/* Warm ivory palette, paired with the orange of the printed invitation. */
-.invitation, .wreath { background: var(--cream); color: var(--ink); }
+/* Neutral editorial palette: photos carry the warmth; blue marks meaningful actions. */
+.invitation, .wreath { background: var(--paper); color: var(--ink); }
 .countdown .section__lead { color: var(--muted); }
-.countdown { background: #fff1e3; color: var(--accent); }
+.countdown { background: #f5f7fb; color: var(--ink); }
 .gallery, .share { background: var(--paper); }
-.calendar__sheet, .couple__person { background: #fffaf2; }
+.calendar__sheet, .couple__person { background: var(--paper); }
 .couple__person { border-color: var(--line); }
-.couple__person:nth-child(2) { background: #fff1e5; }
+.couple__person:nth-child(2) { background: var(--paper); }
 .footer { background: var(--cream); color: var(--muted); border-top: 1px solid var(--line); }
-.button { background: var(--accent); border-color: var(--accent); color: #fff; }
-.button--light { background: transparent; color: var(--accent); }
-.opening__loader { background: radial-gradient(circle at 50% 35%, #fffdf8, #f8ead8 85%); color: var(--ink); }
+.button { background: var(--ink); border-color: var(--ink); color: #fff; }
+.button--light { background: transparent; color: var(--ink); border-color: var(--line); }
+.opening__loader { background: var(--paper); color: var(--ink); }
 .opening__loader-track { background: var(--line); }
-.opening__frame--fallback { background: linear-gradient(145deg, #f7e8d5, #e6ceaf); }
-.opening__placeholder { background: rgba(255,253,248,.9); color: var(--ink); }
-.opening__veil { background: linear-gradient(180deg, rgba(52,37,25,.32), transparent 55%), linear-gradient(0deg, rgba(52,37,25,.35), transparent 25%); }
-.opening__copy, .opening__bottom, .opening__final { text-shadow: 0 2px 10px rgba(35,24,17,.65); }
-.opening__control { background: rgba(255,253,248,.94); color: var(--ink); border-color: rgba(255,253,248,.8); text-shadow: none; }
-.opening__control:hover { background: #fffdf8; }
+.opening__frame--fallback { background: linear-gradient(145deg, #e9edf2, #ccd3dd); }
+.opening__placeholder { background: rgba(255,255,255,.94); color: var(--ink); }
+.opening__veil { background: linear-gradient(180deg, rgba(19,25,35,.32), transparent 55%), linear-gradient(0deg, rgba(19,25,35,.35), transparent 25%); }
+.opening__copy, .opening__bottom, .opening__final { text-shadow: 0 2px 10px rgba(19,25,35,.65); }
+.opening__control { background: rgba(255,255,255,.94); color: var(--ink); border-color: rgba(255,255,255,.8); text-shadow: none; }
+.opening__control:hover { background: #ffffff; }
 .gallery-dialog, .gallery-dialog::backdrop { background: var(--paper); color: var(--ink); }
 .gallery-dialog button { border-color: var(--line); color: var(--ink); }
 .gallery-dialog button:focus-visible { outline-color: var(--accent); }
@@ -479,7 +479,7 @@ body { background: var(--paper); }
 
 /* Clear everyday information, with the softer type retained for personal messages. */
 body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", "Malgun Gothic", sans-serif; line-height: 1.7; }
-.invitation__message, .couple__identity, .wreath__inner { font-family: 'Gowun Dodum', sans-serif; }
+.invitation__message, .couple__identity, .wreath__inner { font-family: inherit; }
 .section__lead, .directions__detail, .directions__aside, .directions__notice { font-size: 15px; line-height: 1.85; }
 .button { font-weight: 500; }
 .directions__content .directions__links { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-width: 480px; margin-inline: auto; padding-top: 16px; }
@@ -505,23 +505,23 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
 /* Keep playback controls above mobile safe areas as browser chrome changes. */
 .opening--short .opening__bottom { bottom: calc(26px + env(safe-area-inset-bottom, 0px)); }
 
-/* Soft surfaces and compact controls keep the invitation calm and easy to scan. */
-:root { --surface: #fffefb; --soft-shadow: 0 8px 28px rgba(74, 52, 34, .045); --ui-ease: cubic-bezier(.2,.7,.2,1); }
+/* Restrained surfaces keep the invitation focused on the couple and photography. */
+:root { --surface: #ffffff; --soft-shadow: 0 2px 8px rgba(24, 33, 48, .025); --ui-ease: cubic-bezier(.2,.7,.2,1); }
 .button, .opening__control, .gallery__pagination button { border-radius: 12px; transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .2s var(--ui-ease); }
 .button:active:not(:disabled), .opening__control:active { transform: scale(.98); }
 .button--light { background: var(--surface); }
 #welcome-enter.button--light { background: transparent; color: var(--ink); border-color: var(--line); }
 .welcome__choices button { border-radius: 16px; background: var(--surface); transition: background-color .2s ease, border-color .2s ease; }
-.welcome__story-card { border-radius: 20px; background: var(--surface); box-shadow: var(--soft-shadow); }
+.welcome__story-card { border-radius: 14px; background: var(--surface); box-shadow: var(--soft-shadow); }
 .welcome__actions .button { min-height: 50px; }
-.calendar__sheet { border: 1px solid var(--line); border-radius: 24px; background: var(--surface); box-shadow: var(--soft-shadow); }
-.countdown { background: linear-gradient(180deg, var(--paper), #fff3e8 50%, var(--paper)); }
+.calendar__sheet { border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: var(--soft-shadow); }
+.countdown { background: #f5f7fb; }
 .countdown__value { font-size: clamp(64px, 10vw, 112px); font-weight: 600; letter-spacing: -.06em; }
 .gallery__grid { gap: 12px; margin-top: 32px; }
-.gallery__item { border-radius: 16px; }
+.gallery__item { border-radius: 8px; }
 .gallery__pagination { gap: 14px; }
 .gallery__pagination button { border-color: var(--line); background: var(--surface); }
-.rsvp-disclosure, .account__group { border: 1px solid var(--line); border-radius: 18px; background: var(--surface); box-shadow: var(--soft-shadow); }
+.rsvp-disclosure, .account__group { border: 1px solid var(--line); border-radius: 12px; background: var(--surface); box-shadow: var(--soft-shadow); }
 .rsvp-disclosure > summary, .account__group > summary { min-height: 68px; padding: 18px 44px 18px 20px; font-size: 16px; font-weight: 500; }
 .rsvp-disclosure > summary { position: relative; padding-inline: 44px; }
 .rsvp-disclosure__icon { position: absolute; right: 20px; }
@@ -533,14 +533,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
 .rsvp-disclosure[open] > div { padding: 0 20px 24px; }
 .rsvp-form input:not([type="checkbox"]), .rsvp-form select, .rsvp-form textarea { border-radius: 10px; border-color: var(--line); background: var(--paper); }
 .rsvp-form input:focus-visible, .rsvp-form select:focus-visible, .rsvp-form textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.couple__person { border: 1px solid var(--line); border-radius: 20px; }
-.directions__map img { border-radius: 18px; }
+.couple__person { border: 1px solid var(--line); border-radius: 12px; }
+.directions__map img { border-radius: 12px; }
 .directions__content .directions__links .button { border-radius: 10px; }
 .directions__list { border-top: 0; }
 .directions__item { padding: 26px 0; }
 .directions__item:last-child { border-bottom: 0; }
-.directions__notice { padding: 16px; margin-top: 12px; border-radius: 12px; background: rgba(255,255,255,.55); }
-.wreath__inner { border-radius: 20px; }
+.directions__notice { padding: 16px; margin-top: 12px; border-radius: 10px; background: var(--surface); }
+.wreath__inner { border-radius: 14px; }
 .side-nav__dot { border-radius: 50%; opacity: .55; }
 .side-nav a[aria-current="location"] .side-nav__dot { transform: scale(1.2); opacity: 1; }
 .footer { border-top: 0; padding-block: 32px; }
@@ -555,3 +555,20 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
   .button, .opening__control, .gallery__pagination button, .welcome__choices button { transition: none; }
   .button:active:not(:disabled), .opening__control:active { transform: none; }
 }
+
+/* Typography and action hierarchy for the white editorial theme. */
+.welcome__eyebrow { letter-spacing: .16em; font-size: 10px; }
+.welcome__couple { color: var(--ink); font-weight: 500; }
+.welcome h2 { font-weight: 500; letter-spacing: -.04em; }
+.welcome__choices button { min-height: 76px; border-radius: 12px; background: var(--cream); border-color: transparent; font-weight: 500; }
+.welcome__choices button:hover, .welcome__choices button[aria-pressed="true"] { background: #edf2fc; border-color: #c3d1f1; }
+.welcome__text-button { color: var(--muted); }
+.invitation__message p { letter-spacing: -.025em; line-height: 2.05; }
+.calendar__month { color: var(--ink); }
+.account__side { color: var(--muted); font-family: inherit; letter-spacing: 0; font-weight: 500; }
+.couple__child strong { font-weight: 500; letter-spacing: -.04em; }
+.couple, .account { background: var(--paper); }
+.wreath__inner { background: var(--cream); border-color: transparent; }
+.button:not(:disabled):hover { background: #34383f; border-color: #34383f; }
+.button--light:not(:disabled):hover { color: var(--ink); background: #edf0f4; border-color: #c7ccd5; }
+#welcome-enter.button--light:focus-visible { outline-color: var(--accent); }
