@@ -1198,7 +1198,7 @@
     welcomeRsvp.hidden = step !== "rsvp";
     welcomeBack.hidden = step === "choice";
     welcomeEnter.textContent = "청첩장 보기";
-    welcomeEnter.className = step === "choice" ? "welcome__text-button" : "button";
+    welcomeEnter.className = step === "choice" ? "welcome__text-button" : "button button--light";
     document.getElementById("welcome-next").hidden = step !== "story";
     document.getElementById("welcome-rsvp-skip").hidden = step !== "story" || storyIndex >= quiz.length - 1;
     welcomeDialog.scrollTop = 0;
@@ -1285,6 +1285,79 @@
     // Avoid downloading the entire sequence for data-saving connections.
     if (!navigator.connection?.saveData) frames.forEach((_, index) => requestOpeningFrame(index));
   }
+
+  // Progressive enhancement: content is always visible without observers or animation support.
+  function initContentMotion() {
+    const running = new Map();
+    const seen = new WeakSet();
+    const revealTargets = ".invitation__message p, .calendar__sheet, #calendar-save, .countdown__inner, .gallery__item, .rsvp-disclosure, .couple__person, .account__group, .location__map-heading, .directions__map, .directions__links, .directions__item, .wreath__inner, .share__inner";
+    if ("IntersectionObserver" in window && Element.prototype.animate) {
+      const observer = new IntersectionObserver((entries) => {
+        for (const { target, isIntersecting } of entries) {
+          if (!isIntersecting) continue;
+          observer.unobserve(target);
+          if (seen.has(target)) continue;
+          seen.add(target);
+          if (motionReduced.matches || document.hidden || target.contains(document.activeElement)) continue;
+          const animation = target.animate([
+            { opacity: .45, transform: "translateY(10px)" },
+            { opacity: 1, transform: "translateY(0)" }
+          ], { duration: 320, easing: "cubic-bezier(.2,.7,.2,1)" });
+          running.set(target, animation);
+          const clear = () => { if (running.get(target) === animation) running.delete(target); };
+          animation.addEventListener("finish", clear, { once: true });
+          animation.addEventListener("cancel", clear, { once: true });
+        }
+      }, { threshold: .08, rootMargin: "0px 0px -12px 0px" });
+      document.querySelectorAll(revealTargets).forEach((element) => observer.observe(element));
+      new MutationObserver((records) => {
+        for (const record of records) {
+          for (const node of record.removedNodes) if (node.nodeType === 1) observer.unobserve(node);
+          for (const node of record.addedNodes) if (node.nodeType === 1 && node.matches(".gallery__item")) observer.observe(node);
+        }
+      }).observe(galleryHost, { childList: true });
+      document.addEventListener("focusin", (event) => {
+        for (const [target, animation] of running) if (target.contains(event.target)) animation.cancel();
+      });
+      motionReduced.addEventListener("change", () => {
+        if (motionReduced.matches) for (const animation of running.values()) animation.cancel();
+      });
+    }
+
+    document.querySelectorAll(".rsvp-disclosure, .account__group").forEach((details) => {
+      const summary = details.querySelector("summary");
+      let animation = null;
+      let targetOpen = details.open;
+      summary.addEventListener("click", (event) => {
+        if (motionReduced.matches || !details.animate) return;
+        event.preventDefault();
+        const from = details.getBoundingClientRect().height;
+        targetOpen = animation ? !targetOpen : !details.open;
+        animation?.cancel();
+        details.open = false;
+        const collapsed = details.getBoundingClientRect().height;
+        details.open = true;
+        const expanded = details.getBoundingClientRect().height;
+        details.style.overflow = "hidden";
+        const current = details.animate([
+          { height: `${from}px` },
+          { height: `${targetOpen ? expanded : collapsed}px` }
+        ], { duration: 260, easing: "cubic-bezier(.2,.7,.2,1)" });
+        animation = current;
+        current.onfinish = () => {
+          if (animation !== current) return;
+          details.open = targetOpen;
+          details.style.removeProperty("overflow");
+          animation = null;
+        };
+      });
+      motionReduced.addEventListener("change", () => {
+        if (motionReduced.matches) animation?.finish();
+      });
+    });
+  }
+  initContentMotion();
+
   if (resumeInvitation && !galleryDialog.open) enterInvitation();
   if (autoplayActive) playOpening(++playbackRun);
 })();

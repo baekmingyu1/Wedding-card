@@ -11,7 +11,7 @@
 
 body { background: var(--paper); }
 .eyebrow, .section__count, .side-nav__caption { letter-spacing: .18em; }
-.section { padding-block: clamp(88px, 10vw, 150px); }
+.section { padding-block: clamp(64px, 8vw, 112px); }
 .side-nav a { position: relative; width: 30px; }
 .side-nav__label {
   position: absolute;
@@ -504,3 +504,54 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
 
 /* Keep playback controls above mobile safe areas as browser chrome changes. */
 .opening--short .opening__bottom { bottom: calc(26px + env(safe-area-inset-bottom, 0px)); }
+
+/* Soft surfaces and compact controls keep the invitation calm and easy to scan. */
+:root { --surface: #fffefb; --soft-shadow: 0 8px 28px rgba(74, 52, 34, .045); --ui-ease: cubic-bezier(.2,.7,.2,1); }
+.button, .opening__control, .gallery__pagination button { border-radius: 12px; transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .2s var(--ui-ease); }
+.button:active:not(:disabled), .opening__control:active { transform: scale(.98); }
+.button--light { background: var(--surface); }
+#welcome-enter.button--light { background: transparent; color: var(--ink); border-color: var(--line); }
+.welcome__choices button { border-radius: 16px; background: var(--surface); transition: background-color .2s ease, border-color .2s ease; }
+.welcome__story-card { border-radius: 20px; background: var(--surface); box-shadow: var(--soft-shadow); }
+.welcome__actions .button { min-height: 50px; }
+.calendar__sheet { border: 1px solid var(--line); border-radius: 24px; background: var(--surface); box-shadow: var(--soft-shadow); }
+.countdown { background: linear-gradient(180deg, var(--paper), #fff3e8 50%, var(--paper)); }
+.countdown__value { font-size: clamp(64px, 10vw, 112px); font-weight: 600; letter-spacing: -.06em; }
+.gallery__grid { gap: 12px; margin-top: 32px; }
+.gallery__item { border-radius: 16px; }
+.gallery__pagination { gap: 14px; }
+.gallery__pagination button { border-color: var(--line); background: var(--surface); }
+.rsvp-disclosure, .account__group { border: 1px solid var(--line); border-radius: 18px; background: var(--surface); box-shadow: var(--soft-shadow); }
+.rsvp-disclosure > summary, .account__group > summary { min-height: 68px; padding: 18px 44px 18px 20px; font-size: 16px; font-weight: 500; }
+.rsvp-disclosure > summary { position: relative; padding-inline: 44px; }
+.rsvp-disclosure__icon { position: absolute; right: 20px; }
+.account__group > summary::after { right: 20px; font-size: 24px; }
+.account__list { gap: 12px; max-width: 640px; margin-top: 28px; }
+.account__group-body { padding: 0 18px 12px; }
+.account__card { column-gap: 12px; padding: 20px 0; }
+.account__details strong { font-variant-numeric: tabular-nums; }
+.rsvp-disclosure[open] > div { padding: 0 20px 24px; }
+.rsvp-form input:not([type="checkbox"]), .rsvp-form select, .rsvp-form textarea { border-radius: 10px; border-color: var(--line); background: var(--paper); }
+.rsvp-form input:focus-visible, .rsvp-form select:focus-visible, .rsvp-form textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.couple__person { border: 1px solid var(--line); border-radius: 20px; }
+.directions__map img { border-radius: 18px; }
+.directions__content .directions__links .button { border-radius: 10px; }
+.directions__list { border-top: 0; }
+.directions__item { padding: 26px 0; }
+.directions__item:last-child { border-bottom: 0; }
+.directions__notice { padding: 16px; margin-top: 12px; border-radius: 12px; background: rgba(255,255,255,.55); }
+.wreath__inner { border-radius: 20px; }
+.side-nav__dot { border-radius: 50%; opacity: .55; }
+.side-nav a[aria-current="location"] .side-nav__dot { transform: scale(1.2); opacity: 1; }
+.footer { border-top: 0; padding-block: 32px; }
+.toast { border-radius: 12px; max-width: calc(100vw - 32px); white-space: normal; text-align: center; box-shadow: var(--soft-shadow); }
+@media (max-width: 420px) {
+  .account__group-body { padding-inline: 12px; }
+  .account__card { column-gap: 8px; }
+  .account__card button { min-width: 60px; padding-inline: 10px; font-size: 12px; }
+  .account__details strong { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .button, .opening__control, .gallery__pagination button, .welcome__choices button { transition: none; }
+  .button:active:not(:disabled), .opening__control:active { transform: none; }
+}
