@@ -591,26 +591,123 @@
     setExternalLink("google-map-link", content.googleMapUrl)
   ].some(Boolean);
   document.getElementById("map-pending").hidden = hasMaps;
-  const naverStaticMap = document.getElementById("naver-static-map");
-  const naverStaticImage = document.getElementById("naver-static-map-image");
-  const naverKeyId = content.naverStaticMapKeyId?.trim();
-  const naverCenter = content.naverStaticMapCenter?.trim();
-  if (naverKeyId && naverCenter && /^https?:$/.test(location.protocol)) {
-    const coordinates = naverCenter.split(",").map(Number);
-    if (coordinates.length === 2 && coordinates.every(Number.isFinite)) {
-      const [longitude, latitude] = coordinates;
+  function initVenueMap() {
+    const root = document.getElementById("venue-map");
+    const canvas = document.getElementById("venue-map-canvas");
+    const fallback = document.getElementById("venue-map-fallback");
+    const fallbackImage = document.getElementById("venue-map-image");
+    const status = document.getElementById("venue-map-status");
+    const activate = document.getElementById("venue-map-activate");
+    const controls = document.getElementById("venue-map-tools");
+    const key = content.naverMapKeyId?.trim();
+    const coordinates = content.naverMapCenter?.split(",").map(Number);
+    if (!key || !coordinates || coordinates.length !== 2 || !coordinates.every(Number.isFinite)) return;
+    const [longitude, latitude] = coordinates;
+    if (Math.abs(longitude) > 180 || Math.abs(latitude) > 90) return;
+    root.hidden = false;
+    canvas.setAttribute("aria-label", `${content.venue} 위치 지도`);
+    fallbackImage.alt = `${content.venue} 위치 안내 지도`;
+    fallback.href = document.getElementById("naver-map-link").href;
+    let map, marker, timer, started = false, failed = false, ready = false;
+    const setInteractive = (active) => {
+      if (!ready || failed) return;
+      map.setOptions({ draggable: active, pinchZoom: active, keyboardShortcuts: active,
+        disableDoubleClickZoom: !active, disableDoubleTapZoom: !active,
+        disableTwoFingerTapZoom: !active, scrollWheel: false, zoomControl: active });
+      canvas.inert = !active;
+      activate.hidden = active;
+      controls.hidden = !active;
+    };
+    const showFallback = () => {
+      if (failed) return;
+      failed = true;
+      clearTimeout(timer);
+      marker?.setMap(null);
+      map?.destroy();
+      canvas.hidden = true;
+      activate.hidden = controls.hidden = true;
+      root.dataset.state = "fallback";
+      status.hidden = false;
+      status.textContent = "아래 지도 버튼에서 위치를 확인해 주세요.";
+      if (!/^https?:$/.test(location.protocol)) return;
       const params = new URLSearchParams({
-        w: "900", h: "580", center: naverCenter, level: "16", lang: "ko",
+        w: "900", h: "580", center: `${longitude},${latitude}`, level: "16", lang: "ko",
         markers: `type:d|size:mid|color:Orange|pos:${longitude} ${latitude}`,
-        "X-NCP-APIGW-API-KEY-ID": naverKeyId
+        "X-NCP-APIGW-API-KEY-ID": key
       });
-      const naverPreview = document.getElementById("naver-static-map-preview");
-      naverPreview.href = document.getElementById("naver-map-link").href;
-      naverStaticImage.addEventListener("error", () => { naverStaticMap.hidden = true; }, { once: true });
-      naverStaticMap.hidden = false;
-      naverStaticImage.src = `https://maps.apigw.ntruss.com/map-static/v2/raster-cors?${params}`;
-    }
+      fallbackImage.onload = () => { fallback.hidden = false; status.hidden = true; };
+      fallbackImage.onerror = () => { fallback.hidden = true; };
+      fallbackImage.loading = "eager";
+      fallbackImage.src = `https://maps.apigw.ntruss.com/map-static/v2/raster-cors?${params}`;
+    };
+    const createMap = () => {
+      if (failed || map) return;
+      if (!window.naver?.maps?.Map) { showFallback(); return; }
+      try {
+        const position = new naver.maps.LatLng(latitude, longitude);
+        map = new naver.maps.Map(canvas, {
+          center: position, zoom: 16, minZoom: 7, maxZoom: 20,
+          draggable: false, pinchZoom: false, scrollWheel: false, keyboardShortcuts: false,
+          disableDoubleClickZoom: true, disableDoubleTapZoom: true, disableTwoFingerTapZoom: true,
+          zoomControl: false
+        });
+        const label = document.createElement("span");
+        label.className = "venue-map__marker";
+        label.textContent = content.venue;
+        marker = new naver.maps.Marker({ position, map, title: content.venue,
+          icon: { content: label, anchor: new naver.maps.Point(0, 0) } });
+        naver.maps.Event.once(map, "tilesloaded", () => {
+          if (failed) return;
+          clearTimeout(timer);
+          ready = true;
+          root.dataset.state = "ready";
+          status.hidden = true;
+          setInteractive(false);
+        });
+      } catch { showFallback(); }
+    };
+    const load = () => {
+      if (started) return;
+      started = true;
+      root.dataset.state = "loading";
+      if (!/^https?:$/.test(location.protocol)) { showFallback(); return; }
+      timer = window.setTimeout(showFallback, 12000);
+      window.navermap_authFailure = showFallback;
+      if (window.naver?.maps?.Map) { createMap(); return; }
+      window.initWeddingVenueMap = createMap;
+      const sdk = document.createElement("script");
+      sdk.src = `https://oapi.map.naver.com/openapi/v3/maps.js?${new URLSearchParams({ ncpKeyId: key, callback: "initWeddingVenueMap" })}`;
+      sdk.async = true;
+      sdk.onerror = showFallback;
+      document.head.append(sdk);
+    };
+    activate.addEventListener("click", () => {
+      setInteractive(true);
+      document.getElementById("venue-map-lock").focus({ preventScroll: true });
+    });
+    document.getElementById("venue-map-lock").addEventListener("click", () => {
+      setInteractive(false);
+      activate.focus({ preventScroll: true });
+    });
+    document.getElementById("venue-map-reset").addEventListener("click", () => {
+      if (!ready || failed) return;
+      map.setCenter(new naver.maps.LatLng(latitude, longitude));
+      map.setZoom(16, false);
+    });
+    root.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && ready && !failed && !canvas.inert) {
+        setInteractive(false);
+        activate.focus({ preventScroll: true });
+      }
+    });
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver((entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) { observer.disconnect(); load(); }
+      }, { rootMargin: "300px" });
+      observer.observe(root);
+    } else load();
   }
+  initVenueMap();
   const rsvpForm = document.getElementById("rsvp-form");
   const rsvpFields = document.getElementById("rsvp-fields");
   const rsvpStatus = document.getElementById("rsvp-status");

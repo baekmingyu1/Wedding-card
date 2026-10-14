@@ -21,11 +21,11 @@
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=26">
-  <link rel="stylesheet" href="play-pause.css?v=41">
+  <link rel="stylesheet" href="play-pause.css?v=42">
   <script src="opening-images.js" defer></script>
   <script src="gallery-images.js" defer></script>
-  <script src="content.js?v=26" defer></script>
-  <script src="script.js?v=45" defer></script>
+  <script src="content.js?v=27" defer></script>
+  <script src="script.js?v=46" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#invitation">본문으로 건너뛰기</a>
@@ -193,10 +193,14 @@
           <button id="copy-address" class="button button--light" type="button" disabled>주소 복사 <span aria-hidden="true">↗</span></button>
         </div>
         <div id="directions" aria-label="지도와 교통 안내">
-        <div class="directions__map" id="naver-static-map" hidden>
-          <a id="naver-static-map-preview" href="#directions" target="_blank" rel="noopener noreferrer" aria-label="네이버 지도에서 아르베웨딩 위치 보기">
-            <img id="naver-static-map-image" alt="아르베웨딩 위치를 표시한 네이버 정적 지도" loading="lazy" decoding="async" width="900" height="580">
-          </a>
+        <div class="directions__map venue-map" id="venue-map" hidden>
+          <div class="venue-map__stage">
+            <div id="venue-map-canvas" class="venue-map__canvas" role="region" aria-label="예식장 위치 지도" inert></div>
+            <a id="venue-map-fallback" class="venue-map__fallback" href="#directions" target="_blank" rel="noopener noreferrer" aria-label="네이버 지도에서 예식장 위치 보기" hidden><img id="venue-map-image" alt="예식장 위치 안내 지도" loading="lazy" decoding="async" width="900" height="580"></a>
+            <p id="venue-map-status" class="venue-map__status" role="status">지도를 불러오고 있습니다.</p>
+            <button id="venue-map-activate" class="venue-map__activate" type="button" aria-controls="venue-map-canvas" hidden><span>눌러서 지도 움직이기</span></button>
+          </div>
+          <div id="venue-map-tools" class="venue-map__tools" hidden><button id="venue-map-reset" class="button button--light" type="button">예식장 위치로</button><button id="venue-map-lock" class="button button--light" type="button">지도 조작 마치기</button></div>
         </div>
         <div class="directions__links"><a id="naver-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="네이버 지도에서 예식장 보기">네이버</a><a id="kakao-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="카카오맵에서 예식장 보기">카카오맵</a><a id="google-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="구글 지도에서 예식장 보기">구글 지도</a><p class="section__pending" id="map-pending">지도 링크를 준비하고 있습니다.</p></div>
         <div class="directions__list">
