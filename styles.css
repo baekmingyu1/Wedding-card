@@ -277,3 +277,6 @@ html.welcome-open, html.welcome-open body { overflow: hidden; }
 .invitation:focus { outline: none; }
 
 #welcome-back { margin-top: 20px; font-size: 12px; }
+
+#welcome-rsvp-skip { margin-top: 14px; font-size: 13px; }
+#welcome-rsvp-skip:not([hidden]) + #welcome-back { margin-top: 0; }

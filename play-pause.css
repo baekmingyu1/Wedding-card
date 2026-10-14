@@ -31,8 +31,8 @@ body { background: var(--paper); }
 .side-nav a[aria-current="location"] .side-nav__dot { transform: rotate(45deg) scale(1.25); }
 
 /* Opening keeps the existing 15-image scroll sequence. */
-.opening--short { height: 100svh; min-height: 0; }
-.opening--short .opening__sticky { min-height: 0; }
+.opening--short { height: 100svh; height: 100dvh; min-height: 0; }
+.opening--short .opening__sticky { height: 100%; min-height: 0; }
 .opening__copy { transition: opacity .35s ease; }
 .opening__controls { display: flex; max-width: 230px; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
 .opening__controls .opening__scroll { width: 100%; justify-content: flex-end; }
@@ -501,3 +501,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
 .directions__content .directions__links .button { background: transparent; border-color: var(--line); color: var(--ink); }
 .directions__content .directions__links .button:active,
 .directions__content .directions__links .button:focus-visible { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* Keep playback controls above mobile safe areas as browser chrome changes. */
+.opening--short .opening__bottom { bottom: calc(26px + env(safe-area-inset-bottom, 0px)); }

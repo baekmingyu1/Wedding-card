@@ -1200,7 +1200,7 @@
     welcomeEnter.textContent = "청첩장 보기";
     welcomeEnter.className = step === "choice" ? "welcome__text-button" : "button";
     document.getElementById("welcome-next").hidden = step !== "story";
-    document.getElementById("welcome-rsvp-skip").hidden = storyIndex >= quiz.length - 1;
+    document.getElementById("welcome-rsvp-skip").hidden = step !== "story" || storyIndex >= quiz.length - 1;
     welcomeDialog.scrollTop = 0;
     const title = document.getElementById(step === "choice" ? "welcome-title" : step === "story" ? "welcome-question" : "welcome-rsvp-title");
     welcomeDialog.setAttribute("aria-labelledby", title.id);
