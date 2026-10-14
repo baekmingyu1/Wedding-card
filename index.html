@@ -21,11 +21,11 @@
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=25">
-  <link rel="stylesheet" href="play-pause.css?v=34">
+  <link rel="stylesheet" href="play-pause.css?v=35">
   <script src="opening-images.js" defer></script>
   <script src="gallery-images.js" defer></script>
   <script src="content.js?v=21" defer></script>
-  <script src="script.js?v=40" defer></script>
+  <script src="script.js?v=41" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#invitation">본문으로 건너뛰기</a>
@@ -109,12 +109,7 @@
           <time class="poster-date" data-field="date"></time>
         </div>
         <div class="opening__bottom">
-          <span class="opening__couple" data-field="couple"></span>
-          <div class="opening__controls">
-            <span class="opening__scroll" id="opening-status" role="status" aria-live="polite">사진 준비 중</span>
-            <button class="opening__control" id="opening-pause" type="button" hidden>일시정지</button>
-            <a class="opening__control" id="opening-skip" href="#invitation">초대글 바로 보기 ↘</a>
-          </div>
+          <a class="opening__control opening__skip" id="opening-skip" href="#invitation"><span>초대글 바로 보기</span><span class="opening__skip-arrow" aria-hidden="true">↘</span></a>
         </div>
         <div class="opening__progress" aria-hidden="true"><span id="opening-progress"></span></div>
       </div>

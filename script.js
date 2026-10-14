@@ -764,8 +764,6 @@
   const loaderProgress = document.getElementById("opening-loader-progress");
   const openingCount = document.getElementById("opening-count");
   const openingProgress = document.getElementById("opening-progress");
-  const openingStatus = document.getElementById("opening-status");
-  const pauseButton = document.getElementById("opening-pause");
   const skipButton = document.getElementById("opening-skip");
   const sections = ["opening", "invitation", "calendar", "countdown", "gallery", "rsvp", "couple", "account", "location", "directions", "wreath", "share"]
     .map((id) => document.getElementById(id));
@@ -778,7 +776,6 @@
   let autoplayActive = startAtOpening && !welcomeWanted && !resumeInvitation && !motionReduced.matches;
   let playbackComplete = false;
   let autoplayIndex = 0;
-  let playbackPaused = false;
   let playbackRun = 0;
   let hasLeftOpening = false;
   let paintedScene = -1;
@@ -841,9 +838,7 @@
   } else {
     // Keep the original scroll-driven sequence for deep links and restored scroll positions.
     opening.style.setProperty("--sequence-height", `${Math.max(300, 170 + openingPhotos.length * 22)}svh`);
-    openingStatus.textContent = "SCROLL TO MEET ↓";
   }
-  if (motionReduced.matches) openingStatus.textContent = "아래로 스크롤 ↓";
 
   function loadOpeningFrame(index, highPriority = false) {
     const image = frames[index]?.querySelector("img[data-src]");
@@ -1057,13 +1052,10 @@
     autoplayActive = false;
     setOpeningLocked(false);
     playbackComplete = true;
-    playbackPaused = false;
     hasLeftOpening = false;
     stopPendingOpeningLoads();
     openingLoader.hidden = true;
     openingLoader.classList.remove("is-exiting");
-    pauseButton.hidden = true;
-    openingStatus.textContent = "";
     updateScroll();
     if (navigate) navigateToInvitation();
   }
@@ -1075,7 +1067,6 @@
     cancelFrameCleanup();
     autoplayActive = !motionReduced.matches;
     playbackComplete = false;
-    playbackPaused = false;
     hasLeftOpening = false;
     autoplayIndex = 0;
     finalMessageReady = false;
@@ -1083,9 +1074,6 @@
     pumpOpeningLoads();
     opening.classList.add("opening--short");
     opening.style.removeProperty("--sequence-height");
-    pauseButton.hidden = true;
-    pauseButton.textContent = "일시정지";
-    openingStatus.textContent = autoplayActive ? "사진 준비 중" : "아래로 스크롤 ↓";
     openingLoader.classList.remove("is-exiting");
     openingLoader.hidden = !autoplayActive || frames.every((frame) => ["ready", "failed"].includes(frame.dataset.status));
     setOpeningLocked(autoplayActive);
@@ -1125,17 +1113,11 @@
   motionReduced.addEventListener("change", () => {
     if (!motionReduced.matches || !autoplayActive) return;
     finishOpening(false);
-    openingStatus.textContent = "아래로 스크롤 ↓";
     loadsEnabled = true;
     requestOpeningFrame(0, true);
     updateScroll();
   });
 
-  pauseButton.addEventListener("click", () => {
-    playbackPaused = !playbackPaused;
-    pauseButton.textContent = playbackPaused ? "이어보기" : "일시정지";
-    openingStatus.textContent = playbackPaused ? "일시정지" : "자동 재생 중";
-  });
   skipButton.addEventListener("click", skipOpening);
 
   async function waitPlayback(milliseconds, run) {
@@ -1143,12 +1125,12 @@
     while (remaining > 0 && autoplayActive && run === playbackRun) {
       const started = performance.now();
       await new Promise((resolve) => window.setTimeout(resolve, Math.min(remaining, 80)));
-      if (!playbackPaused && !document.hidden) remaining -= performance.now() - started;
+      if (!document.hidden) remaining -= performance.now() - started;
     }
   }
 
   async function waitUntilActive(run) {
-    while ((playbackPaused || document.hidden) && autoplayActive && run === playbackRun) {
+    while (document.hidden && autoplayActive && run === playbackRun) {
       await new Promise((resolve) => window.setTimeout(resolve, 80));
     }
   }
@@ -1158,14 +1140,12 @@
     let settled = 0;
     loaderCount.textContent = `00 / ${String(frames.length).padStart(2, "0")}`;
     loaderProgress.style.width = "0%";
-    openingStatus.textContent = `사진 준비 중 ${settled}/${frames.length}`;
     const prepared = frames.map((_, index) =>
       requestOpeningFrame(index, index === 0).then(() => {
         settled += 1;
         if (autoplayActive && run === playbackRun) {
           loaderCount.textContent = `${String(settled).padStart(2, "0")} / ${String(frames.length).padStart(2, "0")}`;
           loaderProgress.style.width = `${settled / frames.length * 100}%`;
-          openingStatus.textContent = `사진 준비 중 ${settled}/${frames.length}`;
         }
       })
     );
@@ -1184,8 +1164,6 @@
       if (index < frames.length && !preparedNext.has(index)) preparedNext.set(index, decodeOpeningForPlayback(index));
     };
     warmNext(0);
-    openingStatus.textContent = "자동 재생 중";
-    pauseButton.hidden = false;
     for (let index = 0; index < frames.length && autoplayActive && run === playbackRun; index += 1) {
       await waitUntilActive(run);
       if (!autoplayActive || run !== playbackRun) return;
