@@ -52,7 +52,7 @@ const galleryManifest = files.find((file) => /^gallery-images\.[a-f0-9]{10}\.js$
 const gallerySandbox = { window: {} };
 runInNewContext(await readFile(join(output, galleryManifest), "utf8"), gallerySandbox);
 const galleryPhotos = gallerySandbox.window.GALLERY_IMAGES;
-const sourceGalleryCount = (await readdir(join(root, "assets", "gallery"))).filter((name) => /^DSC.*\.jpe?g$/i.test(name)).length;
+const sourceGalleryCount = (await readdir(join(root, "assets", "gallery"))).filter((name) => /\.jpe?g$/i.test(name)).length;
 if (!Array.isArray(galleryPhotos) || galleryPhotos.length !== sourceGalleryCount) {
   throw new Error("갤러리 사진 목록과 원본 사진 수가 다릅니다.");
 }

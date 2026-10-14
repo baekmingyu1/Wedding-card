@@ -8,7 +8,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const sourceDir = join(root, "assets", "gallery");
 const outputDir = join(sourceDir, "web");
 const shareDir = join(root, "assets", "share");
-const originals = (await readdir(sourceDir)).filter((name) => /^DSC.*\.jpe?g$/i.test(name)).sort();
+const originals = (await readdir(sourceDir)).filter((name) => /\.jpe?g$/i.test(name)).sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
 if (!originals.length) throw new Error("assets/gallery에 원본 JPG가 없습니다.");
 await mkdir(outputDir, { recursive: true });
 await mkdir(shareDir, { recursive: true });
