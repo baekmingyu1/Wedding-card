@@ -1,12 +1,12 @@
 /* PLAY / PAUSE — a quiet editorial rhythm built around the couple's story. */
 :root {
-  --paper: #fffdf9;
-  --cream: #f0eee7;
-  --ink: #29352f;
-  --muted: #646d65;
-  --accent: #486653;
-  --accent-bright: #486653;
-  --line: #dedfd4;
+  --paper: #fffdfa;
+  --cream: #eee8e2;
+  --ink: #302b28;
+  --muted: #71665e;
+  --accent: #805642;
+  --accent-bright: #805642;
+  --line: #e3dbd3;
 }
 
 body { background: var(--paper); }
@@ -430,10 +430,10 @@ body { background: var(--paper); }
   .couple__child strong { font-size: clamp(22px, 5.6vw, 30px); }
 }
 
-/* Warm neutral surfaces and sage action colors. */
+/* Photo-inspired neutral surfaces and sunset-brown action colors. */
 .invitation, .wreath { background: var(--paper); color: var(--ink); }
 .countdown .section__lead { color: var(--muted); }
-.countdown { background: #e9eee5; color: var(--ink); }
+.countdown { background: #eee6dc; color: var(--ink); }
 .gallery, .share { background: var(--paper); }
 .calendar__sheet, .couple__person { background: var(--paper); }
 .couple__person { border-color: var(--line); }
@@ -448,7 +448,7 @@ body { background: var(--paper); }
 .opening__veil { background: linear-gradient(180deg, rgba(19,25,35,.32), transparent 55%), linear-gradient(0deg, rgba(19,25,35,.35), transparent 25%); }
 .opening__copy, .opening__bottom, .opening__final { text-shadow: 0 2px 10px rgba(19,25,35,.65); }
 .opening__control { background: rgba(255,255,255,.94); color: var(--ink); border-color: rgba(255,255,255,.8); text-shadow: none; }
-.opening__control:hover { background: #fffdf9; }
+.opening__control:hover { background: #fffdfa; }
 .gallery-dialog, .gallery-dialog::backdrop { background: var(--paper); color: var(--ink); }
 .gallery-dialog button { border-color: var(--line); color: var(--ink); }
 .gallery-dialog button:focus-visible { outline-color: var(--accent); }
@@ -506,7 +506,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
 .opening--short .opening__bottom { bottom: calc(26px + env(safe-area-inset-bottom, 0px)); }
 
 /* Restrained surfaces keep the invitation focused on the couple and photography. */
-:root { --surface: #fffdf9; --soft-shadow: 0 8px 28px rgba(41, 53, 47, .045); --ui-ease: cubic-bezier(.2,.7,.2,1); }
+:root { --surface: #fffdfa; --soft-shadow: 0 8px 28px rgba(62, 43, 29, .045); --ui-ease: cubic-bezier(.2,.7,.2,1); }
 .button, .opening__control, .gallery__pagination button { border-radius: 12px; transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .2s var(--ui-ease); }
 .button:active:not(:disabled), .opening__control:active { transform: scale(.98); }
 .button--light { background: var(--surface); }
@@ -515,7 +515,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
 .welcome__story-card { border-radius: 14px; background: var(--surface); box-shadow: var(--soft-shadow); }
 .welcome__actions .button { min-height: 50px; }
 .calendar__sheet { border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: var(--soft-shadow); }
-.countdown { background: #e9eee5; }
+.countdown { background: #eee6dc; }
 .countdown__value { font-size: clamp(64px, 10vw, 112px); font-weight: 600; letter-spacing: -.06em; }
 .gallery__grid { gap: 12px; margin-top: 32px; }
 .gallery__item { border-radius: 8px; }
@@ -561,7 +561,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
 .welcome__couple { color: var(--ink); font-weight: 500; }
 .welcome h2 { font-weight: 500; letter-spacing: -.04em; }
 .welcome__choices button { min-height: 76px; border-radius: 12px; background: var(--cream); border-color: transparent; font-weight: 500; }
-.welcome__choices button:hover, .welcome__choices button[aria-pressed="true"] { background: #e8eee3; border-color: #a5b6a0; }
+.welcome__choices button:hover, .welcome__choices button[aria-pressed="true"] { background: #eee6dc; border-color: #bca594; }
 .welcome__text-button { color: var(--muted); }
 .invitation__message p { letter-spacing: -.025em; line-height: 2.05; }
 .calendar__month { color: var(--ink); }
@@ -569,8 +569,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
 .couple__child strong { font-weight: 500; letter-spacing: -.04em; }
 .couple, .account { background: var(--paper); }
 .wreath__inner { background: var(--cream); border-color: transparent; }
-.button:not(:disabled):hover { background: #344c3d; border-color: #344c3d; }
-.button--light:not(:disabled):hover { color: var(--ink); background: #e8eee3; border-color: #a5b6a0; }
+.button:not(:disabled):hover { background: #644333; border-color: #644333; }
+.button--light:not(:disabled):hover { color: var(--ink); background: #eee6dc; border-color: #bca594; }
 #welcome-enter.button--light:focus-visible { outline-color: var(--accent); }
 
 /* OUR PACE: two paths, one shared rhythm. */
@@ -609,8 +609,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
   .opening__final.is-visible .poster-title, .opening__final.is-visible .pace-mark path { animation: none; }
 }
 
-/* Warm app layout: a continuous canvas, with surfaces for useful information. */
-:root { --canvas: #f4f2eb; --accent-soft: #e8eee3; --content: 960px; }
+/* Photo-inspired app layout: dress-white surfaces, champagne panels, sunset-brown actions. */
+:root { --canvas: #f7f5f2; --accent-soft: #eee6dc; --content: 960px; }
 body, .welcome { background: var(--canvas); }
 .section[id] { padding: clamp(48px, 7vw, 88px) 32px; background: transparent; }
 .section.invitation { padding-block: clamp(80px, 12vw, 140px) 48px; }
@@ -622,9 +622,9 @@ body, .welcome { background: var(--canvas); }
 .calendar__sheet { background: var(--surface); }
 .calendar__month { color: var(--accent); font-weight: 500; }
 .calendar__caption { padding-top: 24px; border-top: 1px solid var(--line); }
-.calendar__grid .calendar__day--event { box-shadow: 0 3px 10px rgba(72, 102, 83, .16); }
+.calendar__grid .calendar__day--event { box-shadow: 0 3px 10px rgba(128, 86, 66, .13); }
 .section.countdown { padding-top: 8px; padding-bottom: 48px; }
-.countdown__inner { max-width: 440px; padding: 32px 20px; border: 1px solid #d7e0d0; border-radius: 28px; background: var(--accent-soft); }
+.countdown__inner { max-width: 440px; padding: 32px 20px; border: 1px solid #e0d3c5; border-radius: 28px; background: var(--accent-soft); }
 .countdown__value { font-size: clamp(48px, 8vw, 72px); color: var(--accent); font-weight: 500; }
 .countdown .section__lead { margin-top: 14px; }
 .gallery .section__inner { max-width: 900px; }
@@ -643,7 +643,7 @@ body, .welcome { background: var(--canvas); }
 .account__group > summary { color: var(--accent); }
 .account__group-body { padding-inline: 20px; }
 .account__card .button { background: var(--accent-soft); border-color: transparent; color: var(--accent); }
-.account__card .button:hover { background: #dce7d8; border-color: var(--line); }
+.account__card .button:hover { background: #e6d9cd; border-color: var(--line); }
 .directions__content { max-width: 700px; }
 .location__map-heading { padding: 32px 20px; border: 1px solid var(--line); border-radius: 28px; background: var(--surface); margin-bottom: 16px; }
 .directions__list { display: grid; gap: 12px; margin-top: 24px; }

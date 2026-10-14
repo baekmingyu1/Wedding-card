@@ -1,12 +1,12 @@
 :root {
   color-scheme: light;
-  --paper: #fffdf9;
-  --cream: #f0eee7;
-  --ink: #29352f;
-  --muted: #646d65;
-  --accent: #486653;
-  --accent-bright: #486653;
-  --line: #dedfd4;
+  --paper: #fffdfa;
+  --cream: #eee8e2;
+  --ink: #302b28;
+  --muted: #71665e;
+  --accent: #805642;
+  --accent-bright: #805642;
+  --line: #e3dbd3;
   --content: 1160px;
 }
 
@@ -18,7 +18,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 button { font: inherit; }
 a { color: inherit; }
 button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 4px; }
-::selection { background: #dce7d8; color: var(--ink); }
+::selection { background: #e6d9cd; color: var(--ink); }
 h1, h2, h3, p { word-break: keep-all; overflow-wrap: break-word; }
 h1, h2, h3 { font-weight: 400; }
 h2 { margin: 16px 0 0; font-size: clamp(42px, 6vw, 76px); line-height: 1.17; letter-spacing: -.065em; }
