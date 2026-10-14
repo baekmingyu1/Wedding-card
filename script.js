@@ -482,13 +482,13 @@
     heading.append(name);
     try {
       const url = new URL(stop.mapUrl);
-      if (url.protocol === "https:" && url.hostname === "map.naver.com") {
+      if (url.protocol === "https:" && ["map.naver.com", "naver.me"].includes(url.hostname)) {
         const link = document.createElement("a");
         link.className = "directions__stop-map";
         link.href = url.href;
         link.target = "_blank";
         link.rel = "noopener noreferrer";
-        link.setAttribute("aria-label", `${stop.name} 정류장 네이버 지도 검색 (새 창)`);
+        link.setAttribute("aria-label", `${stop.name} 정류장 네이버 지도 보기 (새 창)`);
         link.title = "네이버 지도에서 정류장 찾기";
         const icon = document.createElement("span");
         icon.setAttribute("aria-hidden", "true");
