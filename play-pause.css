@@ -698,3 +698,40 @@ body, .welcome { background: var(--canvas); }
 @media (hover: hover) {
   .rsvp-choice:hover input:not(:disabled) + span { border-color: var(--accent); }
 }
+
+/* Date → promise → photographs: each section has its own visual rhythm. */
+.calendar__sheet { position: relative; padding-top: 36px; border-color: transparent; box-shadow: none; background: transparent; }
+.date-scene { margin-bottom: 32px; }
+.date-scene__eyebrow, .countdown__prelude { margin: 0 0 20px; font-size: 14px; line-height: 1.8; color: var(--muted); }
+.date-scene__date { display: flex; align-items: baseline; justify-content: center; gap: .08em; margin: 0; color: var(--accent); font-family: Georgia, 'Times New Roman', serif; font-size: clamp(76px, 16vw, 112px); line-height: 1.05; letter-spacing: -.07em; }
+.date-scene__part, .date-scene__separator { display: inline-block; }
+.date-scene__separator { color: #bca594; font-size: .55em; align-self: center; }
+.calendar__month { font-size: 16px; letter-spacing: .12em; margin-bottom: 24px; }
+.calendar__grid { gap: 6px; }
+.calendar__grid .calendar__day--event { position: relative; background: var(--accent-soft); color: var(--accent); box-shadow: none; overflow: visible; }
+.calendar__event-ring { position: absolute; inset: -5px; width: calc(100% + 10px); height: calc(100% + 10px); overflow: visible; transform: rotate(-90deg); pointer-events: none; }
+.calendar__event-ring circle { fill: none; stroke: var(--accent); stroke-width: 1.3; stroke-dasharray: 1; stroke-dashoffset: 0; stroke-linecap: round; }
+.calendar__caption { margin-top: 32px; padding-top: 28px; }
+.section.countdown { padding-top: 0; }
+.countdown__inner { padding: 0 16px 36px; border: 0; border-radius: 0; background: transparent; }
+.countdown__path { display: block; width: 64px; height: 110px; margin: 0 auto 24px; color: #bca594; overflow: visible; }
+.countdown__path path { stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
+.countdown__path circle { fill: var(--accent); }
+.countdown__prelude { margin-bottom: 12px; }
+.countdown__value { display: flex; justify-content: center; font-size: clamp(46px, 12vw, 80px); font-weight: 400; font-variant-numeric: tabular-nums; letter-spacing: -.05em; }
+.countdown__slot { display: inline-block; overflow: hidden; vertical-align: bottom; padding-block: .08em; }
+.countdown__glyph { display: inline-block; }
+.countdown .section__lead { max-width: 340px; font-size: 14px; line-height: 1.8; }
+.gallery__item { transition: box-shadow .25s ease; }
+.gallery__item:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .gallery__item:hover { box-shadow: 0 8px 22px rgba(62,43,29,.12); }
+}
+@media (max-width: 760px) {
+  .calendar__sheet { padding: 24px 8px; }
+  .date-scene { margin-bottom: 28px; }
+  .calendar__grid { gap: 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gallery__item { transition: none; }
+}

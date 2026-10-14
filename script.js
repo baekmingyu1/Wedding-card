@@ -619,6 +619,13 @@
   if (eventReady) {
     const { year, month, day } = koreanParts(eventDate);
     calendarMonth.textContent = `${year}. ${String(month).padStart(2, "0")}`;
+    const dateScene = document.getElementById("date-scene-date");
+    for (const [index, value] of [String(month).padStart(2, "0"), "·", String(day).padStart(2, "0")].entries()) {
+      const part = document.createElement("span");
+      part.className = index === 1 ? "date-scene__separator" : "date-scene__part";
+      part.textContent = value;
+      dateScene.append(part);
+    }
     document.getElementById("calendar-event-time").dateTime = content.eventDate;
     document.getElementById("calendar-event-date").textContent = new Intl.DateTimeFormat("ko-KR", {
       timeZone: "Asia/Seoul", dateStyle: "full"
@@ -642,8 +649,17 @@
     for (let date = 1; date <= lastDay; date += 1) {
       const cell = document.createElement("span");
       cell.textContent = String(date);
+      cell.classList.add("calendar__day");
       if (date === day) {
-        cell.className = "calendar__day--event";
+        cell.classList.add("calendar__day--event");
+        const ring = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        ring.setAttribute("viewBox", "0 0 56 56");
+        ring.setAttribute("aria-hidden", "true");
+        ring.classList.add("calendar__event-ring");
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", "28"); circle.setAttribute("cy", "28");
+        circle.setAttribute("r", "24"); circle.setAttribute("pathLength", "1");
+        ring.append(circle); cell.append(ring);
         cell.setAttribute("aria-label", `${year}년 ${month}월 ${day}일 예식일`);
       }
       calendarGrid.append(cell);
@@ -654,7 +670,20 @@
       const current = koreanParts(now);
       const today = Date.UTC(current.year, current.month - 1, current.day);
       const days = Math.round((eventDay - today) / 86400000);
-      countdownValue.textContent = days > 0 ? `D-${days}` : days === 0 ? "D-DAY" : "THANK YOU";
+      const label = days > 0 ? `D-${days}` : days === 0 ? "D-DAY" : "THANK YOU";
+      if (countdownValue.getAttribute("aria-label") !== label) {
+        countdownValue.setAttribute("aria-label", label);
+        countdownValue.replaceChildren();
+        for (const character of label) {
+          const slot = document.createElement("span");
+          slot.className = "countdown__slot";
+          slot.setAttribute("aria-hidden", "true");
+          const glyph = document.createElement("span");
+          glyph.className = "countdown__glyph";
+          glyph.textContent = character === " " ? "\u00a0" : character;
+          slot.append(glyph); countdownValue.append(slot);
+        }
+      }
       countdownCaption.textContent = days > 0
         ? `${content.couple}의 결혼식까지 ${days}일 남았습니다.`
         : days === 0 ? "오늘, 함께 시작합니다." : "함께해 주셔서 감사합니다.";
@@ -662,6 +691,9 @@
     updateCountdown();
     window.setInterval(updateCountdown, 60000);
   } else {
+    document.querySelector(".date-scene").hidden = true;
+    document.querySelector(".countdown__path").hidden = true;
+    document.querySelector(".countdown__prelude").hidden = true;
     calendarMonth.textContent = "날짜 준비 중";
     calendarGrid.textContent = "예식 날짜가 정해지면 달력이 표시됩니다.";
   }
@@ -1291,9 +1323,36 @@
   // Progressive enhancement: content is always visible without observers or animation support.
   function initContentMotion() {
     const running = new Map();
+    const play = (target, frames, timing) => {
+      running.get(target)?.cancel();
+      const animation = target.animate(frames, { fill: "backwards", ...timing });
+      running.set(target, animation);
+      const clear = () => { if (running.get(target) === animation) running.delete(target); };
+      animation.addEventListener("finish", clear, { once: true });
+      animation.addEventListener("cancel", clear, { once: true });
+      return animation;
+    };
+    const rise = (target, delay = 0, distance = 18, duration = 700) => play(target,
+      [{ opacity: 0, transform: `translateY(${distance}px)` }, { opacity: 1, transform: "translateY(0)" }],
+      { duration, delay, easing: "cubic-bezier(.22,1,.36,1)" });
+    const revealDate = (sheet) => {
+      sheet.querySelectorAll(".date-scene__part, .date-scene__separator").forEach((part, i) => rise(part, i * 110, 32, 950));
+      sheet.querySelectorAll(".calendar__weekday, .calendar__day").forEach((cell, i) => rise(cell, 160 + i * 12, 8, 450));
+      const ring = sheet.querySelector(".calendar__event-ring circle");
+      if (ring) play(ring, [{ strokeDashoffset: "1" }, { strokeDashoffset: "0" }],
+        { duration: 850, delay: 650, easing: "cubic-bezier(.2,.7,.2,1)" });
+      rise(sheet.querySelector(".calendar__caption"), 750, 12, 700);
+    };
+    const revealCountdown = (section) => {
+      section.querySelectorAll(".countdown__path path").forEach((path, i) => play(path,
+        [{ strokeDashoffset: "1" }, { strokeDashoffset: "0" }],
+        { duration: 1000, delay: i * 120, easing: "ease-in-out" }));
+      section.querySelectorAll(".countdown__glyph").forEach((glyph, i) => rise(glyph, 350 + i * 65, 65, 900));
+      rise(section.querySelector("#countdown-caption"), 600, 12, 700);
+    };
     const seen = new WeakSet();
     const revealTargets = ".pace-mark, .invitation__message p, .calendar__sheet, #calendar-save, .countdown__inner, .gallery__item, .rsvp-disclosure, .couple__person, .account__group, .location__map-heading, .directions__map, .directions__links, .directions__item, .wreath__inner, .share__inner";
-    if ("IntersectionObserver" in window && Element.prototype.animate) {
+    if (typeof IntersectionObserver === "function" && Element.prototype.animate) {
       const observer = new IntersectionObserver((entries) => {
         for (const { target, isIntersecting } of entries) {
           if (!isIntersecting) continue;
@@ -1301,6 +1360,13 @@
           if (seen.has(target)) continue;
           seen.add(target);
           if (motionReduced.matches || document.hidden || target.contains(document.activeElement)) continue;
+          if (target.matches(".calendar__sheet") && eventReady) { revealDate(target); continue; }
+          if (target.matches(".countdown__inner") && eventReady) { revealCountdown(target); continue; }
+          if (target.matches(".gallery__item")) {
+            const position = Array.from(galleryHost.children).indexOf(target);
+            rise(target, Math.max(0, position) * 65, 24, 800);
+            continue;
+          }
           if (target.matches(".pace-mark")) {
             for (const path of target.querySelectorAll("path")) {
               const draw = path.animate([{ strokeDasharray: "1", strokeDashoffset: "1" }, { strokeDasharray: "1", strokeDashoffset: "0" }], { duration: 1400, easing: "ease-in-out" });
@@ -1331,8 +1397,14 @@
       document.addEventListener("focusin", (event) => {
         for (const [target, animation] of running) if (target.contains(event.target)) animation.cancel();
       });
-      motionReduced.addEventListener("change", () => {
-        if (motionReduced.matches) for (const animation of running.values()) animation.cancel();
+      const finishMotion = () => { for (const animation of running.values()) animation.cancel(); };
+      motionReduced.addEventListener("change", () => { if (motionReduced.matches) finishMotion(); });
+      document.addEventListener("visibilitychange", () => { if (document.hidden) finishMotion(); });
+      rsvpForm.addEventListener("change", (event) => {
+        if (!event.target.matches('input[type="radio"]') || motionReduced.matches || document.hidden) return;
+        const face = event.target.nextElementSibling;
+        play(face, [{ transform: "scale(.96)" }, { transform: "scale(1)" }],
+          { duration: 220, easing: "cubic-bezier(.2,.7,.2,1)" });
       });
     }
 
