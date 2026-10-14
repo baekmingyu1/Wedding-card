@@ -170,9 +170,8 @@ h2 em { color: var(--accent); font-style: normal; }
   .contents__visual { min-height: min(118vw, 560px); }
   .contents__heading h2 { font-size: clamp(46px, 10vw, 66px); }
   .invitation__message { margin-top: 42px; }
-  .gallery__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .gallery__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
   .gallery__item, .gallery__item:nth-child(n) { grid-column: span 1; aspect-ratio: 3 / 4; }
-  .gallery__grid--odd .gallery__item:first-child { grid-column: span 2; aspect-ratio: 4 / 3; }
   .location__card { grid-template-columns: 1fr; gap: 32px; }
   .account__list { grid-template-columns: 1fr; }
   .footer { flex-wrap: wrap; padding-right: 58px; }
