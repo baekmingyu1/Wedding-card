@@ -672,7 +672,6 @@ body, .welcome { background: var(--canvas); }
   .couple__person { padding: 24px 8px; }
 }
 @media (max-width: 360px) {
-  .couple__grid { grid-template-columns: 1fr; }
   .couple__person { min-height: 140px; }
   .share__actions { display: grid; grid-template-columns: minmax(0, 1fr); }
   .share__actions .button { min-width: 0; }
@@ -781,10 +780,13 @@ body { word-break: keep-all; overflow-wrap: break-word; }
 .footer__signature { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 8px; max-width: 100%; }
 .footer__signature > span { display: inline-block; max-width: 100%; }
 @media (max-width: 600px) {
-  .couple__grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
-  .couple__person { min-height: 140px; padding: 24px 16px; }
-  .couple__parents { font-size: 15px; }
-  .couple__child strong { font-size: 28px; }
+  .couple__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .couple__person { min-width: 0; min-height: 164px; padding: 24px 6px; }
+  .couple__parents { flex-direction: column; gap: 2px; font-size: clamp(12px, 3.3vw, 15px); }
+  .couple__parents .couple__separator { display: none; }
+  .couple__child { flex-direction: column; align-items: center; gap: 4px; margin-top: 12px; }
+  .couple__child > span { font-size: 13px; }
+  .couple__child strong { max-width: 100%; font-size: clamp(20px, 5.5vw, 28px); overflow-wrap: anywhere; }
   .section__lead, .directions__item p, .directions__notice { line-height: 1.85; letter-spacing: -.01em; }
   .directions__item .directions__stop-heading { font-size: 15px; }
   .location__main h3 { font-size: clamp(24px, 6.5vw, 32px); line-height: 1.4; }
