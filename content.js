@@ -48,7 +48,7 @@ window.WEDDING_CONTENT = {
     { station: "9호선 언주역", directions: "5번 출구 · 도보 5분" }
   ],
   travelNotice: "주차 혼잡이 예상됩니다.\n가급적 대중교통을 이용해 주세요.",
-  galleryMessage: "함께 움직이고 나란히 쉬던 날의 사진을 모았습니다.",
+  galleryMessage: "우리의 시작을 앞두고, 함께한 순간을 담았습니다.",
   accountMessage: "멀리서도 축하해 주시는 마음에 감사드립니다.",
   shareMessage: "소중한 분께 이 초대장을 전해 주세요.",
   rsvpMessage: "참석 여부를 알려주시면 정성껏 자리를 준비하겠습니다.",
