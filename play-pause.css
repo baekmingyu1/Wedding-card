@@ -487,7 +487,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
 .directions__stop-map { display: inline-flex; flex: 0 0 44px; align-items: center; justify-content: center; min-height: 44px; color: #25633d; text-decoration: none; font: 700 12px/1.2 sans-serif; }
 .directions__stop-map > span { padding: 5px; border: 1px solid #91b29d; border-radius: 5px; background: #f0f7f2; white-space: nowrap; }
 @media (max-width: 760px) {
-  .section[id] { padding-inline: 24px 44px; }
   .directions__content .directions__links { gap: 6px; }
   .directions__content .directions__links .button { font-size: 13px; }
 }
@@ -661,7 +660,7 @@ body, .welcome { background: var(--canvas); }
 .side-nav a { min-height: 44px; }
 .footer { background: var(--accent-soft); padding: 48px 24px; border-radius: 32px 32px 0 0; }
 @media (max-width: 760px) {
-  .section[id] { padding-inline: 20px 44px; }
+  .section[id], .footer { padding-inline: max(44px, env(safe-area-inset-left), env(safe-area-inset-right)); }
   .side-nav { right: 2px; }
   .side-nav__label { right: 30px; }
   .gallery__grid { gap: 6px; }
