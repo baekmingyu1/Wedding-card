@@ -643,7 +643,7 @@ body, .welcome { background: var(--canvas); }
 .directions__list { display: grid; gap: 12px; margin-top: 24px; }
 .directions__item, .directions__item:last-child { padding: 28px 24px; border: 1px solid var(--line); border-radius: 24px; background: var(--surface); }
 .directions__item h3 { color: var(--accent); font-size: 15px; }
-.directions__notice { background: var(--accent-soft); border-radius: 18px; }
+.directions__notice { background: var(--accent-soft); border-radius: 18px; white-space: pre-line; }
 .directions__content .directions__links { padding-top: 12px; }
 .directions__content .directions__links .button { background: var(--surface); border-radius: 16px; }
 .directions__content .directions__links .button:focus-visible,
