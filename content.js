@@ -28,9 +28,9 @@ window.WEDDING_CONTENT = {
   venue: "아르베 웨딩",
   address: "서울 강남구 봉은사로 302",
   naverMapUrl: "https://naver.me/xsZ9NoRb",
-  // Naver Cloud Maps > Static Map의 공개 API Key ID. Secret Key는 절대 넣지 마세요.
-  naverStaticMapKeyId: "vr5i2viwvu",
-  naverStaticMapCenter: "127.039411,37.508679",
+  // Naver Cloud Maps 공개 Key ID. Web Dynamic Map 활성화 및 Web 서비스 URL 등록 필요.
+  naverMapKeyId: "vr5i2viwvu",
+  naverMapCenter: "127.039411,37.508679",
   kakaoMapUrl: "https://place.map.kakao.com/191889847",
   googleMapUrl: "https://www.google.com/maps/place/%EC%95%84%EB%A5%B4%EB%B2%A0%EC%9B%A8%EB%94%A9/data=!3m1!4b1!4m4!3m3!1s0x357ca3000cdb4565:0x3bf6331e47e5d979!16s%2Fg%2F11w4r2h2g4!20s8Q99G25Q%2BFQ7?entry=ttu&g_ep=EgoyMDI2MTAwNy4wIKXMDSoASAFQAw%3D%3D",
   busStops: [
@@ -47,8 +47,8 @@ window.WEDDING_CONTENT = {
     { station: "9호선 선정릉역", directions: "4번 출구 · 도보 5분" },
     { station: "9호선 언주역", directions: "5번 출구 · 도보 5분" }
   ],
-  travelNotice: "주차 혼잡이 예상됩니다. 가급적 대중교통을 이용해 주세요.",
-  galleryMessage: "함께 움직이고 나란히 쉬던 날의 사진을 모았습니다.",
+  travelNotice: "주차 혼잡이 예상됩니다.\n가급적 대중교통을 이용해 주세요.",
+  galleryMessage: "우리의 시작을 앞두고, 함께한 순간을 담았습니다.",
   accountMessage: "멀리서도 축하해 주시는 마음에 감사드립니다.",
   shareMessage: "소중한 분께 이 초대장을 전해 주세요.",
   rsvpMessage: "참석 여부를 알려주시면 정성껏 자리를 준비하겠습니다.",
