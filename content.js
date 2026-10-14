@@ -16,6 +16,8 @@ window.WEDDING_CONTENT = {
   brideMother: "전영숙",
   date: "2026년 12월 12일 토요일 오후 4시 30분",
   eventDate: "2026-12-12T16:30:00+09:00",
+  datePrelude: "우리의 다음 장이 시작되는 날",
+  countdownPrelude: "그날을 향해, 한 걸음씩",
   calendarMessage: "12월 12일, 함께 시작하는 날에 뵙겠습니다.",
   invitation: [
     "처음 마주 앉은 한 식탁에서\n우리의 이야기가 시작됐습니다.",

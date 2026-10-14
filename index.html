@@ -21,11 +21,11 @@
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=25">
-  <link rel="stylesheet" href="play-pause.css?v=33">
+  <link rel="stylesheet" href="play-pause.css?v=34">
   <script src="opening-images.js" defer></script>
   <script src="gallery-images.js" defer></script>
-  <script src="content.js?v=20" defer></script>
-  <script src="script.js?v=39" defer></script>
+  <script src="content.js?v=21" defer></script>
+  <script src="script.js?v=40" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#invitation">본문으로 건너뛰기</a>
@@ -133,13 +133,13 @@
     <section class="section calendar" id="calendar" aria-label="캘린더">
       <div class="section__inner calendar__layout">
         <div><p class="section__lead" data-field="calendarMessage"></p></div>
-        <div class="calendar__sheet"><p class="calendar__month" id="calendar-month"></p><div class="calendar__grid" id="calendar-grid" aria-label="예식 월 달력"></div><p class="calendar__caption"><time id="calendar-event-time"><span id="calendar-event-date">날짜 준비 중</span><span id="calendar-event-hour"></span></time></p></div>
+        <div class="calendar__sheet"><div class="date-scene"><p class="date-scene__eyebrow" data-field="datePrelude"></p><p class="date-scene__date" id="date-scene-date" aria-hidden="true"></p></div><p class="calendar__month" id="calendar-month"></p><div class="calendar__grid" id="calendar-grid" aria-label="예식 월 달력"></div><p class="calendar__caption"><time id="calendar-event-time"><span id="calendar-event-date">날짜 준비 중</span><span id="calendar-event-hour"></span></time></p></div>
         <a id="calendar-save" class="button" href="wedding.ics" hidden>내 일정에 저장 <span aria-hidden="true">＋</span></a>
       </div>
     </section>
 
     <section class="section countdown" id="countdown" aria-label="D-DAY 카운트">
-      <div class="section__inner countdown__inner"><p class="countdown__value" id="countdown-value" role="timer">날짜 준비 중</p><p class="section__lead" id="countdown-caption">함께 맞이할 날을 기다립니다.</p></div>
+      <div class="section__inner countdown__inner"><svg class="countdown__path" viewBox="0 0 100 150" fill="none" aria-hidden="true"><path pathLength="1" d="M20 4 C20 48 50 42 50 78 L50 140"/><path pathLength="1" d="M80 4 C80 48 50 42 50 78"/><circle cx="50" cy="140" r="3"/></svg><p class="countdown__prelude" data-field="countdownPrelude"></p><p class="countdown__value" id="countdown-value" role="timer">날짜 준비 중</p><p class="section__lead" id="countdown-caption">함께 맞이할 날을 기다립니다.</p></div>
     </section>
 
     <section class="section gallery" id="gallery" aria-label="갤러리">
