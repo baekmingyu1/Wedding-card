@@ -1,12 +1,12 @@
 /* PLAY / PAUSE — a quiet editorial rhythm built around the couple's story. */
 :root {
-  --paper: #ffffff;
-  --cream: #f5f6f8;
-  --ink: #202124;
-  --muted: #5f636b;
-  --accent: #3157b7;
-  --accent-bright: #3157b7;
-  --line: #dfe2e7;
+  --paper: #fffdfa;
+  --cream: #eee8e2;
+  --ink: #302b28;
+  --muted: #71665e;
+  --accent: #805642;
+  --accent-bright: #805642;
+  --line: #e3dbd3;
 }
 
 body { background: var(--paper); }
@@ -430,16 +430,16 @@ body { background: var(--paper); }
   .couple__child strong { font-size: clamp(22px, 5.6vw, 30px); }
 }
 
-/* Neutral editorial palette: photos carry the warmth; blue marks meaningful actions. */
+/* Photo-inspired neutral surfaces and sunset-brown action colors. */
 .invitation, .wreath { background: var(--paper); color: var(--ink); }
 .countdown .section__lead { color: var(--muted); }
-.countdown { background: #f5f7fb; color: var(--ink); }
+.countdown { background: #eee6dc; color: var(--ink); }
 .gallery, .share { background: var(--paper); }
 .calendar__sheet, .couple__person { background: var(--paper); }
 .couple__person { border-color: var(--line); }
 .couple__person:nth-child(2) { background: var(--paper); }
 .footer { background: var(--cream); color: var(--muted); border-top: 1px solid var(--line); }
-.button { background: var(--ink); border-color: var(--ink); color: #fff; }
+.button { background: var(--accent); border-color: var(--accent); color: #fff; }
 .button--light { background: transparent; color: var(--ink); border-color: var(--line); }
 .opening__loader { background: var(--paper); color: var(--ink); }
 .opening__loader-track { background: var(--line); }
@@ -448,7 +448,7 @@ body { background: var(--paper); }
 .opening__veil { background: linear-gradient(180deg, rgba(19,25,35,.32), transparent 55%), linear-gradient(0deg, rgba(19,25,35,.35), transparent 25%); }
 .opening__copy, .opening__bottom, .opening__final { text-shadow: 0 2px 10px rgba(19,25,35,.65); }
 .opening__control { background: rgba(255,255,255,.94); color: var(--ink); border-color: rgba(255,255,255,.8); text-shadow: none; }
-.opening__control:hover { background: #ffffff; }
+.opening__control:hover { background: #fffdfa; }
 .gallery-dialog, .gallery-dialog::backdrop { background: var(--paper); color: var(--ink); }
 .gallery-dialog button { border-color: var(--line); color: var(--ink); }
 .gallery-dialog button:focus-visible { outline-color: var(--accent); }
@@ -506,7 +506,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
 .opening--short .opening__bottom { bottom: calc(26px + env(safe-area-inset-bottom, 0px)); }
 
 /* Restrained surfaces keep the invitation focused on the couple and photography. */
-:root { --surface: #ffffff; --soft-shadow: 0 2px 8px rgba(24, 33, 48, .025); --ui-ease: cubic-bezier(.2,.7,.2,1); }
+:root { --surface: #fffdfa; --soft-shadow: 0 8px 28px rgba(62, 43, 29, .045); --ui-ease: cubic-bezier(.2,.7,.2,1); }
 .button, .opening__control, .gallery__pagination button { border-radius: 12px; transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .2s var(--ui-ease); }
 .button:active:not(:disabled), .opening__control:active { transform: scale(.98); }
 .button--light { background: var(--surface); }
@@ -515,7 +515,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
 .welcome__story-card { border-radius: 14px; background: var(--surface); box-shadow: var(--soft-shadow); }
 .welcome__actions .button { min-height: 50px; }
 .calendar__sheet { border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: var(--soft-shadow); }
-.countdown { background: #f5f7fb; }
+.countdown { background: #eee6dc; }
 .countdown__value { font-size: clamp(64px, 10vw, 112px); font-weight: 600; letter-spacing: -.06em; }
 .gallery__grid { gap: 12px; margin-top: 32px; }
 .gallery__item { border-radius: 8px; }
@@ -531,7 +531,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
 .account__card { column-gap: 12px; padding: 20px 0; }
 .account__details strong { font-variant-numeric: tabular-nums; }
 .rsvp-disclosure[open] > div { padding: 0 20px 24px; }
-.rsvp-form input:not([type="checkbox"]), .rsvp-form select, .rsvp-form textarea { border-radius: 10px; border-color: var(--line); background: var(--paper); }
+.rsvp-form input:not([type="checkbox"]):not([type="radio"]), .rsvp-form select, .rsvp-form textarea { border-radius: 10px; border-color: var(--line); background: var(--paper); }
 .rsvp-form input:focus-visible, .rsvp-form select:focus-visible, .rsvp-form textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .couple__person { border: 1px solid var(--line); border-radius: 12px; }
 .directions__map img { border-radius: 12px; }
@@ -556,12 +556,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
   .button:active:not(:disabled), .opening__control:active { transform: none; }
 }
 
-/* Typography and action hierarchy for the white editorial theme. */
+/* Typography and action hierarchy. */
 .welcome__eyebrow { letter-spacing: .16em; font-size: 10px; }
 .welcome__couple { color: var(--ink); font-weight: 500; }
 .welcome h2 { font-weight: 500; letter-spacing: -.04em; }
 .welcome__choices button { min-height: 76px; border-radius: 12px; background: var(--cream); border-color: transparent; font-weight: 500; }
-.welcome__choices button:hover, .welcome__choices button[aria-pressed="true"] { background: #edf2fc; border-color: #c3d1f1; }
+.welcome__choices button:hover, .welcome__choices button[aria-pressed="true"] { background: #eee6dc; border-color: #bca594; }
 .welcome__text-button { color: var(--muted); }
 .invitation__message p { letter-spacing: -.025em; line-height: 2.05; }
 .calendar__month { color: var(--ink); }
@@ -569,8 +569,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
 .couple__child strong { font-weight: 500; letter-spacing: -.04em; }
 .couple, .account { background: var(--paper); }
 .wreath__inner { background: var(--cream); border-color: transparent; }
-.button:not(:disabled):hover { background: #34383f; border-color: #34383f; }
-.button--light:not(:disabled):hover { color: var(--ink); background: #edf0f4; border-color: #c7ccd5; }
+.button:not(:disabled):hover { background: #644333; border-color: #644333; }
+.button--light:not(:disabled):hover { color: var(--ink); background: #eee6dc; border-color: #bca594; }
 #welcome-enter.button--light:focus-visible { outline-color: var(--accent); }
 
 /* OUR PACE: two paths, one shared rhythm. */
@@ -580,7 +580,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
 .welcome__inner > .pace-mark { width: 112px; height: 47px; margin-bottom: 18px; }
 .welcome__inner { max-width: 560px; }
 .welcome__eyebrow { margin-top: 0; }
-.welcome__story-card { border: 0; border-block: 1px solid var(--line); border-radius: 0; box-shadow: none; padding: 24px 12px; min-height: 0; }
+.welcome__story-card { border: 1px solid var(--line); border-radius: 24px; box-shadow: var(--soft-shadow); padding: 24px; min-height: 0; }
 #welcome-story .welcome__step { margin-top: 24px; font-size: 12px; letter-spacing: .08em; }
 #welcome-story h2 { font-size: clamp(24px, 5vw, 32px); }
 .opening h1, .opening__final .poster-title { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; letter-spacing: -.065em; line-height: .95; }
@@ -595,10 +595,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
 .opening__final.is-visible .pace-mark path { stroke-dasharray: 1; animation: pace-draw 1.8s ease both; }
 .opening__veil { background: linear-gradient(180deg,rgba(9,17,26,.25),transparent 35%,rgba(9,17,26,.35) 65%,rgba(9,17,26,.75)); }
 .invitation__message p { margin-block: 30px; }
-.calendar__sheet { border: 0; border-block: 1px solid var(--line); border-radius: 0; box-shadow: none; }
+.calendar__sheet { border: 1px solid var(--line); border-radius: 28px; box-shadow: var(--soft-shadow); }
 .gallery__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.gallery__grid .gallery__item { border-radius: 0; }
-.couple__person { border: 0; border-top: 1px solid var(--line); border-radius: 0; }
+.gallery__grid .gallery__item { border-radius: 14px; }
+.couple__person { border: 1px solid var(--line); border-radius: 24px; background: var(--surface); }
 .footer .pace-mark { width: 100px; height: 42px; margin-bottom: 18px; }
 @keyframes pace-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 @keyframes poster-arrive { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -607,4 +607,94 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
 }
 @media (prefers-reduced-motion: reduce) {
   .opening__final.is-visible .poster-title, .opening__final.is-visible .pace-mark path { animation: none; }
+}
+
+/* Photo-inspired app layout: dress-white surfaces, champagne panels, sunset-brown actions. */
+:root { --canvas: #f7f5f2; --accent-soft: #eee6dc; --content: 960px; }
+body, .welcome { background: var(--canvas); }
+.section[id] { padding: clamp(48px, 7vw, 88px) 32px; background: transparent; }
+.section.invitation { padding-block: clamp(80px, 12vw, 140px) 48px; }
+.invitation__body { max-width: 560px; }
+.invitation__message { font-family: 'Gowun Dodum', sans-serif; font-size: 17px; }
+.invitation__message p { line-height: 2.15; }
+.section.calendar { padding-top: 24px; padding-bottom: 20px; }
+.calendar__layout { gap: 24px; }
+.calendar__sheet { background: var(--surface); }
+.calendar__month { color: var(--accent); font-weight: 500; }
+.calendar__caption { padding-top: 24px; border-top: 1px solid var(--line); }
+.calendar__grid .calendar__day--event { box-shadow: 0 3px 10px rgba(128, 86, 66, .13); }
+.section.countdown { padding-top: 8px; padding-bottom: 48px; }
+.countdown__inner { max-width: 440px; padding: 32px 20px; border: 1px solid #e0d3c5; border-radius: 28px; background: var(--accent-soft); }
+.countdown__value { font-size: clamp(48px, 8vw, 72px); color: var(--accent); font-weight: 500; }
+.countdown .section__lead { margin-top: 14px; }
+.gallery .section__inner { max-width: 900px; }
+.gallery__grid { gap: 10px; }
+.gallery__pagination { width: fit-content; max-width: 100%; margin-inline: auto; padding: 6px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); gap: 8px; }
+.gallery__pagination button { border: 0; border-radius: 999px; background: transparent; }
+.gallery__page-status { color: var(--accent); font-size: 13px; }
+.section.rsvp { padding-block: 24px 48px; }
+.rsvp-disclosure, .account__group { border-radius: 22px; }
+.rsvp-disclosure > summary { color: var(--accent); font-weight: 600; }
+.rsvp-disclosure[open] > summary { margin-bottom: 16px; }
+.section.couple { padding-bottom: 20px; }
+.couple__grid { max-width: 640px; margin-inline: auto; }
+.couple__person:nth-child(2) { background: var(--surface); }
+.section.account { padding-top: 24px; }
+.account__group > summary { color: var(--accent); }
+.account__group-body { padding-inline: 20px; }
+.account__card .button { background: var(--accent-soft); border-color: transparent; color: var(--accent); }
+.account__card .button:hover { background: #e6d9cd; border-color: var(--line); }
+.directions__content { max-width: 700px; }
+.location__map-heading { padding: 32px 20px; border: 1px solid var(--line); border-radius: 28px; background: var(--surface); margin-bottom: 16px; }
+.directions__list { display: grid; gap: 12px; margin-top: 24px; }
+.directions__item, .directions__item:last-child { padding: 28px 24px; border: 1px solid var(--line); border-radius: 24px; background: var(--surface); }
+.directions__item h3 { color: var(--accent); font-size: 15px; }
+.directions__notice { background: var(--accent-soft); border-radius: 18px; }
+.directions__content .directions__links { padding-top: 12px; }
+.directions__content .directions__links .button { background: var(--surface); border-radius: 16px; }
+.directions__content .directions__links .button:focus-visible,
+.directions__content .directions__links .button:active { background: var(--accent); color: #fff; }
+.section.wreath { border-top: 0; padding-block: 16px; }
+.wreath__inner { max-width: 640px; background: var(--accent-soft); border-radius: 24px; }
+.section.share { padding-top: 32px; }
+.share__actions { margin-top: 24px; }
+.button, .opening__control { border-radius: 999px; }
+.welcome__choices button { border-radius: 22px; background: var(--surface); border-color: var(--line); box-shadow: var(--soft-shadow); }
+.welcome__choices button:hover, .welcome__choices button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+.welcome__inner > .pace-mark { width: 100px; margin-bottom: 24px; }
+.side-nav__label { border-radius: 999px; padding: 7px 10px; box-shadow: var(--soft-shadow); }
+.side-nav a { min-height: 44px; }
+.footer { background: var(--accent-soft); padding: 48px 24px; border-radius: 32px 32px 0 0; }
+@media (max-width: 760px) {
+  .section[id] { padding-inline: 20px 44px; }
+  .side-nav { right: 2px; }
+  .side-nav__label { right: 30px; }
+  .gallery__grid { gap: 6px; }
+  .gallery__grid .gallery__item { border-radius: 10px; }
+  .calendar__sheet { padding: 24px 16px; }
+  .account__group-body { padding-inline: 12px; }
+  .directions__item, .directions__item:last-child { padding: 24px 16px; }
+  .couple__grid { gap: 10px; }
+  .couple__person { padding: 24px 8px; }
+}
+@media (max-width: 360px) {
+  .couple__grid { grid-template-columns: 1fr; }
+  .couple__person { min-height: 140px; }
+  .share__actions { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .share__actions .button { min-width: 0; }
+}
+
+/* Native radio groups provide one-tap answers and keyboard navigation. */
+.rsvp-form .rsvp-choice-group { margin: 0 0 24px; }
+.rsvp-choice-group legend { width: 100%; margin-bottom: 10px; padding: 0; font-size: 16px; }
+.rsvp-choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.rsvp-form .rsvp-choice { position: relative; flex: 1 1 76px; min-width: 0; margin: 0; cursor: pointer; }
+.rsvp-choice input { position: absolute; width: 1px; height: 1px; padding: 0; margin: 0; opacity: 0; }
+.rsvp-choice span { display: flex; min-height: 52px; height: 100%; align-items: center; justify-content: center; gap: 6px; padding: 12px 8px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); color: var(--ink); font-size: 14px; line-height: 1.5; }
+.rsvp-choice input:checked + span { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.rsvp-choice input:checked + span::before { content: '✓'; font-size: 12px; }
+.rsvp-choice input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 3px; }
+.rsvp-choice input:disabled + span { cursor: not-allowed; opacity: .55; }
+@media (hover: hover) {
+  .rsvp-choice:hover input:not(:disabled) + span { border-color: var(--accent); }
 }

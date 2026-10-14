@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#f7f5f2">
   <meta name="description" content="한 식탁에서 시작해, 함께 움직이고 나란히 쉬며 만든 우리의 시간. 모바일 청첩장">
   <meta property="og:type" content="website">
   <meta property="og:title" content="백민규 · 박지해의 청첩장">
@@ -20,12 +20,12 @@
   <link rel="preload" as="image" media="(min-width: 761px)" href="assets/opening/frames/01-1600-bffa7b263d.webp" imagesrcset="assets/opening/frames/01-480-4ff597cf5f.webp 480w, assets/opening/frames/01-768-32b972d6aa.webp 768w, assets/opening/frames/01-1024-2442ce091a.webp 1024w, assets/opening/frames/01-1600-bffa7b263d.webp 1600w" imagesizes="100vw" fetchpriority="high">
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=23">
-  <link rel="stylesheet" href="play-pause.css?v=31">
+  <link rel="stylesheet" href="styles.css?v=25">
+  <link rel="stylesheet" href="play-pause.css?v=33">
   <script src="opening-images.js" defer></script>
   <script src="gallery-images.js" defer></script>
   <script src="content.js?v=20" defer></script>
-  <script src="script.js?v=38" defer></script>
+  <script src="script.js?v=39" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#invitation">본문으로 건너뛰기</a>
@@ -151,12 +151,12 @@
         <form id="rsvp-form" class="rsvp-form">
           <fieldset id="rsvp-fields" disabled>
             <legend class="rsvp-form__legend">참석 여부 알려주기</legend>
-            <label>구분<select name="side" required><option value="">선택해 주세요</option><option>신랑측</option><option>신부측</option></select></label>
+            <fieldset class="rsvp-choice-group"><legend>구분</legend><div class="rsvp-choices"><label class="rsvp-choice"><input type="radio" name="side" value="신랑측" required><span>신랑측</span></label><label class="rsvp-choice"><input type="radio" name="side" value="신부측" required><span>신부측</span></label></div></fieldset>
             <label>성함<input name="name" autocomplete="name" maxlength="40" required placeholder="성함을 입력해 주세요"></label>
-            <label>참석 여부<select name="attendance" required><option value="">선택해 주세요</option><option>참석</option><option>불참</option></select></label>
+            <fieldset class="rsvp-choice-group"><legend>참석 여부</legend><div class="rsvp-choices"><label class="rsvp-choice"><input type="radio" name="attendance" value="참석" required><span>참석</span></label><label class="rsvp-choice"><input type="radio" name="attendance" value="불참" required><span>불참</span></label></div></fieldset>
             <div id="rsvp-attending" hidden>
               <label>본인 포함 참석 인원<input name="guests" type="number" inputmode="numeric" min="1" max="20" step="1" value="1"></label>
-              <label>식사 여부<select name="meal"><option value="">선택해 주세요</option><option>식사 예정</option><option>식사 안 함</option><option>미정</option></select></label>
+              <fieldset class="rsvp-choice-group"><legend>식사 여부</legend><div class="rsvp-choices"><label class="rsvp-choice"><input type="radio" name="meal" value="식사 예정"><span>식사 예정</span></label><label class="rsvp-choice"><input type="radio" name="meal" value="식사 안 함"><span>식사 안 함</span></label><label class="rsvp-choice"><input type="radio" name="meal" value="미정"><span>미정</span></label></div></fieldset>
             </div>
             <label>전달 메시지 (선택)<textarea name="message" maxlength="500" rows="3" placeholder="전하고 싶은 말을 남겨 주세요"></textarea></label>
             <label class="rsvp-form__consent"><input name="consent" type="checkbox" required><span>참석 확인과 식사 준비를 위한 성함 및 응답 내용 수집·이용에 동의합니다.</span></label>
