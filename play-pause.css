@@ -34,8 +34,6 @@ body { background: var(--paper); }
 .opening--short { height: 100svh; height: 100dvh; min-height: 0; }
 .opening--short .opening__sticky { height: 100%; min-height: 0; }
 .opening__copy { transition: opacity .35s ease; }
-.opening__controls { display: flex; max-width: 230px; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
-.opening__controls .opening__scroll { width: 100%; justify-content: flex-end; }
 .opening__control {
   display: inline-flex;
   align-items: center;
@@ -201,7 +199,6 @@ body { background: var(--paper); }
   .opening h1 { font-size: clamp(58px, 16vw, 105px); }
   .opening__copy p { display: none; }
   .opening__final { right: 24px; bottom: 19svh; left: 24px; text-align: center; }
-  .opening__controls { max-width: 190px; }
   .section.story { padding-right: 42px; }
   .story__first { grid-template-columns: 1fr 25px; gap: 21px; margin-top: 72px; }
   .story__first .story__number { grid-column: 1 / -1; }
@@ -384,8 +381,6 @@ body { background: var(--paper); }
 .section { text-align: center; }
 .section__lead { margin-inline: auto; }
 .opening__bottom { flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; }
-.opening__controls { justify-content: center; }
-.opening__controls .opening__scroll { justify-content: center; }
 .invitation__message { margin-inline: auto; }
 .calendar__layout { grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 32px; }
 .calendar__sheet { width: min(100%, 440px); margin-inline: auto; }
@@ -735,3 +730,21 @@ body, .welcome { background: var(--canvas); }
 @media (prefers-reduced-motion: reduce) {
   .gallery__item { transition: none; }
 }
+
+/* One clear exit from the opening photographs. */
+.opening__skip {
+  min-height: 52px;
+  gap: 18px;
+  padding: 7px 8px 7px 22px;
+  border: 1px solid rgba(255,253,250,.7);
+  background: rgba(255,253,250,.96);
+  color: var(--accent);
+  box-shadow: 0 4px 20px rgba(30,22,18,.16);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -.02em;
+  text-shadow: none;
+}
+.opening__skip-arrow { display: grid; place-items: center; width: 34px; height: 34px; flex: none; border-radius: 50%; background: var(--accent); color: #fffdfa; font-size: 18px; line-height: 1; }
+.opening__skip:hover { background: var(--surface); color: var(--accent); border-color: var(--surface); }
+.opening__skip:focus-visible { outline: 2px solid #fffdfa; outline-offset: 4px; box-shadow: 0 0 0 7px rgba(48,43,40,.75); }
