@@ -546,11 +546,15 @@
     const attending = rsvpForm.elements.attendance.value === "참석";
     document.getElementById("rsvp-attending").hidden = !attending;
     for (const name of ["guests", "meal"]) {
-      rsvpForm.elements[name].disabled = !attending;
-      rsvpForm.elements[name].required = attending;
+      rsvpForm.querySelectorAll(`[name="${name}"]`).forEach((input) => {
+        input.disabled = !attending;
+        input.required = attending;
+      });
     }
   }
-  rsvpForm.elements.attendance.addEventListener("change", updateAttendance);
+  rsvpForm.addEventListener("change", (event) => {
+    if (event.target.name === "attendance") updateAttendance();
+  });
   updateAttendance();
   rsvpForm.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -1270,7 +1274,7 @@
   welcomeBack.addEventListener("click", () => {
     rememberGuest("");
     restoreRsvp();
-    rsvpForm.elements.side.value = "";
+    rsvpForm.querySelectorAll('[name="side"]').forEach((input) => { input.checked = false; });
     showWelcomeStep("choice");
   });
   welcomeEnter.addEventListener("click", enterOpening);

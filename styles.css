@@ -1,12 +1,12 @@
 :root {
   color-scheme: light;
-  --paper: #ffffff;
-  --cream: #f5f6f8;
-  --ink: #202124;
-  --muted: #5f636b;
-  --accent: #3157b7;
-  --accent-bright: #3157b7;
-  --line: #dfe2e7;
+  --paper: #fffdf9;
+  --cream: #f0eee7;
+  --ink: #29352f;
+  --muted: #646d65;
+  --accent: #486653;
+  --accent-bright: #486653;
+  --line: #dedfd4;
   --content: 1160px;
 }
 
@@ -18,7 +18,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 button { font: inherit; }
 a { color: inherit; }
 button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 4px; }
-::selection { background: #dce6fa; color: var(--ink); }
+::selection { background: #dce7d8; color: var(--ink); }
 h1, h2, h3, p { word-break: keep-all; overflow-wrap: break-word; }
 h1, h2, h3 { font-weight: 400; }
 h2 { margin: 16px 0 0; font-size: clamp(42px, 6vw, 76px); line-height: 1.17; letter-spacing: -.065em; }
@@ -225,7 +225,7 @@ h2 em { color: var(--accent); font-style: normal; }
 .rsvp-form fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
 .rsvp-form__legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .rsvp-form label { display: block; margin: 0 0 20px; font-size: 16px; }
-.rsvp-form input:not([type="checkbox"]), .rsvp-form select, .rsvp-form textarea { box-sizing: border-box; display: block; width: 100%; min-width: 0; min-height: 48px; margin-top: 8px; padding: 12px; border: 1px solid #a69e92; border-radius: 4px; background: #fffaf4; color: var(--ink); font: inherit; font-size: 16px; text-align: center; }
+.rsvp-form input:not([type="checkbox"]):not([type="radio"]), .rsvp-form select, .rsvp-form textarea { box-sizing: border-box; display: block; width: 100%; min-width: 0; min-height: 48px; margin-top: 8px; padding: 12px; border: 1px solid #a69e92; border-radius: 4px; background: #fffaf4; color: var(--ink); font: inherit; font-size: 16px; text-align: center; }
 .rsvp-form textarea { resize: vertical; }
 .rsvp-form .rsvp-form__consent { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 14px; line-height: 1.6; }
 .rsvp-form__consent input { flex: 0 0 22px; width: 22px; height: 22px; accent-color: var(--accent); }
