@@ -573,7 +573,7 @@
         link.title = "네이버 지도에서 정류장 찾기";
         const icon = document.createElement("span");
         icon.setAttribute("aria-hidden", "true");
-        icon.textContent = "N ↗";
+        icon.textContent = "↗";
         link.append(icon);
         heading.append(link);
       }
