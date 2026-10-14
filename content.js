@@ -30,6 +30,10 @@ window.WEDDING_CONTENT = {
   naverStaticMapCenter: "127.039411,37.508679",
   kakaoMapUrl: "https://place.map.kakao.com/191889847",
   googleMapUrl: "https://www.google.com/maps/place/%EC%95%84%EB%A5%B4%EB%B2%A0%EC%9B%A8%EB%94%A9/data=!3m1!4b1!4m4!3m3!1s0x357ca3000cdb4565:0x3bf6331e47e5d979!16s%2Fg%2F11w4r2h2g4!20s8Q99G25Q%2BFQ7?entry=ttu&g_ep=EgoyMDI2MTAwNy4wIKXMDSoASAFQAw%3D%3D",
+  busStops: [
+    { name: "아크로힐스논현", routes: "지선버스 3412, 6411", mapUrl: "https://map.naver.com/p/search/%EC%84%9C%EC%9A%B8%20%EA%B0%95%EB%82%A8%EA%B5%AC%20%EC%95%84%ED%81%AC%EB%A1%9C%ED%9E%90%EC%8A%A4%EB%85%BC%ED%98%84%20%EB%B2%84%EC%8A%A4%EC%A0%95%EB%A5%98%EC%9E%A5" },
+    { name: "스포월드·라움아트센터", routes: "간선버스 141, 242", mapUrl: "https://map.naver.com/p/search/%EC%84%9C%EC%9A%B8%20%EA%B0%95%EB%82%A8%EA%B5%AC%20%EC%8A%A4%ED%8F%AC%EC%9B%94%EB%93%9C%20%EB%9D%BC%EC%9B%80%EC%95%84%ED%8A%B8%EC%84%BC%ED%84%B0%20%EB%B2%84%EC%8A%A4%EC%A0%95%EB%A5%98%EC%9E%A5" },
+  ],
   rsvpMessage: "참석 여부를 알려주시면 정성껏 자리를 준비하겠습니다.",
   rsvpUrl: "",
   // Google Apps Script 웹 앱의 /exec 주소 (비밀 키가 아닙니다).

@@ -471,6 +471,39 @@
     } catch { return false; }
   }
 
+  const busStopsHost = document.getElementById("bus-stops");
+  for (const stop of content.busStops || []) {
+    const block = document.createElement("div");
+    block.className = "directions__bus-stop";
+    const heading = document.createElement("p");
+    heading.className = "directions__stop-heading";
+    const name = document.createElement("span");
+    name.textContent = stop.name;
+    heading.append(name);
+    try {
+      const url = new URL(stop.mapUrl);
+      if (url.protocol === "https:" && url.hostname === "map.naver.com") {
+        const link = document.createElement("a");
+        link.className = "directions__stop-map";
+        link.href = url.href;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.setAttribute("aria-label", `${stop.name} 정류장 네이버 지도 검색 (새 창)`);
+        link.title = "네이버 지도에서 정류장 찾기";
+        const icon = document.createElement("span");
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = "N ↗";
+        link.append(icon);
+        heading.append(link);
+      }
+    } catch { /* Keep the stop name readable if a map link is unavailable. */ }
+    const routes = document.createElement("p");
+    routes.className = "directions__detail";
+    routes.textContent = stop.routes;
+    block.append(heading, routes);
+    busStopsHost.append(block);
+  }
+
   const hasMaps = [
     setExternalLink("naver-map-link", content.naverMapUrl),
     setExternalLink("kakao-map-link", content.kakaoMapUrl),

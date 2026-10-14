@@ -2,8 +2,8 @@
 :root {
   --paper: #fffdf8;
   --cream: #faf3e9;
-  --ink: #51463f;
-  --muted: #75675d;
+  --ink: #352f2a;
+  --muted: #62574e;
   --accent: #b85024;
   --accent-bright: #f47735;
   --line: rgba(112, 85, 62, .18);
@@ -476,3 +476,23 @@ body { background: var(--paper); }
 .section.directions { padding-bottom: clamp(40px, 6vw, 64px); }
 .section.share { padding-top: 24px; padding-bottom: clamp(40px, 6vw, 64px); }
 .share__actions { margin-top: 24px; }
+
+/* Clear everyday information, with the softer type retained for personal messages. */
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", "Malgun Gothic", sans-serif; line-height: 1.7; }
+.invitation__message, .couple__identity, .wreath__inner { font-family: 'Gowun Dodum', sans-serif; }
+.section__lead, .directions__detail, .directions__aside, .directions__notice { font-size: 15px; line-height: 1.85; }
+.button { font-weight: 500; }
+.directions__content .directions__links { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-width: 480px; margin-inline: auto; padding-top: 16px; }
+.directions__content .directions__links .button { min-width: 0; min-height: 44px; padding: 10px 4px; font-size: 14px; line-height: 1.4; white-space: nowrap; border-radius: 6px; }
+.directions__list { margin-top: 28px; }
+.directions__item h3 { margin-bottom: 8px; font-size: 18px; }
+.directions__bus-stops { display: grid; gap: 20px; }
+.directions__item .directions__stop-heading { display: flex; align-items: center; justify-content: center; gap: 4px; margin-bottom: 2px; font-weight: 600; }
+.directions__stop-heading > span { min-width: 0; }
+.directions__stop-map { display: inline-flex; flex: 0 0 44px; align-items: center; justify-content: center; min-height: 44px; color: #25633d; text-decoration: none; font: 700 12px/1.2 sans-serif; }
+.directions__stop-map > span { padding: 5px; border: 1px solid #91b29d; border-radius: 5px; background: #f0f7f2; white-space: nowrap; }
+@media (max-width: 760px) {
+  .section[id] { padding-inline: 24px 44px; }
+  .directions__content .directions__links { gap: 6px; }
+  .directions__content .directions__links .button { font-size: 13px; }
+}

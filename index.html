@@ -21,11 +21,11 @@
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=21">
-  <link rel="stylesheet" href="play-pause.css?v=25">
+  <link rel="stylesheet" href="play-pause.css?v=26">
   <script src="opening-images.js" defer></script>
   <script src="gallery-images.js" defer></script>
-  <script src="content.js?v=17" defer></script>
-  <script src="script.js?v=33" defer></script>
+  <script src="content.js?v=18" defer></script>
+  <script src="script.js?v=34" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#invitation">본문으로 건너뛰기</a>
@@ -198,10 +198,10 @@
             <img id="naver-static-map-image" alt="아르베웨딩 위치를 표시한 네이버 정적 지도" loading="lazy" decoding="async" width="900" height="580">
           </a>
         </div>
-        <div class="directions__links"><a id="naver-map-link" class="button" href="#directions" hidden target="_blank" rel="noopener noreferrer">네이버 지도 <span aria-hidden="true">↗</span></a><a id="kakao-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer">카카오맵 <span aria-hidden="true">↗</span></a><a id="google-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer">구글 지도 <span aria-hidden="true">↗</span></a><p class="section__pending" id="map-pending">지도 링크를 준비하고 있습니다.</p></div>
+        <div class="directions__links"><a id="naver-map-link" class="button" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="네이버 지도에서 예식장 보기">네이버</a><a id="kakao-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="카카오맵에서 예식장 보기">카카오맵</a><a id="google-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="구글 지도에서 예식장 보기">구글 지도</a><p class="section__pending" id="map-pending">지도 링크를 준비하고 있습니다.</p></div>
         <div class="directions__list">
           <div class="directions__item"><h3>자가용</h3><div><p>외부 주차장에 먼저 주차한 뒤 웨딩홀로 이동해 주세요.</p><p class="directions__detail"> 도보 약 5분, 2시간 무료 주차입니다.</p><p class="directions__detail">제1주차장 · 서울시 강남구 논현동 237-12 경복주차장<br>제2주차장 · 서울시 강남구 언주로 603 국민은행</p><p class="directions__aside">외부 주차장은 토·일요일 이용 가능합니다.</p></div></div>
-          <div class="directions__item"><h3>버스</h3><div><p>아크로힐스논현 (구 경복아파트)<br><span class="directions__detail">정류장 23-138, 23-273 · 지선버스 3412, 6411</span></p><p>스포월드, 라움아트센터 (구 경복아파트)<br><span class="directions__detail">정류장 23-271, 23-272 · 간선버스 141, 242</span></p></div></div>
+          <div class="directions__item"><h3>버스</h3><div class="directions__bus-stops" id="bus-stops"></div></div>
           <div class="directions__item"><h3>지하철</h3><div><p>9호선 선정릉역 4번 출구 · 도보 5분</p><p>9호선 언주역 5번 출구 · 도보 5분</p></div></div>
         </div>
         <p class="directions__notice">주차 혼잡이 예상되오니 가급적 대중교통을 이용해 주세요.</p>
