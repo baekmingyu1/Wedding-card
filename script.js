@@ -785,6 +785,45 @@
   invitationUrl.hash = "";
   const calendarSave = document.getElementById("calendar-save");
   calendarSave.hidden = !eventReady;
+  const calendarPicker = document.getElementById("calendar-picker");
+  if (eventReady) {
+    const start = eventDate.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+    const googleCalendar = new URL("https://calendar.google.com/calendar/render");
+    googleCalendar.search = new URLSearchParams({
+      action: "TEMPLATE",
+      text: `${content.couple} 결혼식`,
+      dates: `${start}/${start}`,
+      ctz: "Asia/Seoul",
+      location: [content.venue, content.address].filter(Boolean).join(" · "),
+      details: `예식 시작: ${content.date} (대한민국 / Asia/Seoul)\n종료 시간은 안내되지 않았습니다. 저장 전 확인해 주세요.`
+    }).toString();
+    document.getElementById("calendar-google").href = googleCalendar.href;
+  }
+  calendarSave.addEventListener("click", () => {
+    if (!eventReady || calendarPicker.open) return;
+    calendarPicker.showModal();
+    document.documentElement.classList.add("calendar-picker-open");
+    document.getElementById("calendar-picker-title").focus({ preventScroll: true });
+  });
+  document.getElementById("calendar-picker-close").addEventListener("click", () => calendarPicker.close());
+  calendarPicker.addEventListener("click", (event) => {
+    if (event.target !== calendarPicker) return;
+    const rect = calendarPicker.getBoundingClientRect();
+    if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) calendarPicker.close();
+  });
+  calendarPicker.addEventListener("keydown", (event) => {
+    if (event.key !== "Tab") return;
+    const choices = [...calendarPicker.querySelectorAll("a[href], button")];
+    const index = choices.indexOf(document.activeElement);
+    if ((event.shiftKey && index <= 0) || (!event.shiftKey && index === choices.length - 1)) {
+      event.preventDefault();
+      choices[event.shiftKey ? choices.length - 1 : 0].focus();
+    }
+  });
+  calendarPicker.addEventListener("close", () => {
+    document.documentElement.classList.remove("calendar-picker-open");
+    calendarSave.focus({ preventScroll: true });
+  });
 
   document.getElementById("copy-link").addEventListener("click", () => copyText(invitationUrl.href));
   document.getElementById("share-invitation").addEventListener("click", async () => {
