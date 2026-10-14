@@ -21,11 +21,11 @@
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=26">
-  <link rel="stylesheet" href="play-pause.css?v=38">
+  <link rel="stylesheet" href="play-pause.css?v=39">
   <script src="opening-images.js" defer></script>
   <script src="gallery-images.js" defer></script>
   <script src="content.js?v=24" defer></script>
-  <script src="script.js?v=43" defer></script>
+  <script src="script.js?v=44" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#invitation">본문으로 건너뛰기</a>
@@ -129,7 +129,7 @@
       <div class="section__inner calendar__layout">
         <div><p class="section__lead" data-field="calendarMessage"></p></div>
         <div class="calendar__sheet"><div class="date-scene"><p class="date-scene__eyebrow" data-field="datePrelude"></p><p class="date-scene__date" id="date-scene-date" aria-hidden="true"></p></div><p class="calendar__month" id="calendar-month"></p><div class="calendar__grid" id="calendar-grid" aria-label="예식 월 달력"></div><p class="calendar__caption"><time id="calendar-event-time"><span id="calendar-event-date">날짜 준비 중</span><span id="calendar-event-hour"></span></time></p></div>
-        <a id="calendar-save" class="button" href="wedding.ics" hidden>내 일정에 저장 <span aria-hidden="true">＋</span></a>
+        <button id="calendar-save" class="button" type="button" aria-haspopup="dialog" aria-controls="calendar-picker" hidden>내 일정에 저장 <span aria-hidden="true">＋</span></button>
       </div>
     </section>
 
@@ -219,6 +219,16 @@
   </main>
 
   <footer class="footer"><svg class="pace-mark" viewBox="0 0 240 100" fill="none" aria-hidden="true"><path pathLength="1" d="M8 16 C75 16 65 76 120 76 S181 35 232 35"/><path pathLength="1" d="M8 48 C66 48 77 76 120 76"/><circle cx="232" cy="35" r="3"/></svg><span class="footer__signature"><span>OUR PACE</span><span aria-hidden="true">/</span><span>PLAY · PAUSE · TOGETHER</span></span><strong data-field="couple"></strong><a href="#opening">처음부터 다시 보기 ↑</a></footer>
+  <dialog id="calendar-picker" class="calendar-picker" aria-labelledby="calendar-picker-title" aria-describedby="calendar-picker-description">
+    <h2 id="calendar-picker-title" tabindex="-1">어디에 저장할까요?</h2>
+    <p id="calendar-picker-description">사용하실 캘린더를 선택해 주세요.</p>
+    <div class="calendar-picker__options">
+      <a class="calendar-picker__option" href="wedding.ics" target="_blank" rel="noopener noreferrer"><span><strong>기기 캘린더</strong><small>일정 파일을 열어 추가</small></span><span aria-hidden="true">↗</span></a>
+      <a id="calendar-google" class="calendar-picker__option" href="https://calendar.google.com/calendar/render" target="_blank" rel="noopener noreferrer"><span><strong>Google 캘린더</strong><small>Google 계정으로 로그인 후 저장</small></span><span aria-hidden="true">↗</span></a>
+    </div>
+    <p class="calendar-picker__help">기기 캘린더에서 열리지 않으면<br>Google 캘린더를 선택해 주세요.</p>
+    <button id="calendar-picker-close" class="calendar-picker__close" type="button">닫기</button>
+  </dialog>
   <dialog id="gallery-dialog" class="gallery-dialog" aria-label="사진 확대 보기">
     <div class="gallery-dialog__header"><span id="gallery-photo-counter" aria-live="polite"></span><button id="gallery-photo-close" type="button" autofocus>닫기 ×</button></div>
     <div class="gallery-dialog__viewport"><div id="gallery-photo-stage" class="gallery-dialog__stage"></div><p id="gallery-photo-status" class="gallery-dialog__status" role="status"></p></div>

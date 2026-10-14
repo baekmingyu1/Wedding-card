@@ -806,3 +806,22 @@ body { word-break: keep-all; overflow-wrap: break-word; }
 
 /* Keep each parking instruction together while allowing breaks between phrases. */
 .parking-phrase { display: inline-block; max-width: 100%; }
+
+/* One entry button, with explicit calendar choices in a modal sheet. */
+html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
+.calendar-picker { position: fixed; inset: auto 0 0; box-sizing: border-box; width: min(calc(100% - 32px), 440px); max-width: none; max-height: calc(100dvh - 32px); margin: 0 auto max(16px, env(safe-area-inset-bottom)); padding: 28px 20px 16px; overflow-y: auto; border: 1px solid var(--line); border-radius: 28px; background: var(--paper); color: var(--ink); text-align: center; box-shadow: var(--soft-shadow); }
+.calendar-picker::backdrop { background: rgba(48,43,40,.35); }
+.calendar-picker h2 { margin: 0; font-size: 22px; line-height: 1.5; letter-spacing: -.03em; }
+.calendar-picker h2:focus { outline: none; }
+.calendar-picker p { margin: 8px 0 0; color: var(--muted); font-size: 14px; line-height: 1.8; }
+.calendar-picker__options { display: grid; gap: 10px; margin-top: 24px; }
+.calendar-picker__option { position: relative; display: flex; align-items: center; justify-content: center; gap: 12px; min-height: 76px; padding: 16px 32px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); text-align: center; text-decoration: none; }
+.calendar-picker__option > span:first-child { min-width: 0; }
+.calendar-picker__option strong, .calendar-picker__option small { display: block; }
+.calendar-picker__option strong { font-size: 16px; font-weight: 600; }
+.calendar-picker__option small { margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.calendar-picker__option:hover { background: var(--accent-soft); }
+.calendar-picker .calendar-picker__help { margin-top: 20px; font-size: 12px; }
+.calendar-picker__close { width: 100%; min-height: 44px; margin-top: 12px; border: 0; border-radius: 16px; background: var(--accent-soft); color: var(--accent); cursor: pointer; }
+
+.calendar-picker__option > span:last-child { position: absolute; right: 14px; }
