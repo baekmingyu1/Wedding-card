@@ -20,12 +20,12 @@
   <link rel="preload" as="image" media="(min-width: 761px)" href="assets/opening/frames/01-1600-bffa7b263d.webp" imagesrcset="assets/opening/frames/01-480-4ff597cf5f.webp 480w, assets/opening/frames/01-768-32b972d6aa.webp 768w, assets/opening/frames/01-1024-2442ce091a.webp 1024w, assets/opening/frames/01-1600-bffa7b263d.webp 1600w" imagesizes="100vw" fetchpriority="high">
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20">
-  <link rel="stylesheet" href="play-pause.css?v=23">
+  <link rel="stylesheet" href="styles.css?v=21">
+  <link rel="stylesheet" href="play-pause.css?v=24">
   <script src="opening-images.js" defer></script>
   <script src="gallery-images.js" defer></script>
   <script src="content.js?v=16" defer></script>
-  <script src="script.js?v=32" defer></script>
+  <script src="script.js?v=33" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#invitation">본문으로 건너뛰기</a>
@@ -120,12 +120,6 @@
       <div class="section__inner invitation__inner">
 
         <div class="invitation__body">
-          <header class="invitation__summary">
-            <p class="invitation__eyebrow">우리의 결혼식에 초대합니다</p>
-            <h2 data-field="couple"></h2>
-            <p data-field="date"></p>
-            <p class="invitation__venue" data-field="venue"></p>
-          </header>
           <div class="invitation__message" id="invitation-message"></div>
         </div>
       </div>
@@ -134,7 +128,7 @@
     <section class="section calendar" id="calendar" aria-label="캘린더">
       <div class="section__inner calendar__layout">
         <div><p class="section__lead" data-field="calendarMessage"></p></div>
-        <div class="calendar__sheet"><p class="calendar__month" id="calendar-month"></p><div class="calendar__grid" id="calendar-grid" aria-label="예식 월 달력"></div><p class="calendar__caption" data-field="date"></p></div>
+        <div class="calendar__sheet"><p class="calendar__month" id="calendar-month"></p><div class="calendar__grid" id="calendar-grid" aria-label="예식 월 달력"></div><p class="calendar__caption"><time id="calendar-event-time"><span id="calendar-event-date">날짜 준비 중</span><span id="calendar-event-hour"></span></time></p></div>
         <a id="calendar-save" class="button" href="wedding.ics" hidden>내 일정에 저장 <span aria-hidden="true">＋</span></a>
       </div>
     </section>
@@ -148,7 +142,7 @@
     </section>
 
     <section class="section rsvp" id="rsvp" aria-label="참석 의사 전달">
-      <div class="section__inner rsvp__layout"><div><p class="section__lead" data-field="rsvpMessage"></p><a class="button rsvp__link" id="rsvp-link" href="#rsvp" target="_blank" rel="noopener noreferrer" hidden>참석 여부 알려주기 <span aria-hidden="true">↗</span></a><p class="section__pending" id="rsvp-pending">참석 여부 접수를 준비하고 있습니다.</p>
+      <div class="section__inner rsvp__layout"><details class="rsvp-disclosure" id="rsvp-disclosure"><summary>참석 여부 알려주기<span class="rsvp-disclosure__icon" aria-hidden="true"></span></summary><div><p class="section__lead" data-field="rsvpMessage"></p><a class="button rsvp__link" id="rsvp-link" href="#rsvp" target="_blank" rel="noopener noreferrer" hidden>참석 여부 알려주기 <span aria-hidden="true">↗</span></a><p class="section__pending" id="rsvp-pending">참석 여부 접수를 준비하고 있습니다.</p>
         <form id="rsvp-form" class="rsvp-form">
           <fieldset id="rsvp-fields" disabled>
             <legend class="rsvp-form__legend">참석 여부 알려주기</legend>
@@ -165,7 +159,7 @@
             <button class="button" type="submit" id="rsvp-submit">참석 여부 전달하기</button>
           </fieldset>
           <p id="rsvp-status" role="status" aria-live="polite"></p>
-        </form></div></div>
+        </form></div></details></div>
     </section>
 
     <section class="section couple" id="couple" aria-label="신랑 신부 소개">
@@ -194,7 +188,6 @@
     <section class="section directions" id="location" aria-label="예식 장소와 오시는 방법">
       <div class="section__inner directions__content">
         <div class="location__main location__map-heading">
-          <p class="location__date" data-field="date"></p>
           <h3 data-field="venue"></h3>
           <p class="location__address" data-field="address"></p>
           <button id="copy-address" class="button button--light" type="button" disabled>주소 복사 <span aria-hidden="true">↗</span></button>

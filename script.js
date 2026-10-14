@@ -584,6 +584,13 @@
   if (eventReady) {
     const { year, month, day } = koreanParts(eventDate);
     calendarMonth.textContent = `${year}. ${String(month).padStart(2, "0")}`;
+    document.getElementById("calendar-event-time").dateTime = content.eventDate;
+    document.getElementById("calendar-event-date").textContent = new Intl.DateTimeFormat("ko-KR", {
+      timeZone: "Asia/Seoul", dateStyle: "full"
+    }).format(eventDate);
+    document.getElementById("calendar-event-hour").textContent = new Intl.DateTimeFormat("ko-KR", {
+      timeZone: "Asia/Seoul", hour: "numeric", minute: "numeric", hour12: true
+    }).format(eventDate);
     for (const weekday of ["일", "월", "화", "수", "목", "금", "토"]) {
       const label = document.createElement("span");
       label.className = "calendar__weekday";
@@ -1144,7 +1151,7 @@
   const welcomeRsvp = document.getElementById("welcome-rsvp");
   const welcomeBack = document.getElementById("welcome-back");
   const welcomeEnter = document.getElementById("welcome-enter");
-  const rsvpHome = rsvpForm.parentElement.parentElement;
+  const rsvpHome = document.getElementById("rsvp-disclosure");
   const rsvpContent = rsvpForm.parentElement;
   const quiz = Array.isArray(content.welcomeQuiz) ? content.welcomeQuiz : [];
   let storyIndex = 0;

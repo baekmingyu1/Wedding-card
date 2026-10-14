@@ -453,3 +453,21 @@ body { background: var(--paper); }
 .gallery-dialog button { border-color: var(--line); color: var(--ink); }
 .gallery-dialog button:focus-visible { outline-color: var(--accent); }
 .gallery-dialog .gallery-dialog__thumbnail[aria-current="true"] { border-color: var(--accent); }
+
+/* Keep the date and time readable as separate lines at every screen width. */
+.calendar .calendar__caption { font-size: clamp(16px, 2.2vw, 22px); }
+.calendar__caption time > span { display: block; }
+#calendar-event-hour { margin-top: 6px; font-size: .95em; font-weight: 400; }
+
+.rsvp-disclosure { max-width: 520px; margin-inline: auto; border-block: 1px solid var(--line); }
+.rsvp-disclosure > summary { display: flex; align-items: center; justify-content: center; gap: 16px; min-height: 64px; padding: 18px 12px; cursor: pointer; list-style: none; font-size: 17px; }
+.rsvp-disclosure > summary::-webkit-details-marker { display: none; }
+.rsvp-disclosure > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.rsvp-disclosure__icon::before { content: "+"; color: var(--accent); font-size: 22px; }
+.rsvp-disclosure[open] .rsvp-disclosure__icon::before { content: "−"; }
+.rsvp-disclosure[open] > div { padding: 0 12px 24px; }
+
+/* A separate, quiet card marks the end of travel information. */
+.section.wreath { background: var(--paper); border-top: 1px solid var(--line); padding-block: clamp(56px, 8vw, 96px); }
+.wreath__inner { max-width: 670px; padding: clamp(24px, 5vw, 48px) 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--cream); }
+.wreath__inner > p:last-child { font-size: clamp(16px, 2vw, 22px); }

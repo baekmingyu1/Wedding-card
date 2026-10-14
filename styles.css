@@ -109,7 +109,6 @@ h2 em { color: var(--accent); font-style: normal; }
 
 .location { background: var(--paper); }
 .location__card { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(35px, 6vw, 90px); margin-top: 65px; padding-top: 40px; border-top: 1px solid var(--line); }
-.location__date { margin: 0 0 25px; color: var(--accent); font-family: 'DM Sans', 'Gowun Dodum', sans-serif; font-size: 13px; font-weight: 600; }
 .location__main h3 { margin: 0 0 18px; font-size: clamp(30px, 4vw, 48px); }
 .location__address { margin: 0; color: var(--muted); font-size: 16px; }
 .location__transport { max-width: 480px; margin: 0; color: var(--muted); font-size: 15px; line-height: 1.9; }
@@ -274,12 +273,6 @@ html.welcome-open, html.welcome-open body { overflow: hidden; }
 .welcome__actions { display: flex; justify-content: center; gap: 12px; }
 .welcome__actions .button { flex: 1; padding: 14px 10px; font-size: 15px; }
 .welcome__actions .welcome__text-button { margin-top: 0; }
-.invitation__summary { margin-bottom: 40px; }
-.invitation__summary .invitation__eyebrow { margin: 0 0 20px; color: var(--muted); font-size: 14px; }
-.invitation__body .invitation__summary h2 { margin: 0 0 24px; font-size: clamp(28px, 5vw, 44px); line-height: 1.5; }
-.invitation__summary p { margin: 10px 0; font-size: clamp(14px, 2vw, 18px); line-height: 1.8; }
-.invitation__summary .invitation__venue { color: var(--accent); }
-.invitation__summary + .invitation__message { margin-top: 0; }
 
 .invitation:focus { outline: none; }
 
