@@ -29,16 +29,6 @@
     element.textContent = content[element.dataset.field] || "";
   });
 
-  // Reuse optimized photographs without adding a second image pipeline.
-  function setEditorialPhoto(element, photo) {
-    if (!element || !photo) return;
-    element.src = photo.src;
-    element.srcset = photo.srcset || photo.mobileSrcset || "";
-    element.sizes = "(max-width: 760px) 100vw, 900px";
-    element.decoding = "async";
-  }
-  setEditorialPhoto(document.getElementById("editorial-photo"), window.OPENING_IMAGES?.at(-1));
-
   for (const line of content.invitation || []) {
     const paragraph = document.createElement("p");
     paragraph.textContent = line;
@@ -145,7 +135,7 @@
 
   const galleryPhotos = content.galleryPhotos?.length ? content.galleryPhotos : Array(6).fill("");
   const galleryPager = document.getElementById("gallery-pagination");
-  const galleryPageSize = 8;
+  const galleryPageSize = 9;
   const galleryPageCount = Math.ceil(galleryPhotos.length / galleryPageSize);
 
   const galleryDialog = document.getElementById("gallery-dialog");
@@ -415,11 +405,9 @@
     galleryHost.replaceChildren();
     const start = page * galleryPageSize;
     const photos = galleryPhotos.slice(start, start + galleryPageSize);
-    galleryHost.classList.toggle("gallery__grid--odd", photos.length % 2 === 1);
     photos.forEach((photo, offset) => {
       const index = start + offset;
-      const mobileSize = offset === 0 && photos.length % 2 === 1
-        ? "calc(100vw - 104px)" : "calc((100vw - 114px) / 2)";
+      const mobileSize = "calc((100vw - 92px) / 3)";
       const sizes = "(max-width: 760px) " + mobileSize + ", (max-width: 1220px) calc((100vw - 88px) / 3), 378px";
       addPhoto(galleryHost, resolveGalleryPhoto(index), index, "gallery", sizes);
     });
@@ -1223,7 +1211,6 @@
   function showStory() {
     if (storyIndex >= quiz.length) { showWelcomeRsvp(); return; }
     const item = quiz[storyIndex];
-    setEditorialPhoto(document.getElementById("story-photo"), window.OPENING_IMAGES?.[storyIndex % (window.OPENING_IMAGES?.length || 1)]);
     document.getElementById("welcome-question").textContent = item.question || "우리의 이야기";
     document.getElementById("welcome-step").textContent = `${storyIndex + 1} / ${quiz.length} · 우리의 이야기`;
     const answers = document.getElementById("welcome-answers");
@@ -1301,7 +1288,7 @@
   function initContentMotion() {
     const running = new Map();
     const seen = new WeakSet();
-    const revealTargets = ".pace-mark, .editorial-cover, .story-photo, .invitation__message p, .calendar__sheet, #calendar-save, .countdown__inner, .gallery__item, .rsvp-disclosure, .couple__person, .account__group, .location__map-heading, .directions__map, .directions__links, .directions__item, .wreath__inner, .share__inner";
+    const revealTargets = ".pace-mark, .invitation__message p, .calendar__sheet, #calendar-save, .countdown__inner, .gallery__item, .rsvp-disclosure, .couple__person, .account__group, .location__map-heading, .directions__map, .directions__links, .directions__item, .wreath__inner, .share__inner";
     if ("IntersectionObserver" in window && Element.prototype.animate) {
       const observer = new IntersectionObserver((entries) => {
         for (const { target, isIntersecting } of entries) {
@@ -1319,7 +1306,7 @@
               draw.addEventListener("cancel", clearDraw, { once: true });
             }
           }
-          const editorial = target.matches(".editorial-cover, .story-photo, .invitation__message p, .gallery__item");
+          const editorial = target.matches(".invitation__message p, .gallery__item");
           const animation = target.animate([
             { opacity: editorial ? 0 : .45, transform: editorial ? "translateY(24px)" : "translateY(10px)" },
             { opacity: 1, transform: "translateY(0)" }
