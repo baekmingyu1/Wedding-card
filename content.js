@@ -18,6 +18,7 @@ window.WEDDING_CONTENT = {
   eventDate: "2026-12-12T16:30:00+09:00",
   datePrelude: "우리의 다음 장이 시작되는 날",
   countdownPrelude: "그날을 향해, 한 걸음씩",
+  calendarSaveHelp: "Google 캘린더에서 로그인 후 저장해 주세요.",
   calendarMessage: "12월 12일, 함께 시작하는 날에 뵙겠습니다.",
   invitation: [
     "처음 마주 앉은 한 식탁에서\n우리의 이야기가 시작됐습니다.",

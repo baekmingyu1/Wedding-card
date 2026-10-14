@@ -784,7 +784,22 @@
   const invitationUrl = new URL(window.location.href);
   invitationUrl.hash = "";
   const calendarSave = document.getElementById("calendar-save");
-  calendarSave.hidden = !eventReady;
+  document.getElementById("calendar-save-actions").hidden = !eventReady;
+  if (eventReady) {
+    // Android browsers cannot reliably hand .ics files to an installed calendar.
+    // Use an HTTPS editor; keep the static file as a separate download option.
+    const start = eventDate.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+    const calendarUrl = new URL("https://calendar.google.com/calendar/render");
+    calendarUrl.search = new URLSearchParams({
+      action: "TEMPLATE",
+      text: `${content.couple} 결혼식`,
+      dates: `${start}/${start}`,
+      ctz: "Asia/Seoul",
+      location: [content.venue, content.address].filter(Boolean).join(" · "),
+      details: `예식 시작: ${content.date} (대한민국 / Asia/Seoul)\n종료 시간은 안내되지 않았습니다. 저장 전 확인해 주세요.`
+    }).toString();
+    calendarSave.href = calendarUrl.href;
+  }
 
   document.getElementById("copy-link").addEventListener("click", () => copyText(invitationUrl.href));
   document.getElementById("share-invitation").addEventListener("click", async () => {

@@ -21,11 +21,11 @@
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=26">
-  <link rel="stylesheet" href="play-pause.css?v=38">
+  <link rel="stylesheet" href="play-pause.css?v=39">
   <script src="opening-images.js" defer></script>
   <script src="gallery-images.js" defer></script>
-  <script src="content.js?v=24" defer></script>
-  <script src="script.js?v=43" defer></script>
+  <script src="content.js?v=25" defer></script>
+  <script src="script.js?v=44" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#invitation">본문으로 건너뛰기</a>
@@ -129,7 +129,11 @@
       <div class="section__inner calendar__layout">
         <div><p class="section__lead" data-field="calendarMessage"></p></div>
         <div class="calendar__sheet"><div class="date-scene"><p class="date-scene__eyebrow" data-field="datePrelude"></p><p class="date-scene__date" id="date-scene-date" aria-hidden="true"></p></div><p class="calendar__month" id="calendar-month"></p><div class="calendar__grid" id="calendar-grid" aria-label="예식 월 달력"></div><p class="calendar__caption"><time id="calendar-event-time"><span id="calendar-event-date">날짜 준비 중</span><span id="calendar-event-hour"></span></time></p></div>
-        <a id="calendar-save" class="button" href="wedding.ics" hidden>내 일정에 저장 <span aria-hidden="true">＋</span></a>
+        <div class="calendar__save-actions" id="calendar-save-actions" hidden>
+          <a id="calendar-save" class="button" href="https://calendar.google.com/calendar/render" target="_blank" rel="noopener noreferrer" aria-describedby="calendar-save-help">내 일정에 저장 <span aria-hidden="true">＋</span></a>
+          <p id="calendar-save-help" class="calendar__save-help" data-field="calendarSaveHelp"></p>
+          <a class="calendar__file" href="wedding.ics" download="wedding.ics">다른 캘린더용 일정 파일 받기 <span aria-hidden="true">↓</span></a>
+        </div>
       </div>
     </section>
 

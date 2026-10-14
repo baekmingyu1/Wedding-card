@@ -806,3 +806,8 @@ body { word-break: keep-all; overflow-wrap: break-word; }
 
 /* Keep each parking instruction together while allowing breaks between phrases. */
 .parking-phrase { display: inline-block; max-width: 100%; }
+
+/* Calendar editor works without a local .ics file handler. */
+.calendar__save-actions { width: 100%; text-align: center; }
+.calendar__save-help { margin: 12px auto 4px; max-width: 28em; color: var(--muted); font-size: 13px; line-height: 1.8; }
+.calendar__file { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; max-width: 100%; padding-block: 8px; color: var(--muted); font-size: 13px; text-decoration: underline; text-underline-offset: 4px; }
