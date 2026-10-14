@@ -21,11 +21,11 @@
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=23">
-  <link rel="stylesheet" href="play-pause.css?v=30">
+  <link rel="stylesheet" href="play-pause.css?v=31">
   <script src="opening-images.js" defer></script>
   <script src="gallery-images.js" defer></script>
   <script src="content.js?v=20" defer></script>
-  <script src="script.js?v=37" defer></script>
+  <script src="script.js?v=38" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#invitation">본문으로 건너뛰기</a>
@@ -49,6 +49,7 @@
 
   <dialog class="welcome" id="welcome-dialog" aria-labelledby="welcome-title">
     <div class="welcome__inner">
+      <svg class="pace-mark" viewBox="0 0 240 100" fill="none" aria-hidden="true"><path pathLength="1" d="M8 16 C75 16 65 76 120 76 S181 35 232 35"/><path pathLength="1" d="M8 48 C66 48 77 76 120 76"/><circle cx="232" cy="35" r="3"/></svg>
       <p class="welcome__eyebrow">OUR PACE · OUR PEOPLE</p>
       <p class="welcome__couple" data-field="couple"></p>
       <div id="welcome-choice">
@@ -60,6 +61,7 @@
         </div>
       </div>
       <div id="welcome-story" hidden>
+        <figure class="story-photo"><img id="story-photo" alt="" width="1600" height="1067"></figure>
         <p class="welcome__step" id="welcome-step"></p>
         <h2 id="welcome-question" tabindex="-1"></h2>
         <div class="welcome__story-card">
@@ -97,12 +99,15 @@
         </div>
         <div class="opening__copy">
           <span class="opening__scene" id="opening-count">01 / 15</span>
-          <h1>OUR <span class="opening__slash">/</span><br>PACE</h1>
+          <h1>Our <em>pace.</em></h1>
           <p>함께 움직이고, 나란히 쉬며 만들어 온 우리의 시간.</p>
         </div>
         <div class="opening__final" id="opening-final" aria-hidden="true">
-          <span>OUR PACE, TOGETHER</span>
-          <p>이제, 같은 페이스로.</p>
+          <span>OUR WEDDING INVITATION</span>
+          <p class="poster-title">Our <em>pace.</em></p>
+          <svg class="pace-mark" viewBox="0 0 240 100" fill="none" aria-hidden="true"><path pathLength="1" d="M8 16 C75 16 65 76 120 76 S181 35 232 35"/><path pathLength="1" d="M8 48 C66 48 77 76 120 76"/><circle cx="232" cy="35" r="3"/></svg>
+          <p class="poster-caption">이제, 같은 페이스로.</p>
+          <time class="poster-date" data-field="date"></time>
         </div>
         <div class="opening__bottom">
           <span class="opening__couple" data-field="couple"></span>
@@ -117,7 +122,9 @@
     </section>
 
     <section class="section invitation" id="invitation" aria-label="초대 멘트">
+      <figure class="editorial-cover"><img id="editorial-photo" alt="골목에서 서로 마주 보고 있는 신랑 신부" width="1600" height="1067"><figcaption><span>OUR DAYS, TOGETHER</span><strong>Our <em>pace.</em></strong></figcaption></figure>
       <div class="section__inner invitation__inner">
+        <svg class="pace-mark" viewBox="0 0 240 100" fill="none" aria-hidden="true"><path pathLength="1" d="M8 16 C75 16 65 76 120 76 S181 35 232 35"/><path pathLength="1" d="M8 48 C66 48 77 76 120 76"/><circle cx="232" cy="35" r="3"/></svg>
 
         <div class="invitation__body">
           <div class="invitation__message" id="invitation-message"></div>
@@ -218,7 +225,7 @@
     </section>
   </main>
 
-  <footer class="footer"><span>OUR PACE / PLAY · PAUSE · TOGETHER</span><strong data-field="couple"></strong><a href="#opening">처음부터 다시 보기 ↑</a></footer>
+  <footer class="footer"><svg class="pace-mark" viewBox="0 0 240 100" fill="none" aria-hidden="true"><path pathLength="1" d="M8 16 C75 16 65 76 120 76 S181 35 232 35"/><path pathLength="1" d="M8 48 C66 48 77 76 120 76"/><circle cx="232" cy="35" r="3"/></svg><span>OUR PACE / PLAY · PAUSE · TOGETHER</span><strong data-field="couple"></strong><a href="#opening">처음부터 다시 보기 ↑</a></footer>
   <dialog id="gallery-dialog" class="gallery-dialog" aria-label="사진 확대 보기">
     <div class="gallery-dialog__header"><span id="gallery-photo-counter" aria-live="polite"></span><button id="gallery-photo-close" type="button" autofocus>닫기 ×</button></div>
     <div class="gallery-dialog__viewport"><div id="gallery-photo-stage" class="gallery-dialog__stage"></div><p id="gallery-photo-status" class="gallery-dialog__status" role="status"></p></div>

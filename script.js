@@ -29,6 +29,16 @@
     element.textContent = content[element.dataset.field] || "";
   });
 
+  // Reuse optimized photographs without adding a second image pipeline.
+  function setEditorialPhoto(element, photo) {
+    if (!element || !photo) return;
+    element.src = photo.src;
+    element.srcset = photo.srcset || photo.mobileSrcset || "";
+    element.sizes = "(max-width: 760px) 100vw, 900px";
+    element.decoding = "async";
+  }
+  setEditorialPhoto(document.getElementById("editorial-photo"), window.OPENING_IMAGES?.at(-1));
+
   for (const line of content.invitation || []) {
     const paragraph = document.createElement("p");
     paragraph.textContent = line;
@@ -1174,7 +1184,7 @@
         finalMessageReady = true;
         updateScroll();
       }
-      await waitPlayback(index === 0 ? 1300 : index === frames.length - 1 ? 1600 : middleFrameMs, run);
+      await waitPlayback(index === 0 ? 1300 : index === frames.length - 1 ? 3200 : middleFrameMs, run);
     }
     if (run === playbackRun) finishOpening();
   }
@@ -1213,6 +1223,7 @@
   function showStory() {
     if (storyIndex >= quiz.length) { showWelcomeRsvp(); return; }
     const item = quiz[storyIndex];
+    setEditorialPhoto(document.getElementById("story-photo"), window.OPENING_IMAGES?.[storyIndex % (window.OPENING_IMAGES?.length || 1)]);
     document.getElementById("welcome-question").textContent = item.question || "우리의 이야기";
     document.getElementById("welcome-step").textContent = `${storyIndex + 1} / ${quiz.length} · 우리의 이야기`;
     const answers = document.getElementById("welcome-answers");
@@ -1290,7 +1301,7 @@
   function initContentMotion() {
     const running = new Map();
     const seen = new WeakSet();
-    const revealTargets = ".invitation__message p, .calendar__sheet, #calendar-save, .countdown__inner, .gallery__item, .rsvp-disclosure, .couple__person, .account__group, .location__map-heading, .directions__map, .directions__links, .directions__item, .wreath__inner, .share__inner";
+    const revealTargets = ".pace-mark, .editorial-cover, .story-photo, .invitation__message p, .calendar__sheet, #calendar-save, .countdown__inner, .gallery__item, .rsvp-disclosure, .couple__person, .account__group, .location__map-heading, .directions__map, .directions__links, .directions__item, .wreath__inner, .share__inner";
     if ("IntersectionObserver" in window && Element.prototype.animate) {
       const observer = new IntersectionObserver((entries) => {
         for (const { target, isIntersecting } of entries) {
@@ -1299,10 +1310,20 @@
           if (seen.has(target)) continue;
           seen.add(target);
           if (motionReduced.matches || document.hidden || target.contains(document.activeElement)) continue;
+          if (target.matches(".pace-mark")) {
+            for (const path of target.querySelectorAll("path")) {
+              const draw = path.animate([{ strokeDasharray: "1", strokeDashoffset: "1" }, { strokeDasharray: "1", strokeDashoffset: "0" }], { duration: 1400, easing: "ease-in-out" });
+              running.set(path, draw);
+              const clearDraw = () => running.delete(path);
+              draw.addEventListener("finish", clearDraw, { once: true });
+              draw.addEventListener("cancel", clearDraw, { once: true });
+            }
+          }
+          const editorial = target.matches(".editorial-cover, .story-photo, .invitation__message p, .gallery__item");
           const animation = target.animate([
-            { opacity: .45, transform: "translateY(10px)" },
+            { opacity: editorial ? 0 : .45, transform: editorial ? "translateY(24px)" : "translateY(10px)" },
             { opacity: 1, transform: "translateY(0)" }
-          ], { duration: 320, easing: "cubic-bezier(.2,.7,.2,1)" });
+          ], { duration: editorial ? 850 : 320, easing: "cubic-bezier(.2,.7,.2,1)" });
           running.set(target, animation);
           const clear = () => { if (running.get(target) === animation) running.delete(target); };
           animation.addEventListener("finish", clear, { once: true });
