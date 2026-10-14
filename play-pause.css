@@ -803,3 +803,6 @@ body { word-break: keep-all; overflow-wrap: break-word; }
   .wreath__inner { padding-inline: 16px; }
   .footer__signature { letter-spacing: .1em; }
 }
+
+/* Keep each parking instruction together while allowing breaks between phrases. */
+.parking-phrase { display: inline-block; max-width: 100%; }

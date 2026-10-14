@@ -21,7 +21,8 @@ window.WEDDING_CONTENT = {
   calendarMessage: "12월 12일, 함께 시작하는 날에 뵙겠습니다.",
   invitation: [
     "처음 마주 앉은 한 식탁에서\n우리의 이야기가 시작됐습니다.",
-    "함께 움직이는 날도,\n나란히 쉬는 날도 좋았습니다.\n이제 앞으로의 날들을\n함께 이어가려 합니다.",
+    "함께 움직이는 날도,\n나란히 쉬는 날도 좋았습니다.",
+    "이제 앞으로의 날들을\n함께 이어가려 합니다.",
     "소중한 분들을 모시고\n그 첫날을 맞이하고 싶습니다."
   ],
   venue: "아르베 웨딩",
@@ -36,7 +37,7 @@ window.WEDDING_CONTENT = {
     { name: "아크로힐스논현", routes: "지선버스 3412, 6411", mapUrl: "https://map.naver.com/p/search/%EC%84%9C%EC%9A%B8%20%EA%B0%95%EB%82%A8%EA%B5%AC%20%EC%95%84%ED%81%AC%EB%A1%9C%ED%9E%90%EC%8A%A4%EB%85%BC%ED%98%84%20%EB%B2%84%EC%8A%A4%EC%A0%95%EB%A5%98%EC%9E%A5" },
     { name: "라움아트센터 · 시티프라디움더강남", routes: "간선버스 141, 242", mapUrl: "https://naver.me/xM5Fkzhh" },
   ],
-  parkingMessage: "외부 주차장에 먼저 주차한 뒤 웨딩홀로 이동해 주세요.",
+  parkingMessage: ["외부 주차장에", "먼저 주차한 뒤", "웨딩홀로 이동해 주세요."],
   parkingDuration: "도보 약 5분 · 2시간 무료 주차",
   parkingLocations: [
     { label: "제1주차장 · 경복주차장", address: "서울시 강남구 논현동 237-12" },

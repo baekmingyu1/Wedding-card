@@ -26,7 +26,16 @@
   let toastTimer;
 
   document.querySelectorAll("[data-field]").forEach((element) => {
-    element.textContent = content[element.dataset.field] || "";
+    const value = content[element.dataset.field];
+    if (element.dataset.field === "parkingMessage" && Array.isArray(value)) {
+      value.forEach((text, index) => {
+        if (index) element.append(document.createTextNode(" "));
+        const phrase = document.createElement("span");
+        phrase.className = "parking-phrase";
+        phrase.textContent = text;
+        element.append(phrase);
+      });
+    } else element.textContent = value || "";
   });
 
   for (const line of content.invitation || []) {
@@ -136,6 +145,7 @@
   const galleryPhotos = content.galleryPhotos?.length ? content.galleryPhotos : Array(6).fill("");
   const galleryPager = document.getElementById("gallery-pagination");
   const galleryPageSize = 9;
+  const gallerySizes = "(max-width: 760px) calc((100vw - 100px) / 3), (max-width: 964px) calc((100vw - 84px) / 3), 294px";
   const galleryPageCount = Math.ceil(galleryPhotos.length / galleryPageSize);
 
   const galleryDialog = document.getElementById("gallery-dialog");
@@ -158,6 +168,55 @@
   const resolveGalleryPhoto = (index) => galleryPhotos[index] || openingPhotos[
     Math.round(index * (openingPhotos.length - 1) / Math.max(1, galleryPhotos.length - 1))
   ];
+
+  // Warm the HTTP cache after the intro is ready, without retaining every decoded image.
+  let galleryPreloadStarted = false;
+  function preloadGallery() {
+    if (galleryPreloadStarted || navigator.connection?.saveData) return;
+    galleryPreloadStarted = true;
+    const photos = galleryPhotos.map((_, index) => resolveGalleryPhoto(index)).filter(photoUrl);
+    const waitForVisible = () => new Promise((resolve) => {
+      if (!document.hidden) { resolve(); return; }
+      const resume = () => {
+        if (document.hidden) return;
+        document.removeEventListener("visibilitychange", resume);
+        resolve();
+      };
+      document.addEventListener("visibilitychange", resume);
+    });
+    const load = (photo, thumbnail) => new Promise((resolve) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.fetchPriority = "low";
+      img.onload = img.onerror = () => {
+        img.onload = img.onerror = null;
+        resolve();
+      };
+      if (thumbnail) {
+        img.sizes = gallerySizes;
+        const srcset = window.matchMedia("(max-width: 760px)").matches
+          ? photo.mobileSrcset || photo.srcset : photo.srcset;
+        if (srcset) img.srcset = srcset;
+      }
+      img.src = photoUrl(photo);
+    });
+    const run = async () => {
+      // Finish all grid sizes before spending bandwidth on enlarged photos.
+      for (const thumbnail of [true, false]) {
+        let nextIndex = 0;
+        const worker = async () => {
+          while (nextIndex < photos.length) {
+            await waitForVisible();
+            if (navigator.connection?.saveData) return;
+            const photo = photos[nextIndex++];
+            if (photo) await load(photo, thumbnail);
+          }
+        };
+        await Promise.all([worker(), worker()]);
+      }
+    };
+    void run();
+  }
 
   // Keep only nearby decoded photos in memory; browser HTTP caching handles older ones.
   const photoCache = new Map();
@@ -407,9 +466,7 @@
     const photos = galleryPhotos.slice(start, start + galleryPageSize);
     photos.forEach((photo, offset) => {
       const index = start + offset;
-      const mobileSize = "calc((100vw - 92px) / 3)";
-      const sizes = "(max-width: 760px) " + mobileSize + ", (max-width: 1220px) calc((100vw - 88px) / 3), 378px";
-      addPhoto(galleryHost, resolveGalleryPhoto(index), index, "gallery", sizes);
+      addPhoto(galleryHost, resolveGalleryPhoto(index), index, "gallery", gallerySizes);
     });
     previous.disabled = page === 0;
     next.disabled = page === galleryPageCount - 1;
@@ -1089,6 +1146,7 @@
     openingLoader.hidden = true;
     openingLoader.classList.remove("is-exiting");
     updateScroll();
+    preloadGallery();
     if (navigate) navigateToInvitation();
   }
 
@@ -1121,6 +1179,7 @@
     requestOpeningFrame(0, true);
     updateScroll();
     if (autoplayActive) playOpening(playbackRun);
+    else preloadGallery();
   }
 
   document.querySelectorAll('a[href="#opening"]').forEach((link) => {
@@ -1190,6 +1249,7 @@
       if (!autoplayActive || run !== playbackRun) return;
       openingLoader.hidden = true;
     }
+    preloadGallery();
     const middleFrameMs = 200;
     const preparedNext = new Map();
     const warmNext = (index) => {
@@ -1298,6 +1358,7 @@
     // Enter directly, without starting the photo intro or an intermediate notice.
     opening.hidden = true;
     stopPendingOpeningLoads();
+    preloadGallery();
     firstSection.tabIndex = -1;
     firstSection.focus({ preventScroll: true });
     firstSection.scrollIntoView({ behavior: "instant", block: "start" });
@@ -1454,4 +1515,5 @@
 
   if (resumeInvitation && !galleryDialog.open) enterInvitation();
   if (autoplayActive) playOpening(++playbackRun);
+  else if (!welcomeWanted) preloadGallery();
 })();
