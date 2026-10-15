@@ -958,8 +958,15 @@
       bank.textContent = account.bank;
       const holder = document.createElement("span");
       holder.className = "account__holder";
-      holder.textContent = `예금주 ${account.holder}`;
-      details.append(number, bank, holder);
+      holder.textContent = account.holder;
+      holder.setAttribute("aria-label", `예금주 ${account.holder}`);
+      const meta = document.createElement("span");
+      meta.className = "account__meta";
+      const separator = document.createElement("span");
+      separator.textContent = "·";
+      separator.setAttribute("aria-hidden", "true");
+      meta.append(bank, separator, holder);
+      details.append(number, meta);
       const button = document.createElement("button");
       button.className = "button button--light";
       button.type = "button";
