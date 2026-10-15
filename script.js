@@ -878,8 +878,83 @@
     calendarGrid.textContent = "예식 날짜가 정해지면 달력이 표시됩니다.";
   }
 
+  function initCalendarDiagnostics() {
+    if (new URLSearchParams(window.location.search).get("calendarDebug") !== "1") return () => {};
+    const host = document.getElementById("calendar-diagnostics");
+    const output = document.getElementById("calendar-diagnostics-output");
+    const report = document.getElementById("calendar-diagnostics-report");
+    const storageKey = "wedding-calendar-diagnostics-v1";
+    // Only these fixed events are recorded. Never capture URLs, form values,
+    // arbitrary console/error messages, cookies, or calendar account data.
+    const allowed = {
+      load: ["android", "other"], picker: ["normal", "fallback"],
+      click: ["calendar-save", "calendar-device", "calendar-google", "calendar-web"],
+      fallback: ["device-to-google-app"], visibility: ["visible", "hidden"],
+      focus: ["gained", "lost"], pagehide: ["cached", "unloaded"],
+      pageshow: ["cached", "loaded"], close: ["picker"], reset: ["manual"]
+    };
+    let entries = [];
+    let storageAvailable = true;
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(storageKey) || "[]");
+      if (Array.isArray(saved)) entries = saved.filter((entry) =>
+        entry && typeof entry.at === "string" && /^\d{4}-\d{2}-\d{2}T[\d:.]+Z$/.test(entry.at) &&
+        Object.hasOwn(allowed, entry.event) && allowed[entry.event].includes(entry.value)
+      ).slice(-60).map(({ at, event, value }) => ({ at, event, value }));
+    } catch { storageAvailable = false; }
+    host.hidden = false;
+    const scriptSource = new URL(document.currentScript?.src || "script.js", location.href);
+    const version = scriptSource.pathname.split("/").pop() + (scriptSource.searchParams.has("v") ? `?v=${scriptSource.searchParams.get("v")}` : "");
+    const metadata = {
+      format: 1, build: version, userAgent: navigator.userAgent.slice(0, 300),
+      language: navigator.language, viewport: `${innerWidth}x${innerHeight}`,
+      note: "Visibility/focus changes are observations, not proof of app launch or event save."
+    };
+    function render() {
+      const data = { ...metadata, sessionStorage: storageAvailable, entries };
+      output.textContent = JSON.stringify(data, null, 2);
+      const issue = new URL("https://github.com/baekmingyu1/Wedding-card/issues/new");
+      issue.searchParams.set("title", "[Calendar diagnostic] 캘린더 앱 연결 테스트");
+      // Keep the issue link small enough for mobile browsers. Full logs remain visible.
+      const recent = entries.slice(-30);
+      const updateBody = () => issue.searchParams.set("body", [
+        "캘린더 앱 연결 진단입니다. 기기 캘린더와 Google 앱의 실제 동작 결과도 적어 주세요.",
+        "화면 전환 기록만으로 앱 실행 또는 일정 저장 성공을 확정할 수 없습니다.",
+        "```json", JSON.stringify({ ...data, entries: recent, omitted: entries.length - recent.length }, null, 2), "```"
+      ].join("\n\n"));
+      updateBody();
+      while (issue.href.length > 7500 && recent.length > 1) { recent.shift(); updateBody(); }
+      report.href = issue.href;
+    }
+    function record(event, value) {
+      if (!Object.hasOwn(allowed, event) || !allowed[event].includes(value)) return;
+      entries.push({ at: new Date().toISOString(), event, value });
+      entries = entries.slice(-60);
+      try { sessionStorage.setItem(storageKey, JSON.stringify(entries)); }
+      catch { storageAvailable = false; }
+      render();
+    }
+    document.addEventListener("click", (event) => {
+      const id = event.target.closest?.("a, button")?.id;
+      if (allowed.click.includes(id)) record("click", id);
+    }, true);
+    document.addEventListener("visibilitychange", () => record("visibility", document.visibilityState));
+    window.addEventListener("blur", () => record("focus", "lost"));
+    window.addEventListener("focus", () => record("focus", "gained"));
+    window.addEventListener("pagehide", (event) => record("pagehide", event.persisted ? "cached" : "unloaded"));
+    window.addEventListener("pageshow", (event) => record("pageshow", event.persisted ? "cached" : "loaded"));
+    document.getElementById("calendar-diagnostics-reset").addEventListener("click", () => {
+      entries = [];
+      record("reset", "manual");
+    });
+    record("load", /Android/i.test(navigator.userAgent) || navigator.userAgentData?.platform === "Android" ? "android" : "other");
+    return record;
+  }
+  const recordCalendarDiagnostic = initCalendarDiagnostics();
+
   const invitationUrl = new URL(window.location.href);
   invitationUrl.hash = "";
+  invitationUrl.searchParams.delete("calendarDebug");
   const calendarSave = document.getElementById("calendar-save");
   calendarSave.hidden = !eventReady;
   const calendarPicker = document.getElementById("calendar-picker");
@@ -935,6 +1010,7 @@
       ? "기본 캘린더를 열지 못했어요. 아래 버튼을 눌러 이어서 저장해 주세요."
       : "사용하실 캘린더를 선택해 주세요.";
     document.querySelector("#calendar-google strong").textContent = deviceFailed ? "Google 캘린더 앱으로 열기" : "Google 캘린더";
+    recordCalendarDiagnostic("picker", deviceFailed ? "fallback" : "normal");
     if (!calendarPicker.open) calendarPicker.showModal();
     document.documentElement.classList.add("calendar-picker-open");
     document.getElementById("calendar-picker-title").focus({ preventScroll: true });
@@ -944,6 +1020,7 @@
     if (!calendarAndroid || !eventReady || window.location.hash !== "#calendar-google") return;
     // A second app launch needs a fresh user gesture. A fallback URL cannot safely
     // chain another intent or a timed redirect, so keep the working Google app link.
+    recordCalendarDiagnostic("fallback", "device-to-google-app");
     const cleanUrl = new URL(window.location.href);
     cleanUrl.hash = "calendar";
     window.history.replaceState(window.history.state, "", cleanUrl.href);
@@ -961,7 +1038,11 @@
   });
   calendarPicker.addEventListener("keydown", (event) => {
     if (event.key !== "Tab") return;
-    const choices = [...calendarPicker.querySelectorAll("a[href], button")].filter((element) => !element.hidden);
+    const choices = [...calendarPicker.querySelectorAll("a[href], button, summary")].filter((element) => {
+      const details = element.closest("details");
+      return !element.closest("[hidden]") && element.getClientRects().length &&
+        (!details || details.open || element.tagName === "SUMMARY");
+    });
     const index = choices.indexOf(document.activeElement);
     if ((event.shiftKey && index <= 0) || (!event.shiftKey && index === choices.length - 1)) {
       event.preventDefault();
@@ -969,6 +1050,7 @@
     }
   });
   calendarPicker.addEventListener("close", () => {
+    recordCalendarDiagnostic("close", "picker");
     document.documentElement.classList.remove("calendar-picker-open");
     calendarSave.focus({ preventScroll: true });
   });
