@@ -792,13 +792,16 @@ body { word-break: keep-all; overflow-wrap: break-word; }
   .welcome__choices--guests { gap: 8px; }
   .welcome__choices--guests button { line-height: 1.6; }
 }
-/* Full-width account details stay left-aligned; copy remains at the top right. */
+/* Left-aligned account details with the copy action centered vertically on the right. */
 .account__card { grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; text-align: left; }
 .account__side { grid-column: 1; grid-row: 1; margin-bottom: 0; text-align: left; }
-.account__details { grid-column: 1 / -1; grid-row: 2; text-align: left; }
-.account__card button { grid-column: 2; grid-row: 1; justify-self: end; min-width: 60px; min-height: 44px; padding: 10px 12px; font-size: 12px; }
+.account__details { grid-column: 1; grid-row: 2; text-align: left; }
+.account__card button { grid-column: 2; grid-row: 1 / span 2; align-self: center; justify-self: end; min-width: 60px; min-height: 44px; padding: 10px 12px; font-size: 12px; }
 .account__group > summary { padding-inline: 44px; }
 @media (max-width: 380px) {
+  .account__card { column-gap: 6px; }
+  .account__card button { min-width: 44px; padding-inline: 5px; }
+  .account__meta { gap: 4px; font-size: 12px; }
   .rsvp-choices--meal { grid-template-columns: minmax(0, 1fr); }
   .rsvp-disclosure[open] > div { padding-inline: 14px; }
   .directions__item, .directions__item:last-child { padding-inline: 14px; }
