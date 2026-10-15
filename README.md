@@ -22,9 +22,9 @@
 
 네이버 클라우드 Maps Application에서 **Web Dynamic Map**을 활성화하고 실제 배포 주소 `https://welcome-our-wedding.cst.onul.me`를 **Web 서비스 URL**에 등록하세요. 공개 Key ID는 `content.js`의 `naverMapKeyId`, 기존 예식장 건물 좌표는 `naverMapCenter`에서 관리합니다. Secret Key는 공개 파일에 넣지 마세요. SDK 오류·인증 실패·12초 로딩 초과 시 기존 Static Map 이미지로 전환합니다(이 대체 이미지에도 **Static Map** 사용 권한 필요). 이미지도 실패하면 지도 바로가기 버튼으로 안내합니다. `file://`에서는 지도 인증을 사용할 수 없어 바로가기만 안내합니다. 실제 인증과 타일 표시는 등록된 배포 주소에서 별도로 확인해야 합니다.
 
-달력 아래 **내 일정에 저장**은 캘린더 선택 팝업을 엽니다. Android의 ‘기기 캘린더’는 표준 `ACTION_INSERT` 인텐트로 일정 제목·장소·시작 시각을 전달하고, Google 선택은 Google 캘린더 패키지에 HTTPS 일정 작성 링크를 전달합니다. 사용자 클릭에서 직접 연결하며 새 탭이나 타이머로 앱을 실행하지 않습니다. 앱이 해당 브라우저 연결을 지원하지 않으면 `browser_fallback_url`로 Google 웹 작성 화면을 요청합니다. 브라우저가 이 대체 경로를 처리하지 못해도 팝업의 **앱 없이 웹으로 저장** 링크를 이용할 수 있습니다. Android 이외 기기의 ‘기기 캘린더’는 `wedding.ics` 파일을 열고, Google 선택은 웹 작성 화면을 엽니다.
+달력 아래 **내 일정에 저장**은 캘린더 선택 팝업을 엽니다. Android의 ‘기기 캘린더’는 표준 `ACTION_INSERT` 인텐트로 일정 제목·장소·시작 시각을 전달하고, Google 선택은 Google 캘린더 패키지에 HTTPS 일정 작성 링크를 전달합니다. 사용자 클릭에서 직접 연결하며 새 탭이나 타이머로 앱을 실행하지 않습니다. 기기 캘린더가 해당 브라우저 연결을 지원하지 않으면 `browser_fallback_url`로 청첩장의 `#calendar-google` 경로에 돌아와 **Google 캘린더 앱으로 열기** 버튼을 표시합니다. 이 경로에서는 Google 웹으로 자동 이동하지 않습니다. 브라우저의 사용자 동작 제한 때문에 두 번째 앱은 버튼을 한 번 더 눌러 실행합니다. 같은 문서의 해시 이동과 페이지 재로딩을 모두 처리하고 경로는 `#calendar`로 정리합니다. Google 앱 자체를 열 수 없을 때만 기존 Google 웹 대체 경로를 사용합니다. 원래 선택창의 **앱 없이 웹으로 저장** 링크도 유지합니다. Android 이외 기기의 ‘기기 캘린더’는 `wedding.ics` 파일을 열고, Google 선택은 웹 작성 화면을 엽니다.
 
-**제한:** 네이티브 앱의 INSERT 지원과 웹 브라우저에서의 실행 가능 여부는 다릅니다. 브라우저 실행에는 앱의 `BROWSABLE` 활동 지원이 필요하며, 웹사이트는 설치 앱 목록·앱 실행 성공·실제 일정 저장 여부를 확인하거나 보장할 수 없습니다. 삼성 캘린더가 이 연결을 지원하지 않으면 Google 웹으로 이어질 수 있습니다. 실제 삼성 기기에서 앱 실행과 일정 입력값을 별도 확인해야 합니다. 참고: [Android 일정 추가 인텐트](https://developer.android.com/guide/components/intents-common#Calendar), [브라우저 인텐트와 대체 URL](https://developer.chrome.com/docs/android/intents).
+**제한:** 네이티브 앱의 INSERT 지원과 웹 브라우저에서의 실행 가능 여부는 다릅니다. 브라우저 실행에는 앱의 `BROWSABLE` 활동 지원이 필요하며, 웹사이트는 설치 앱 목록·앱 실행 성공·실제 일정 저장 여부를 확인하거나 보장할 수 없습니다. 삼성 캘린더가 이 연결을 지원하지 않으면 Google 앱 실행 버튼으로 안내합니다. 실제 삼성 기기에서 앱 실행과 일정 입력값을 별도 확인해야 합니다. 참고: [Android 일정 추가 인텐트](https://developer.android.com/guide/components/intents-common#Calendar), [브라우저 인텐트와 대체 URL](https://developer.chrome.com/docs/android/intents).
 
 예식의 시작 시각만 전달하고, 미확정 종료 시각은 임의로 정하지 않습니다. Google 링크는 시작·종료에 동일한 시각을 전달하며 저장 전 종료 시각 확인 문구를 포함합니다. 저장한 일정은 청첩장 변경과 자동 동기화되지 않습니다.
 

@@ -883,6 +883,7 @@
   const calendarSave = document.getElementById("calendar-save");
   calendarSave.hidden = !eventReady;
   const calendarPicker = document.getElementById("calendar-picker");
+  const calendarAndroid = navigator.userAgentData?.platform === "Android" || /Android/i.test(navigator.userAgent);
   if (eventReady) {
     const start = eventDate.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
     const googleCalendar = new URL("https://calendar.google.com/calendar/render");
@@ -898,36 +899,60 @@
     googleLink.href = googleCalendar.href;
     const webLink = document.getElementById("calendar-web");
     webLink.href = googleCalendar.href;
-    const android = navigator.userAgentData?.platform === "Android" || /Android/i.test(navigator.userAgent);
-    if (android) {
+    if (calendarAndroid) {
       const deviceLink = document.getElementById("calendar-device");
       // The browser resolves supported apps; it cannot detect installation or confirm a save.
       // INSERT is supported only if the calendar exposes a browser-accessible activity.
       // Use the browser's fallback, not a timer that could interrupt a successful app launch.
-      const fallback = `S.browser_fallback_url=${encodeURIComponent(googleCalendar.href)}`;
+      const googleFallback = `S.browser_fallback_url=${encodeURIComponent(googleCalendar.href)}`;
+      const deviceFallback = new URL(window.location.href);
+      deviceFallback.hash = "calendar-google";
       deviceLink.href = [
         "intent://com.android.calendar/events#Intent", "scheme=content",
         "action=android.intent.action.INSERT", "type=vnd.android.cursor.dir/event",
         `S.title=${encodeURIComponent(`${content.couple} 결혼식`)}`,
         `S.eventLocation=${encodeURIComponent([content.venue, content.address].filter(Boolean).join(" · "))}`,
         `S.description=${encodeURIComponent(googleCalendar.searchParams.get("details"))}`,
-        `l.beginTime=${eventDate.getTime()}`, "B.allDay=false", fallback, "end"
+        `l.beginTime=${eventDate.getTime()}`, "B.allDay=false",
+        `S.browser_fallback_url=${encodeURIComponent(deviceFallback.href)}`, "end"
       ].join(";");
-      googleLink.href = `intent://${googleCalendar.href.slice("https://".length)}#Intent;scheme=https;action=android.intent.action.VIEW;package=com.google.android.calendar;${fallback};end`;
+      googleLink.href = `intent://${googleCalendar.href.slice("https://".length)}#Intent;scheme=https;action=android.intent.action.VIEW;package=com.google.android.calendar;${googleFallback};end`;
       deviceLink.removeAttribute("target");
       googleLink.removeAttribute("target");
       document.getElementById("calendar-device-description").textContent = "설치된 캘린더 앱으로 연결";
       document.getElementById("calendar-google-description").textContent = "Google 캘린더 앱으로 연결";
-      document.getElementById("calendar-picker-help").textContent = "앱 연결을 지원하지 않으면 웹으로 이동합니다. 열리지 않을 때는 아래 링크를 이용해 주세요.";
+      document.getElementById("calendar-picker-help").textContent = "기기 캘린더가 열리지 않으면 Google 캘린더 앱을 선택해 주세요.";
       webLink.hidden = false;
     }
   }
-  calendarSave.addEventListener("click", () => {
-    if (!eventReady || calendarPicker.open) return;
-    calendarPicker.showModal();
+  function openCalendarPicker(deviceFailed = false) {
+    if (!eventReady) return;
+    document.getElementById("calendar-device").hidden = deviceFailed;
+    document.getElementById("calendar-web").hidden = !calendarAndroid || deviceFailed;
+    document.getElementById("calendar-picker-help").hidden = deviceFailed;
+    document.getElementById("calendar-picker-title").textContent = deviceFailed ? "Google 캘린더로 저장" : "어디에 저장할까요?";
+    document.getElementById("calendar-picker-description").textContent = deviceFailed
+      ? "기본 캘린더를 열지 못했어요. 아래 버튼을 눌러 이어서 저장해 주세요."
+      : "사용하실 캘린더를 선택해 주세요.";
+    document.querySelector("#calendar-google strong").textContent = deviceFailed ? "Google 캘린더 앱으로 열기" : "Google 캘린더";
+    if (!calendarPicker.open) calendarPicker.showModal();
     document.documentElement.classList.add("calendar-picker-open");
     document.getElementById("calendar-picker-title").focus({ preventScroll: true });
-  });
+  }
+  calendarSave.addEventListener("click", () => openCalendarPicker());
+  function handleCalendarFallback() {
+    if (!calendarAndroid || !eventReady || window.location.hash !== "#calendar-google") return;
+    // A second app launch needs a fresh user gesture. A fallback URL cannot safely
+    // chain another intent or a timed redirect, so keep the working Google app link.
+    const cleanUrl = new URL(window.location.href);
+    cleanUrl.hash = "calendar";
+    window.history.replaceState(window.history.state, "", cleanUrl.href);
+    openCalendarPicker(true);
+  }
+  window.addEventListener("hashchange", handleCalendarFallback);
+  // Supports both same-document fallback and browsers that reload the fallback URL.
+  if (document.readyState === "complete") handleCalendarFallback();
+  else window.addEventListener("load", handleCalendarFallback, { once: true });
   document.getElementById("calendar-picker-close").addEventListener("click", () => calendarPicker.close());
   calendarPicker.addEventListener("click", (event) => {
     if (event.target !== calendarPicker) return;
