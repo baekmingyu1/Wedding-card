@@ -849,3 +849,10 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 .directions__map .venue-map__canvas img { width: auto; height: auto; aspect-ratio: auto; border: 0; border-radius: 0; background: transparent; }
 
 .calendar-picker__web { display: flex; align-items: center; justify-content: center; min-height: 44px; margin-top: 8px; color: var(--accent); font-size: 13px; text-underline-offset: 4px; }
+
+/* Diagnostic controls are visible only for an explicitly requested test session. */
+.calendar-diagnostics { margin-top: 16px; padding: 12px; border: 1px solid var(--line); border-radius: 14px; text-align: left; }
+.calendar-diagnostics summary { display: flex; align-items: center; min-height: 44px; cursor: pointer; font-size: 14px; }
+.calendar-diagnostics p { font-size: 12px; }
+.calendar-diagnostics pre { max-height: 160px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 11px; line-height: 1.6; }
+.calendar-diagnostics a, .calendar-diagnostics button { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 44px; margin-top: 8px; padding: 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--accent-soft); color: var(--accent); font: inherit; font-size: 13px; text-decoration: none; cursor: pointer; }

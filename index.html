@@ -21,11 +21,11 @@
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=26">
-  <link rel="stylesheet" href="play-pause.css?v=46">
+  <link rel="stylesheet" href="play-pause.css?v=47">
   <script src="opening-images.js" defer></script>
   <script src="gallery-images.js" defer></script>
   <script src="content.js?v=27" defer></script>
-  <script src="script.js?v=49" defer></script>
+  <script src="script.js?v=50" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#invitation">본문으로 건너뛰기</a>
@@ -232,6 +232,13 @@
     </div>
     <p id="calendar-picker-help" class="calendar-picker__help">기기 캘린더에서 열리지 않으면<br>Google 캘린더를 선택해 주세요.</p>
     <a id="calendar-web" class="calendar-picker__web" href="https://calendar.google.com/calendar/render" target="_blank" rel="noopener noreferrer" hidden>앱 없이 웹으로 저장 ↗</a>
+    <details id="calendar-diagnostics" class="calendar-diagnostics" hidden>
+      <summary>캘린더 진단 로그</summary>
+      <p>이 탭에 동작을 기록합니다. GitHub 이슈를 등록하면 기기·브라우저 정보와 동작 시각이 공개됩니다. 계좌 정보와 입력 내용은 기록하지 않습니다.</p>
+      <pre id="calendar-diagnostics-output" aria-label="캘린더 동작 기록"></pre>
+      <a id="calendar-diagnostics-report" href="https://github.com/baekmingyu1/Wedding-card/issues/new" target="_blank" rel="noopener noreferrer">GitHub에 로그 보내기 ↗</a>
+      <button id="calendar-diagnostics-reset" type="button">새 테스트 시작</button>
+    </details>
     <button id="calendar-picker-close" class="calendar-picker__close" type="button">닫기</button>
   </dialog>
   <dialog id="gallery-dialog" class="gallery-dialog" aria-label="사진 확대 보기">
