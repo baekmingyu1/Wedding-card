@@ -894,7 +894,33 @@
       location: [content.venue, content.address].filter(Boolean).join(" · "),
       details: `예식 시작: ${content.date} (대한민국 / Asia/Seoul)\n종료 시간은 안내되지 않았습니다. 저장 전 확인해 주세요.`
     }).toString();
-    document.getElementById("calendar-google").href = googleCalendar.href;
+    const googleLink = document.getElementById("calendar-google");
+    googleLink.href = googleCalendar.href;
+    const webLink = document.getElementById("calendar-web");
+    webLink.href = googleCalendar.href;
+    const android = navigator.userAgentData?.platform === "Android" || /Android/i.test(navigator.userAgent);
+    if (android) {
+      const deviceLink = document.getElementById("calendar-device");
+      // The browser resolves supported apps; it cannot detect installation or confirm a save.
+      // INSERT is supported only if the calendar exposes a browser-accessible activity.
+      // Use the browser's fallback, not a timer that could interrupt a successful app launch.
+      const fallback = `S.browser_fallback_url=${encodeURIComponent(googleCalendar.href)}`;
+      deviceLink.href = [
+        "intent://com.android.calendar/events#Intent", "scheme=content",
+        "action=android.intent.action.INSERT", "type=vnd.android.cursor.dir/event",
+        `S.title=${encodeURIComponent(`${content.couple} 결혼식`)}`,
+        `S.eventLocation=${encodeURIComponent([content.venue, content.address].filter(Boolean).join(" · "))}`,
+        `S.description=${encodeURIComponent(googleCalendar.searchParams.get("details"))}`,
+        `l.beginTime=${eventDate.getTime()}`, "B.allDay=false", fallback, "end"
+      ].join(";");
+      googleLink.href = `intent://${googleCalendar.href.slice("https://".length)}#Intent;scheme=https;action=android.intent.action.VIEW;package=com.google.android.calendar;${fallback};end`;
+      deviceLink.removeAttribute("target");
+      googleLink.removeAttribute("target");
+      document.getElementById("calendar-device-description").textContent = "설치된 캘린더 앱으로 연결";
+      document.getElementById("calendar-google-description").textContent = "Google 캘린더 앱으로 연결";
+      document.getElementById("calendar-picker-help").textContent = "앱 연결을 지원하지 않으면 웹으로 이동합니다. 열리지 않을 때는 아래 링크를 이용해 주세요.";
+      webLink.hidden = false;
+    }
   }
   calendarSave.addEventListener("click", () => {
     if (!eventReady || calendarPicker.open) return;
@@ -910,7 +936,7 @@
   });
   calendarPicker.addEventListener("keydown", (event) => {
     if (event.key !== "Tab") return;
-    const choices = [...calendarPicker.querySelectorAll("a[href], button")];
+    const choices = [...calendarPicker.querySelectorAll("a[href], button")].filter((element) => !element.hidden);
     const index = choices.indexOf(document.activeElement);
     if ((event.shiftKey && index <= 0) || (!event.shiftKey && index === choices.length - 1)) {
       event.preventDefault();

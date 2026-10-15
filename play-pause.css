@@ -847,3 +847,5 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 .venue-map [hidden] { display: none; }
 /* The SDK positions tiles itself; site-wide photo styling must not resize them. */
 .directions__map .venue-map__canvas img { width: auto; height: auto; aspect-ratio: auto; border: 0; border-radius: 0; background: transparent; }
+
+.calendar-picker__web { display: flex; align-items: center; justify-content: center; min-height: 44px; margin-top: 8px; color: var(--accent); font-size: 13px; text-underline-offset: 4px; }

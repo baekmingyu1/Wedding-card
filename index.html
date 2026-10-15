@@ -21,11 +21,11 @@
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=26">
-  <link rel="stylesheet" href="play-pause.css?v=45">
+  <link rel="stylesheet" href="play-pause.css?v=46">
   <script src="opening-images.js" defer></script>
   <script src="gallery-images.js" defer></script>
   <script src="content.js?v=27" defer></script>
-  <script src="script.js?v=47" defer></script>
+  <script src="script.js?v=48" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#invitation">본문으로 건너뛰기</a>
@@ -227,10 +227,11 @@
     <h2 id="calendar-picker-title" tabindex="-1">어디에 저장할까요?</h2>
     <p id="calendar-picker-description">사용하실 캘린더를 선택해 주세요.</p>
     <div class="calendar-picker__options">
-      <a class="calendar-picker__option" href="wedding.ics" target="_blank" rel="noopener noreferrer"><span><strong>기기 캘린더</strong><small>일정 파일을 열어 추가</small></span><span aria-hidden="true">↗</span></a>
-      <a id="calendar-google" class="calendar-picker__option" href="https://calendar.google.com/calendar/render" target="_blank" rel="noopener noreferrer"><span><strong>Google 캘린더</strong><small>Google 계정으로 로그인 후 저장</small></span><span aria-hidden="true">↗</span></a>
+      <a id="calendar-device" class="calendar-picker__option" href="wedding.ics" target="_blank" rel="noopener noreferrer"><span><strong>기기 캘린더</strong><small id="calendar-device-description">일정 파일을 열어 추가</small></span><span aria-hidden="true">↗</span></a>
+      <a id="calendar-google" class="calendar-picker__option" href="https://calendar.google.com/calendar/render" target="_blank" rel="noopener noreferrer"><span><strong>Google 캘린더</strong><small id="calendar-google-description">Google 계정으로 로그인 후 저장</small></span><span aria-hidden="true">↗</span></a>
     </div>
-    <p class="calendar-picker__help">기기 캘린더에서 열리지 않으면<br>Google 캘린더를 선택해 주세요.</p>
+    <p id="calendar-picker-help" class="calendar-picker__help">기기 캘린더에서 열리지 않으면<br>Google 캘린더를 선택해 주세요.</p>
+    <a id="calendar-web" class="calendar-picker__web" href="https://calendar.google.com/calendar/render" target="_blank" rel="noopener noreferrer" hidden>앱 없이 웹으로 저장 ↗</a>
     <button id="calendar-picker-close" class="calendar-picker__close" type="button">닫기</button>
   </dialog>
   <dialog id="gallery-dialog" class="gallery-dialog" aria-label="사진 확대 보기">
