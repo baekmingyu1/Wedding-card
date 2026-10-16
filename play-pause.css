@@ -856,3 +856,37 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 .calendar-diagnostics p { font-size: 12px; }
 .calendar-diagnostics pre { max-height: 160px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 11px; line-height: 1.6; }
 .calendar-diagnostics a, .calendar-diagnostics button { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 44px; margin-top: 8px; padding: 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--accent-soft); color: var(--accent); font: inherit; font-size: 13px; text-decoration: none; cursor: pointer; }
+
+/* Shared, quiet feedback. Individual scale preserves positioned controls' transforms. */
+:where(button, a[href], summary, [role="button"]):not(:disabled):not([aria-disabled="true"]) {
+  -webkit-tap-highlight-color: rgba(155, 100, 68, .14);
+  transition-duration: 150ms;
+  transition-timing-function: ease;
+  transition-property: background-color, border-color, color, box-shadow, opacity, filter, scale;
+}
+:where(button, a[href], summary, [role="button"]):not(:disabled):not([aria-disabled="true"]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+@media (hover: hover) and (pointer: fine) {
+  :where(button, a[href], summary, [role="button"]):not(:disabled):not([aria-disabled="true"]):hover {
+    filter: brightness(.95);
+  }
+  :is(.account__group, .rsvp-disclosure, .calendar-diagnostics) > summary:hover {
+    background-color: var(--accent-soft);
+  }
+  .rsvp-choice:hover input:not(:disabled) + span { background-color: var(--accent-soft); }
+}
+:where(button, a[href], summary, [role="button"]):not(:disabled):not([aria-disabled="true"]):active {
+  filter: brightness(.89);
+  scale: .98;
+  transition-duration: 70ms;
+}
+/* Replace the earlier transform-based press effect to avoid double shrinking. */
+.button:active:not(:disabled), .opening__control:active { transform: none; }
+.rsvp-choice:active input:not(:disabled) + span { background-color: var(--accent-soft); border-color: var(--accent); }
+.rsvp-choice span { transition: background-color 150ms ease, border-color 150ms ease; }
+@media (prefers-reduced-motion: reduce) {
+  :where(button, a[href], summary, [role="button"]):not(:disabled):not([aria-disabled="true"]), .rsvp-choice span { transition: none; }
+  :where(button, a[href], summary, [role="button"]):not(:disabled):not([aria-disabled="true"]):active { scale: none; }
+}
