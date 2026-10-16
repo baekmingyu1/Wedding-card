@@ -939,3 +939,16 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 }
 /* The full-size map activation surface must not gain an inset frame. */
 .venue-map__activate:is(:hover, :active) { box-shadow: none; }
+
+/* Parking directions: a centered heading with a compact action at the right. */
+.directions__parking-heading { display: grid; grid-template-columns: 64px minmax(0, 1fr) 64px; align-items: center; }
+.directions__parking-heading h3 { grid-column: 2; margin: 0; }
+.directions__parking-heading .button { grid-column: 3; min-height: 44px; padding: 8px 12px; font-size: 13px; }
+.parking-map-dialog { box-sizing: border-box; width: min(920px, calc(100% - 24px)); max-width: none; max-height: calc(100dvh - 32px); padding: 16px; border: 1px solid var(--line); border-radius: 22px; background: var(--surface); color: var(--ink); overflow: auto; overscroll-behavior: contain; }
+.parking-map-dialog::backdrop { background: rgba(30, 26, 23, .55); }
+.parking-map-dialog__header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.parking-map-dialog__header h2 { margin: 0; font-size: 18px; font-weight: 500; }
+.parking-map-dialog__header .button { min-height: 44px; padding: 8px 14px; font-size: 14px; }
+.parking-map-dialog img { display: block; width: 100%; height: auto; background: white; }
+.parking-map-dialog p { text-align: center; line-height: 1.7; }
+html.parking-map-open, html.parking-map-open body { overflow: hidden; }
