@@ -597,6 +597,24 @@
       const title = document.createElement("p");
       title.className = "directions__place-name";
       title.textContent = entry[titleKey];
+      if (entry.mapUrl) {
+        try {
+          const url = new URL(entry.mapUrl);
+          if (url.protocol === "https:" && ["map.naver.com", "naver.me"].includes(url.hostname)) {
+            const link = document.createElement("a");
+            link.className = "directions__place-map";
+            link.href = url.href;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.setAttribute("aria-label", `${entry[titleKey]} 네이버 지도 보기 (새 창)`);
+            const icon = document.createElement("span");
+            icon.setAttribute("aria-hidden", "true");
+            icon.textContent = "↗";
+            link.append(icon);
+            title.append(link);
+          }
+        } catch { /* Keep the address readable when no valid map link is available. */ }
+      }
       const detail = document.createElement("p");
       detail.className = "directions__detail";
       detail.textContent = entry[detailKey];
