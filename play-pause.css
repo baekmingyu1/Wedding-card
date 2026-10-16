@@ -639,7 +639,7 @@ body, .welcome { background: var(--canvas); }
 .account__card .button { background: var(--accent-soft); border-color: transparent; color: var(--accent); }
 .account__card .button:hover { background: #e6d9cd; border-color: var(--line); }
 .directions__content { max-width: 700px; }
-.location__map-heading { padding: 32px 20px; border: 1px solid var(--line); border-radius: 28px; background: var(--surface); margin-bottom: 16px; }
+.location__map-heading { padding: 8px 12px 0; border: 0; border-radius: 0; background: transparent; margin-bottom: 24px; }
 .directions__list { display: grid; gap: 12px; margin-top: 24px; }
 .directions__item, .directions__item:last-child { padding: 28px 24px; border: 1px solid var(--line); border-radius: 24px; background: var(--surface); }
 .directions__item h3 { color: var(--accent); font-size: 15px; }
@@ -890,8 +890,6 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 }
 
 /* A compact venue heading keeps the address and its action together. */
-.location__map-heading { padding: 24px 20px 20px; border-radius: 22px; }
-.location__map-heading h3 { margin: 0 0 8px; font-size: clamp(26px, 3.2vw, 36px); line-height: 1.4; }
 .location__address-row { display: flex; align-items: center; justify-content: center; gap: 2px; }
 .location__address-row .location__address { flex: 0 1 auto; min-width: 0; margin: 0; line-height: 1.6; }
 .location__copy { display: grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; }
@@ -902,7 +900,6 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 }
 .location__copy:not(:disabled):active { background: var(--accent-soft); color: var(--accent); }
 @media (max-width: 480px) {
-  .location__map-heading { padding: 20px 12px 16px; }
   .location__address-row .location__address { font-size: 14px; }
 }
 
@@ -914,8 +911,8 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 /* Map controls must not dim or scale the whole map interaction surface. */
 .venue-map__activate:not(:disabled):is(:hover, :active) { filter: none; scale: none; }
 
-.location__map-heading .location__title { margin: 0 0 18px; font-size: clamp(25px, 5.5vw, 30px); line-height: 1.4; font-weight: 500; color: var(--ink); }
-.location__map-heading h3 { margin: 0 0 5px; font-size: clamp(19px, 4.5vw, 22px); line-height: 1.5; font-weight: 500; }
+.location__map-heading .location__title { margin: 0 0 16px; font-size: 15px; line-height: 1.6; font-weight: 400; color: var(--muted); }
+.location__map-heading h3 { margin: 0 0 4px; font-size: clamp(19px, 4.5vw, 22px); line-height: 1.5; font-weight: 500; }
 
 /* Summary backgrounds follow the disclosure card instead of painting square corners. */
 .account__group > summary, .rsvp-disclosure > summary {
