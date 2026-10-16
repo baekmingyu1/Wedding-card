@@ -1129,7 +1129,7 @@
   let bgmAttempt = 0;
   function renderBgm() {
     const audible = bgmStarted && !bgmMuted && !bgmBlocked && !bgm.paused;
-    bgmButton.textContent = audible ? "♪ 음악 끄기" : "♪ 음악 켜기";
+    bgmButton.title = audible ? "배경음악 음소거" : "배경음악 켜기";
     bgmButton.setAttribute("aria-label", audible ? "배경음악 음소거" : "배경음악 켜기");
     bgmButton.setAttribute("aria-pressed", String(audible));
   }
@@ -1181,7 +1181,9 @@
   window.addEventListener("pageshow", () => playBgm());
   bgm.addEventListener("error", () => {
     bgmButton.disabled = true;
-    bgmButton.textContent = "음악을 불러올 수 없어요";
+    bgmButton.setAttribute("aria-pressed", "false");
+    bgmButton.setAttribute("aria-label", "음악을 불러올 수 없어요");
+    bgmButton.title = "음악을 불러올 수 없어요";
   });
 
   const opening = document.getElementById("opening");
