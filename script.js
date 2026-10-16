@@ -658,8 +658,6 @@
     const fallback = document.getElementById("venue-map-fallback");
     const fallbackImage = document.getElementById("venue-map-image");
     const status = document.getElementById("venue-map-status");
-    const activate = document.getElementById("venue-map-activate");
-    const controls = document.getElementById("venue-map-tools");
     const key = content.naverMapKeyId?.trim();
     const coordinates = content.naverMapCenter?.split(",").map(Number);
     if (!key || !coordinates || coordinates.length !== 2 || !coordinates.every(Number.isFinite)) return;
@@ -670,16 +668,6 @@
     fallbackImage.alt = `${content.venue} 위치 안내 지도`;
     fallback.href = document.getElementById("naver-map-link").href;
     let map, marker, timer, readinessTimer, started = false, failed = false, ready = false;
-    const setInteractive = (active) => {
-      if (!ready || failed) return;
-      map.setOptions({ draggable: active, pinchZoom: active, keyboardShortcuts: active,
-        disableDoubleClickZoom: !active, disableDoubleTapZoom: !active,
-        disableTwoFingerTapZoom: !active, scrollWheel: false, zoomControl: active });
-      canvas.inert = !active;
-      canvas.style.touchAction = active ? "none" : "pan-y";
-      activate.hidden = active;
-      controls.hidden = !active;
-    };
     const showFallback = (reason = "load-timeout") => {
       if (failed) return;
       failed = true;
@@ -688,7 +676,6 @@
       marker?.setMap(null);
       map?.destroy();
       canvas.hidden = true;
-      activate.hidden = controls.hidden = true;
       root.dataset.state = "fallback";
       root.dataset.failure = typeof reason === "string" ? reason : "network-error";
       console.warn("Venue map fallback:", root.dataset.failure);
@@ -720,9 +707,9 @@
         const position = new naver.maps.LatLng(latitude, longitude);
         map = new naver.maps.Map(canvas, {
           center: position, zoom: 16, minZoom: 7, maxZoom: 20,
-          draggable: false, pinchZoom: false, scrollWheel: false, keyboardShortcuts: false,
-          disableDoubleClickZoom: true, disableDoubleTapZoom: true, disableTwoFingerTapZoom: true,
-          zoomControl: false
+          draggable: true, pinchZoom: true, scrollWheel: true, keyboardShortcuts: true,
+          disableDoubleClickZoom: false, disableDoubleTapZoom: false, disableTwoFingerTapZoom: false,
+          zoomControl: true
         });
         const label = document.createElement("span");
         label.className = "venue-map__marker";
@@ -735,7 +722,8 @@
           ready = true;
           root.dataset.state = "ready";
           status.hidden = true;
-          setInteractive(false);
+          canvas.inert = false;
+          canvas.style.touchAction = "none";
         };
         // A dynamically injected SDK can finish init before listeners attach.
         // Map construction enables controls; tiles may continue loading normally.
@@ -769,25 +757,6 @@
       sdk.onerror = () => showFallback("sdk-network-error");
       document.head.append(sdk);
     };
-    activate.addEventListener("click", () => {
-      setInteractive(true);
-      document.getElementById("venue-map-lock").focus({ preventScroll: true });
-    });
-    document.getElementById("venue-map-lock").addEventListener("click", () => {
-      setInteractive(false);
-      activate.focus({ preventScroll: true });
-    });
-    document.getElementById("venue-map-reset").addEventListener("click", () => {
-      if (!ready || failed) return;
-      map.setCenter(new naver.maps.LatLng(latitude, longitude));
-      map.setZoom(16, false);
-    });
-    root.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && ready && !failed && !canvas.inert) {
-        setInteractive(false);
-        activate.focus({ preventScroll: true });
-      }
-    });
     if ("IntersectionObserver" in window) {
       const observer = new IntersectionObserver((entries) => {
         if (entries.some((entry) => entry.isIntersecting)) { observer.disconnect(); load(); }

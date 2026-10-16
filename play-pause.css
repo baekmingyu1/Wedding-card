@@ -838,11 +838,6 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 .venue-map__canvas[inert] { pointer-events: none; }
 .venue-map .venue-map__fallback img { width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; border: 0; border-radius: 0; }
 .venue-map__status { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; padding: 24px; background: var(--accent-soft); color: var(--muted); font-size: 14px; line-height: 1.8; text-align: center; }
-.venue-map__activate { position: absolute; inset: 0; display: flex; justify-content: center; align-items: flex-start; width: 100%; padding: 14px; border: 0; background: transparent; color: var(--ink); cursor: pointer; touch-action: pan-y; }
-.venue-map__activate > span { padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--paper); font-size: 13px; line-height: 1.5; box-shadow: var(--soft-shadow); }
-.venue-map__activate:focus-visible { outline-offset: -4px; }
-.venue-map__tools { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; padding-top: 10px; }
-.venue-map__tools .button { min-height: 44px; padding-inline: 12px; justify-content: center; }
 .venue-map__marker { display: block; width: max-content; max-width: 180px; padding: 7px 12px; transform: translate(-50%, -100%); border: 2px solid var(--paper); border-radius: 12px 12px 12px 0; background: var(--accent); color: var(--paper); font-size: 13px; line-height: 1.5; text-align: center; box-shadow: var(--soft-shadow); }
 .venue-map [hidden] { display: none; }
 /* The SDK positions tiles itself; site-wide photo styling must not resize them. */
@@ -908,8 +903,6 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 .directions__links img { display: block; width: 24px; height: 24px; border-radius: 6px; object-fit: contain; flex-shrink: 0; }
 .venue-map__canvas { width: 100%; height: 100%; }
 .venue-map__notice { margin: 10px 0 0; font-size: 13px; line-height: 1.7; color: var(--muted); }
-/* Map controls must not dim or scale the whole map interaction surface. */
-.venue-map__activate:not(:disabled):is(:hover, :active) { filter: none; scale: none; }
 
 .location__map-heading .location__title { margin: 0 0 16px; font-size: 15px; line-height: 1.6; font-weight: 400; color: var(--muted); }
 .location__map-heading h3 { margin: 0 0 4px; font-size: clamp(19px, 4.5vw, 22px); line-height: 1.5; font-weight: 500; }
@@ -934,8 +927,6 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
   .gallery-dialog__thumbnail:hover { border-color: var(--accent); opacity: 1; }
   .welcome__text-button:hover { text-decoration: underline; text-underline-offset: 4px; }
 }
-/* The full-size map activation surface must not gain an inset frame. */
-.venue-map__activate:is(:hover, :active) { box-shadow: none; }
 
 /* Parking directions: a centered heading with a compact action at the right. */
 .directions__parking-heading { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; }
