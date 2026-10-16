@@ -20,12 +20,12 @@
   <link rel="preload" as="image" media="(min-width: 761px)" href="assets/opening/frames/01-1600-bffa7b263d.webp" imagesrcset="assets/opening/frames/01-480-4ff597cf5f.webp 480w, assets/opening/frames/01-768-32b972d6aa.webp 768w, assets/opening/frames/01-1024-2442ce091a.webp 1024w, assets/opening/frames/01-1600-bffa7b263d.webp 1600w" imagesizes="100vw" fetchpriority="high">
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=26">
-  <link rel="stylesheet" href="play-pause.css?v=35">
+  <link rel="stylesheet" href="styles.css?v=27">
+  <link rel="stylesheet" href="play-pause.css?v=47">
   <script src="opening-images.js" defer></script>
   <script src="gallery-images.js" defer></script>
-  <script src="content.js?v=21" defer></script>
-  <script src="script.js?v=42" defer></script>
+  <script src="content.js?v=27" defer></script>
+  <script src="script.js?v=51" defer></script>
 </head>
 <body>
   <audio id="wedding-bgm" src="assets/audio/wedding-bgm.m4a" preload="none" loop></audio>
@@ -131,7 +131,7 @@
       <div class="section__inner calendar__layout">
         <div><p class="section__lead" data-field="calendarMessage"></p></div>
         <div class="calendar__sheet"><div class="date-scene"><p class="date-scene__eyebrow" data-field="datePrelude"></p><p class="date-scene__date" id="date-scene-date" aria-hidden="true"></p></div><p class="calendar__month" id="calendar-month"></p><div class="calendar__grid" id="calendar-grid" aria-label="예식 월 달력"></div><p class="calendar__caption"><time id="calendar-event-time"><span id="calendar-event-date">날짜 준비 중</span><span id="calendar-event-hour"></span></time></p></div>
-        <a id="calendar-save" class="button" href="wedding.ics" hidden>내 일정에 저장 <span aria-hidden="true">＋</span></a>
+        <button id="calendar-save" class="button" type="button" aria-haspopup="dialog" aria-controls="calendar-picker" hidden>내 일정에 저장 <span aria-hidden="true">＋</span></button>
       </div>
     </section>
 
@@ -140,7 +140,7 @@
     </section>
 
     <section class="section gallery" id="gallery" aria-label="갤러리">
-      <div class="section__inner"><p class="section__lead">함께 움직이고 나란히 쉬던 날의 사진을 모았습니다.</p><div class="gallery__grid" id="gallery-grid"></div><nav class="gallery__pagination" id="gallery-pagination" aria-label="갤러리 페이지"></nav></div>
+      <div class="section__inner"><p class="section__lead" data-field="galleryMessage"></p><div class="gallery__grid" id="gallery-grid"></div><nav class="gallery__pagination" id="gallery-pagination" aria-label="갤러리 페이지"></nav></div>
     </section>
 
     <section class="section rsvp" id="rsvp" aria-label="참석 의사 전달">
@@ -148,12 +148,12 @@
         <form id="rsvp-form" class="rsvp-form">
           <fieldset id="rsvp-fields" disabled>
             <legend class="rsvp-form__legend">참석 여부 알려주기</legend>
-            <fieldset class="rsvp-choice-group"><legend>구분</legend><div class="rsvp-choices"><label class="rsvp-choice"><input type="radio" name="side" value="신랑측" required><span>신랑측</span></label><label class="rsvp-choice"><input type="radio" name="side" value="신부측" required><span>신부측</span></label></div></fieldset>
+            <fieldset class="rsvp-choice-group"><legend>구분</legend><div class="rsvp-choices"><label class="rsvp-choice"><input type="radio" name="side" value="신랑측" required><span>신랑 측</span></label><label class="rsvp-choice"><input type="radio" name="side" value="신부측" required><span>신부 측</span></label></div></fieldset>
             <label>성함<input name="name" autocomplete="name" maxlength="40" required placeholder="성함을 입력해 주세요"></label>
             <fieldset class="rsvp-choice-group"><legend>참석 여부</legend><div class="rsvp-choices"><label class="rsvp-choice"><input type="radio" name="attendance" value="참석" required><span>참석</span></label><label class="rsvp-choice"><input type="radio" name="attendance" value="불참" required><span>불참</span></label></div></fieldset>
             <div id="rsvp-attending" hidden>
               <label>본인 포함 참석 인원<input name="guests" type="number" inputmode="numeric" min="1" max="20" step="1" value="1"></label>
-              <fieldset class="rsvp-choice-group"><legend>식사 여부</legend><div class="rsvp-choices"><label class="rsvp-choice"><input type="radio" name="meal" value="식사 예정"><span>식사 예정</span></label><label class="rsvp-choice"><input type="radio" name="meal" value="식사 안 함"><span>식사 안 함</span></label><label class="rsvp-choice"><input type="radio" name="meal" value="미정"><span>미정</span></label></div></fieldset>
+              <fieldset class="rsvp-choice-group"><legend>식사 여부</legend><div class="rsvp-choices rsvp-choices--meal"><label class="rsvp-choice"><input type="radio" name="meal" value="식사 예정"><span>식사 예정</span></label><label class="rsvp-choice"><input type="radio" name="meal" value="식사 안 함"><span>식사 안 함</span></label><label class="rsvp-choice"><input type="radio" name="meal" value="미정"><span>미정</span></label></div></fieldset>
             </div>
             <label>전달 메시지 (선택)<textarea name="message" maxlength="500" rows="3" placeholder="전하고 싶은 말을 남겨 주세요"></textarea></label>
             <label class="rsvp-form__consent"><input name="consent" type="checkbox" required><span>참석 확인과 식사 준비를 위한 성함 및 응답 내용 수집·이용에 동의합니다.</span></label>
@@ -184,7 +184,7 @@
     </section>
 
     <section class="section account" id="account" aria-label="마음 전하실 곳">
-      <div class="section__inner"><p class="section__lead">멀리서도 축하해 주시는 마음에 감사드립니다.</p><div class="account__list" id="account-list"></div></div>
+      <div class="section__inner"><p class="section__lead" data-field="accountMessage"></p><div class="account__list" id="account-list"></div></div>
     </section>
 
     <section class="section directions" id="location" aria-label="예식 장소와 오시는 방법">
@@ -195,18 +195,22 @@
           <button id="copy-address" class="button button--light" type="button" disabled>주소 복사 <span aria-hidden="true">↗</span></button>
         </div>
         <div id="directions" aria-label="지도와 교통 안내">
-        <div class="directions__map" id="naver-static-map" hidden>
-          <a id="naver-static-map-preview" href="#directions" target="_blank" rel="noopener noreferrer" aria-label="네이버 지도에서 아르베웨딩 위치 보기">
-            <img id="naver-static-map-image" alt="아르베웨딩 위치를 표시한 네이버 정적 지도" loading="lazy" decoding="async" width="900" height="580">
-          </a>
+        <div class="directions__map venue-map" id="venue-map" hidden>
+          <div class="venue-map__stage">
+            <div id="venue-map-canvas" class="venue-map__canvas" role="region" aria-label="예식장 위치 지도" inert></div>
+            <a id="venue-map-fallback" class="venue-map__fallback" href="#directions" target="_blank" rel="noopener noreferrer" aria-label="네이버 지도에서 예식장 위치 보기" hidden><img id="venue-map-image" alt="예식장 위치 안내 지도" loading="lazy" decoding="async" width="900" height="580"></a>
+            <p id="venue-map-status" class="venue-map__status" role="status">지도를 불러오고 있습니다.</p>
+            <button id="venue-map-activate" class="venue-map__activate" type="button" aria-controls="venue-map-canvas" hidden><span>눌러서 지도 움직이기</span></button>
+          </div>
+          <div id="venue-map-tools" class="venue-map__tools" hidden><button id="venue-map-reset" class="button button--light" type="button">예식장 위치로</button><button id="venue-map-lock" class="button button--light" type="button">지도 조작 마치기</button></div>
         </div>
         <div class="directions__links"><a id="naver-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="네이버 지도에서 예식장 보기">네이버</a><a id="kakao-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="카카오맵에서 예식장 보기">카카오맵</a><a id="google-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="구글 지도에서 예식장 보기">구글 지도</a><p class="section__pending" id="map-pending">지도 링크를 준비하고 있습니다.</p></div>
         <div class="directions__list">
-          <div class="directions__item"><h3>자가용</h3><div><p>외부 주차장에 먼저 주차한 뒤 웨딩홀로 이동해 주세요.</p><p class="directions__detail"> 도보 약 5분, 2시간 무료 주차입니다.</p><p class="directions__detail">제1주차장 · 서울시 강남구 논현동 237-12 경복주차장<br>제2주차장 · 서울시 강남구 언주로 603 국민은행</p></div></div>
+          <div class="directions__item"><h3>자가용</h3><div><p data-field="parkingMessage"></p><p class="directions__detail" data-field="parkingDuration"></p><div class="directions__places" id="parking-locations"></div></div></div>
           <div class="directions__item"><h3>버스</h3><div class="directions__bus-stops" id="bus-stops"></div></div>
-          <div class="directions__item"><h3>지하철</h3><div><p>9호선 선정릉역 4번 출구 · 도보 5분</p><p>9호선 언주역 5번 출구 · 도보 5분</p></div></div>
+          <div class="directions__item"><h3>지하철</h3><div class="directions__places" id="subway-routes"></div></div>
         </div>
-        <p class="directions__notice">주차 혼잡이 예상되오니 가급적 대중교통을 이용해 주세요.</p>
+        <p class="directions__notice" data-field="travelNotice"></p>
         </div>
       </div>
     </section>
@@ -216,11 +220,29 @@
     </section>
 
     <section class="section share" id="share" aria-label="청첩장 전달하기">
-      <div class="section__inner share__inner"><p class="section__lead">소중한 분께 이 초대장을 전해 주세요.</p><div class="share__actions"><button id="share-invitation" class="button" type="button">청첩장 전달하기 <span aria-hidden="true">↗</span></button><button id="copy-link" class="button button--light" type="button">주소 복사 <span aria-hidden="true">↗</span></button></div></div>
+      <div class="section__inner share__inner"><p class="section__lead" data-field="shareMessage"></p><div class="share__actions"><button id="share-invitation" class="button" type="button">청첩장 전달하기 <span aria-hidden="true">↗</span></button><button id="copy-link" class="button button--light" type="button">주소 복사 <span aria-hidden="true">↗</span></button></div></div>
     </section>
   </main>
 
-  <footer class="footer"><svg class="pace-mark" viewBox="0 0 240 100" fill="none" aria-hidden="true"><path pathLength="1" d="M8 16 C75 16 65 76 120 76 S181 35 232 35"/><path pathLength="1" d="M8 48 C66 48 77 76 120 76"/><circle cx="232" cy="35" r="3"/></svg><span>OUR PACE / PLAY · PAUSE · TOGETHER</span><strong data-field="couple"></strong><a href="#opening">처음부터 다시 보기 ↑</a></footer>
+  <footer class="footer"><svg class="pace-mark" viewBox="0 0 240 100" fill="none" aria-hidden="true"><path pathLength="1" d="M8 16 C75 16 65 76 120 76 S181 35 232 35"/><path pathLength="1" d="M8 48 C66 48 77 76 120 76"/><circle cx="232" cy="35" r="3"/></svg><span class="footer__signature"><span>OUR PACE</span><span aria-hidden="true">/</span><span>PLAY · PAUSE · TOGETHER</span></span><strong data-field="couple"></strong><a href="#opening">처음부터 다시 보기 ↑</a></footer>
+  <dialog id="calendar-picker" class="calendar-picker" aria-labelledby="calendar-picker-title" aria-describedby="calendar-picker-description">
+    <h2 id="calendar-picker-title" tabindex="-1">어디에 저장할까요?</h2>
+    <p id="calendar-picker-description">사용하실 캘린더를 선택해 주세요.</p>
+    <div class="calendar-picker__options">
+      <a id="calendar-device" class="calendar-picker__option" href="wedding.ics" target="_blank" rel="noopener noreferrer"><span><strong>기기 캘린더</strong><small id="calendar-device-description">일정 파일을 열어 추가</small></span><span aria-hidden="true">↗</span></a>
+      <a id="calendar-google" class="calendar-picker__option" href="https://calendar.google.com/calendar/render" target="_blank" rel="noopener noreferrer"><span><strong>Google 캘린더</strong><small id="calendar-google-description">Google 계정으로 로그인 후 저장</small></span><span aria-hidden="true">↗</span></a>
+    </div>
+    <p id="calendar-picker-help" class="calendar-picker__help">기기 캘린더에서 열리지 않으면<br>Google 캘린더를 선택해 주세요.</p>
+    <a id="calendar-web" class="calendar-picker__web" href="https://calendar.google.com/calendar/render" target="_blank" rel="noopener noreferrer" hidden>앱 없이 웹으로 저장 ↗</a>
+    <details id="calendar-diagnostics" class="calendar-diagnostics" hidden>
+      <summary>캘린더 진단 로그</summary>
+      <p>이 탭에 동작을 기록합니다. GitHub 이슈를 등록하면 기기·브라우저 정보와 동작 시각이 공개됩니다. 계좌 정보와 입력 내용은 기록하지 않습니다.</p>
+      <pre id="calendar-diagnostics-output" aria-label="캘린더 동작 기록"></pre>
+      <a id="calendar-diagnostics-report" href="https://github.com/baekmingyu1/Wedding-card/issues/new" target="_blank" rel="noopener noreferrer">GitHub에 로그 보내기 ↗</a>
+      <button id="calendar-diagnostics-reset" type="button">새 테스트 시작</button>
+    </details>
+    <button id="calendar-picker-close" class="calendar-picker__close" type="button">닫기</button>
+  </dialog>
   <dialog id="gallery-dialog" class="gallery-dialog" aria-label="사진 확대 보기">
     <div class="gallery-dialog__header"><span id="gallery-photo-counter" aria-live="polite"></span><button id="gallery-photo-close" type="button" autofocus>닫기 ×</button></div>
     <div class="gallery-dialog__viewport"><div id="gallery-photo-stage" class="gallery-dialog__stage"></div><p id="gallery-photo-status" class="gallery-dialog__status" role="status"></p></div>

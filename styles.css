@@ -19,7 +19,7 @@ button { font: inherit; }
 a { color: inherit; }
 button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 4px; }
 ::selection { background: #e6d9cd; color: var(--ink); }
-h1, h2, h3, p { word-break: keep-all; overflow-wrap: break-word; }
+h1, h2, h3, p { word-break: keep-all; overflow-wrap: break-word; text-wrap: balance; }
 h1, h2, h3 { font-weight: 400; }
 h2 { margin: 16px 0 0; font-size: clamp(42px, 6vw, 76px); line-height: 1.17; letter-spacing: -.065em; }
 h2 em { color: var(--accent); font-style: normal; }

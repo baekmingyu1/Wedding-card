@@ -26,7 +26,16 @@
   let toastTimer;
 
   document.querySelectorAll("[data-field]").forEach((element) => {
-    element.textContent = content[element.dataset.field] || "";
+    const value = content[element.dataset.field];
+    if (element.dataset.field === "parkingMessage" && Array.isArray(value)) {
+      value.forEach((text, index) => {
+        if (index) element.append(document.createTextNode(" "));
+        const phrase = document.createElement("span");
+        phrase.className = "parking-phrase";
+        phrase.textContent = text;
+        element.append(phrase);
+      });
+    } else element.textContent = value || "";
   });
 
   for (const line of content.invitation || []) {
@@ -136,6 +145,7 @@
   const galleryPhotos = content.galleryPhotos?.length ? content.galleryPhotos : Array(6).fill("");
   const galleryPager = document.getElementById("gallery-pagination");
   const galleryPageSize = 9;
+  const gallerySizes = "(max-width: 760px) calc((100vw - 100px) / 3), (max-width: 964px) calc((100vw - 84px) / 3), 294px";
   const galleryPageCount = Math.ceil(galleryPhotos.length / galleryPageSize);
 
   const galleryDialog = document.getElementById("gallery-dialog");
@@ -158,6 +168,55 @@
   const resolveGalleryPhoto = (index) => galleryPhotos[index] || openingPhotos[
     Math.round(index * (openingPhotos.length - 1) / Math.max(1, galleryPhotos.length - 1))
   ];
+
+  // Warm the HTTP cache after the intro is ready, without retaining every decoded image.
+  let galleryPreloadStarted = false;
+  function preloadGallery() {
+    if (galleryPreloadStarted || navigator.connection?.saveData) return;
+    galleryPreloadStarted = true;
+    const photos = galleryPhotos.map((_, index) => resolveGalleryPhoto(index)).filter(photoUrl);
+    const waitForVisible = () => new Promise((resolve) => {
+      if (!document.hidden) { resolve(); return; }
+      const resume = () => {
+        if (document.hidden) return;
+        document.removeEventListener("visibilitychange", resume);
+        resolve();
+      };
+      document.addEventListener("visibilitychange", resume);
+    });
+    const load = (photo, thumbnail) => new Promise((resolve) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.fetchPriority = "low";
+      img.onload = img.onerror = () => {
+        img.onload = img.onerror = null;
+        resolve();
+      };
+      if (thumbnail) {
+        img.sizes = gallerySizes;
+        const srcset = window.matchMedia("(max-width: 760px)").matches
+          ? photo.mobileSrcset || photo.srcset : photo.srcset;
+        if (srcset) img.srcset = srcset;
+      }
+      img.src = photoUrl(photo);
+    });
+    const run = async () => {
+      // Finish all grid sizes before spending bandwidth on enlarged photos.
+      for (const thumbnail of [true, false]) {
+        let nextIndex = 0;
+        const worker = async () => {
+          while (nextIndex < photos.length) {
+            await waitForVisible();
+            if (navigator.connection?.saveData) return;
+            const photo = photos[nextIndex++];
+            if (photo) await load(photo, thumbnail);
+          }
+        };
+        await Promise.all([worker(), worker()]);
+      }
+    };
+    void run();
+  }
 
   // Keep only nearby decoded photos in memory; browser HTTP caching handles older ones.
   const photoCache = new Map();
@@ -407,9 +466,7 @@
     const photos = galleryPhotos.slice(start, start + galleryPageSize);
     photos.forEach((photo, offset) => {
       const index = start + offset;
-      const mobileSize = "calc((100vw - 92px) / 3)";
-      const sizes = "(max-width: 760px) " + mobileSize + ", (max-width: 1220px) calc((100vw - 88px) / 3), 378px";
-      addPhoto(galleryHost, resolveGalleryPhoto(index), index, "gallery", sizes);
+      addPhoto(galleryHost, resolveGalleryPhoto(index), index, "gallery", gallerySizes);
     });
     previous.disabled = page === 0;
     next.disabled = page === galleryPageCount - 1;
@@ -469,6 +526,25 @@
     } catch { return false; }
   }
 
+  for (const [hostId, entries, titleKey, detailKey] of [
+    ["parking-locations", content.parkingLocations || [], "label", "address"],
+    ["subway-routes", content.subwayRoutes || [], "station", "directions"]
+  ]) {
+    const host = document.getElementById(hostId);
+    for (const entry of entries) {
+      const item = document.createElement("div");
+      item.className = "directions__place";
+      const title = document.createElement("p");
+      title.className = "directions__place-name";
+      title.textContent = entry[titleKey];
+      const detail = document.createElement("p");
+      detail.className = "directions__detail";
+      detail.textContent = entry[detailKey];
+      item.append(title, detail);
+      host.append(item);
+    }
+  }
+
   const busStopsHost = document.getElementById("bus-stops");
   for (const stop of content.busStops || []) {
     const block = document.createElement("div");
@@ -476,7 +552,14 @@
     const heading = document.createElement("p");
     heading.className = "directions__stop-heading";
     const name = document.createElement("span");
-    name.textContent = stop.name;
+    name.className = "directions__stop-name";
+    for (const [index, part] of stop.name.split("·").entries()) {
+      if (index) name.append(document.createTextNode(" · "));
+      const unit = document.createElement("span");
+      unit.className = "text-unit";
+      unit.textContent = part.trim();
+      name.append(unit);
+    }
     heading.append(name);
     try {
       const url = new URL(stop.mapUrl);
@@ -490,7 +573,7 @@
         link.title = "네이버 지도에서 정류장 찾기";
         const icon = document.createElement("span");
         icon.setAttribute("aria-hidden", "true");
-        icon.textContent = "N ↗";
+        icon.textContent = "↗";
         link.append(icon);
         heading.append(link);
       }
@@ -508,26 +591,123 @@
     setExternalLink("google-map-link", content.googleMapUrl)
   ].some(Boolean);
   document.getElementById("map-pending").hidden = hasMaps;
-  const naverStaticMap = document.getElementById("naver-static-map");
-  const naverStaticImage = document.getElementById("naver-static-map-image");
-  const naverKeyId = content.naverStaticMapKeyId?.trim();
-  const naverCenter = content.naverStaticMapCenter?.trim();
-  if (naverKeyId && naverCenter && /^https?:$/.test(location.protocol)) {
-    const coordinates = naverCenter.split(",").map(Number);
-    if (coordinates.length === 2 && coordinates.every(Number.isFinite)) {
-      const [longitude, latitude] = coordinates;
+  function initVenueMap() {
+    const root = document.getElementById("venue-map");
+    const canvas = document.getElementById("venue-map-canvas");
+    const fallback = document.getElementById("venue-map-fallback");
+    const fallbackImage = document.getElementById("venue-map-image");
+    const status = document.getElementById("venue-map-status");
+    const activate = document.getElementById("venue-map-activate");
+    const controls = document.getElementById("venue-map-tools");
+    const key = content.naverMapKeyId?.trim();
+    const coordinates = content.naverMapCenter?.split(",").map(Number);
+    if (!key || !coordinates || coordinates.length !== 2 || !coordinates.every(Number.isFinite)) return;
+    const [longitude, latitude] = coordinates;
+    if (Math.abs(longitude) > 180 || Math.abs(latitude) > 90) return;
+    root.hidden = false;
+    canvas.setAttribute("aria-label", `${content.venue} 위치 지도`);
+    fallbackImage.alt = `${content.venue} 위치 안내 지도`;
+    fallback.href = document.getElementById("naver-map-link").href;
+    let map, marker, timer, started = false, failed = false, ready = false;
+    const setInteractive = (active) => {
+      if (!ready || failed) return;
+      map.setOptions({ draggable: active, pinchZoom: active, keyboardShortcuts: active,
+        disableDoubleClickZoom: !active, disableDoubleTapZoom: !active,
+        disableTwoFingerTapZoom: !active, scrollWheel: false, zoomControl: active });
+      canvas.inert = !active;
+      activate.hidden = active;
+      controls.hidden = !active;
+    };
+    const showFallback = () => {
+      if (failed) return;
+      failed = true;
+      clearTimeout(timer);
+      marker?.setMap(null);
+      map?.destroy();
+      canvas.hidden = true;
+      activate.hidden = controls.hidden = true;
+      root.dataset.state = "fallback";
+      status.hidden = false;
+      status.textContent = "아래 지도 버튼에서 위치를 확인해 주세요.";
+      if (!/^https?:$/.test(location.protocol)) return;
       const params = new URLSearchParams({
-        w: "900", h: "580", center: naverCenter, level: "16", lang: "ko",
+        w: "900", h: "580", center: `${longitude},${latitude}`, level: "16", lang: "ko",
         markers: `type:d|size:mid|color:Orange|pos:${longitude} ${latitude}`,
-        "X-NCP-APIGW-API-KEY-ID": naverKeyId
+        "X-NCP-APIGW-API-KEY-ID": key
       });
-      const naverPreview = document.getElementById("naver-static-map-preview");
-      naverPreview.href = document.getElementById("naver-map-link").href;
-      naverStaticImage.addEventListener("error", () => { naverStaticMap.hidden = true; }, { once: true });
-      naverStaticMap.hidden = false;
-      naverStaticImage.src = `https://maps.apigw.ntruss.com/map-static/v2/raster-cors?${params}`;
-    }
+      fallbackImage.onload = () => { fallback.hidden = false; status.hidden = true; };
+      fallbackImage.onerror = () => { fallback.hidden = true; };
+      fallbackImage.loading = "eager";
+      fallbackImage.src = `https://maps.apigw.ntruss.com/map-static/v2/raster-cors?${params}`;
+    };
+    const createMap = () => {
+      if (failed || map) return;
+      if (!window.naver?.maps?.Map) { showFallback(); return; }
+      try {
+        const position = new naver.maps.LatLng(latitude, longitude);
+        map = new naver.maps.Map(canvas, {
+          center: position, zoom: 16, minZoom: 7, maxZoom: 20,
+          draggable: false, pinchZoom: false, scrollWheel: false, keyboardShortcuts: false,
+          disableDoubleClickZoom: true, disableDoubleTapZoom: true, disableTwoFingerTapZoom: true,
+          zoomControl: false
+        });
+        const label = document.createElement("span");
+        label.className = "venue-map__marker";
+        label.textContent = content.venue;
+        marker = new naver.maps.Marker({ position, map, title: content.venue,
+          icon: { content: label, anchor: new naver.maps.Point(0, 0) } });
+        naver.maps.Event.once(map, "tilesloaded", () => {
+          if (failed) return;
+          clearTimeout(timer);
+          ready = true;
+          root.dataset.state = "ready";
+          status.hidden = true;
+          setInteractive(false);
+        });
+      } catch { showFallback(); }
+    };
+    const load = () => {
+      if (started) return;
+      started = true;
+      root.dataset.state = "loading";
+      if (!/^https?:$/.test(location.protocol)) { showFallback(); return; }
+      timer = window.setTimeout(showFallback, 12000);
+      window.navermap_authFailure = showFallback;
+      if (window.naver?.maps?.Map) { createMap(); return; }
+      window.initWeddingVenueMap = createMap;
+      const sdk = document.createElement("script");
+      sdk.src = `https://oapi.map.naver.com/openapi/v3/maps.js?${new URLSearchParams({ ncpKeyId: key, callback: "initWeddingVenueMap" })}`;
+      sdk.async = true;
+      sdk.onerror = showFallback;
+      document.head.append(sdk);
+    };
+    activate.addEventListener("click", () => {
+      setInteractive(true);
+      document.getElementById("venue-map-lock").focus({ preventScroll: true });
+    });
+    document.getElementById("venue-map-lock").addEventListener("click", () => {
+      setInteractive(false);
+      activate.focus({ preventScroll: true });
+    });
+    document.getElementById("venue-map-reset").addEventListener("click", () => {
+      if (!ready || failed) return;
+      map.setCenter(new naver.maps.LatLng(latitude, longitude));
+      map.setZoom(16, false);
+    });
+    root.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && ready && !failed && !canvas.inert) {
+        setInteractive(false);
+        activate.focus({ preventScroll: true });
+      }
+    });
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver((entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) { observer.disconnect(); load(); }
+      }, { rootMargin: "300px" });
+      observer.observe(root);
+    } else load();
   }
+  initVenueMap();
   const rsvpForm = document.getElementById("rsvp-form");
   const rsvpFields = document.getElementById("rsvp-fields");
   const rsvpStatus = document.getElementById("rsvp-status");
@@ -685,7 +865,7 @@
         }
       }
       countdownCaption.textContent = days > 0
-        ? `${content.couple}의 결혼식까지 ${days}일 남았습니다.`
+        ? `${content.couple}의 결혼식까지\n${days}일 남았습니다.`
         : days === 0 ? "오늘, 함께 시작합니다." : "함께해 주셔서 감사합니다.";
     }
     updateCountdown();
@@ -698,10 +878,182 @@
     calendarGrid.textContent = "예식 날짜가 정해지면 달력이 표시됩니다.";
   }
 
+  function initCalendarDiagnostics() {
+    if (new URLSearchParams(window.location.search).get("calendarDebug") !== "1") return () => {};
+    const host = document.getElementById("calendar-diagnostics");
+    const output = document.getElementById("calendar-diagnostics-output");
+    const report = document.getElementById("calendar-diagnostics-report");
+    const storageKey = "wedding-calendar-diagnostics-v1";
+    // Only these fixed events are recorded. Never capture URLs, form values,
+    // arbitrary console/error messages, cookies, or calendar account data.
+    const allowed = {
+      load: ["android", "other"], picker: ["normal", "fallback"],
+      click: ["calendar-save", "calendar-device", "calendar-google", "calendar-web"],
+      fallback: ["device-to-google-app"], visibility: ["visible", "hidden"],
+      focus: ["gained", "lost"], pagehide: ["cached", "unloaded"],
+      pageshow: ["cached", "loaded"], close: ["picker"], reset: ["manual"]
+    };
+    let entries = [];
+    let storageAvailable = true;
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(storageKey) || "[]");
+      if (Array.isArray(saved)) entries = saved.filter((entry) =>
+        entry && typeof entry.at === "string" && /^\d{4}-\d{2}-\d{2}T[\d:.]+Z$/.test(entry.at) &&
+        Object.hasOwn(allowed, entry.event) && allowed[entry.event].includes(entry.value)
+      ).slice(-60).map(({ at, event, value }) => ({ at, event, value }));
+    } catch { storageAvailable = false; }
+    host.hidden = false;
+    const scriptSource = new URL(document.currentScript?.src || "script.js", location.href);
+    const version = scriptSource.pathname.split("/").pop() + (scriptSource.searchParams.has("v") ? `?v=${scriptSource.searchParams.get("v")}` : "");
+    const metadata = {
+      format: 1, build: version, userAgent: navigator.userAgent.slice(0, 300),
+      language: navigator.language, viewport: `${innerWidth}x${innerHeight}`,
+      note: "Visibility/focus changes are observations, not proof of app launch or event save."
+    };
+    function render() {
+      const data = { ...metadata, sessionStorage: storageAvailable, entries };
+      output.textContent = JSON.stringify(data, null, 2);
+      const issue = new URL("https://github.com/baekmingyu1/Wedding-card/issues/new");
+      issue.searchParams.set("title", "[Calendar diagnostic] 캘린더 앱 연결 테스트");
+      // Keep the issue link small enough for mobile browsers. Full logs remain visible.
+      const recent = entries.slice(-30);
+      const updateBody = () => issue.searchParams.set("body", [
+        "캘린더 앱 연결 진단입니다. 기기 캘린더와 Google 앱의 실제 동작 결과도 적어 주세요.",
+        "화면 전환 기록만으로 앱 실행 또는 일정 저장 성공을 확정할 수 없습니다.",
+        "```json", JSON.stringify({ ...data, entries: recent, omitted: entries.length - recent.length }, null, 2), "```"
+      ].join("\n\n"));
+      updateBody();
+      while (issue.href.length > 7500 && recent.length > 1) { recent.shift(); updateBody(); }
+      report.href = issue.href;
+    }
+    function record(event, value) {
+      if (!Object.hasOwn(allowed, event) || !allowed[event].includes(value)) return;
+      entries.push({ at: new Date().toISOString(), event, value });
+      entries = entries.slice(-60);
+      try { sessionStorage.setItem(storageKey, JSON.stringify(entries)); }
+      catch { storageAvailable = false; }
+      render();
+    }
+    document.addEventListener("click", (event) => {
+      const id = event.target.closest?.("a, button")?.id;
+      if (allowed.click.includes(id)) record("click", id);
+    }, true);
+    document.addEventListener("visibilitychange", () => record("visibility", document.visibilityState));
+    window.addEventListener("blur", () => record("focus", "lost"));
+    window.addEventListener("focus", () => record("focus", "gained"));
+    window.addEventListener("pagehide", (event) => record("pagehide", event.persisted ? "cached" : "unloaded"));
+    window.addEventListener("pageshow", (event) => record("pageshow", event.persisted ? "cached" : "loaded"));
+    document.getElementById("calendar-diagnostics-reset").addEventListener("click", () => {
+      entries = [];
+      record("reset", "manual");
+    });
+    record("load", /Android/i.test(navigator.userAgent) || navigator.userAgentData?.platform === "Android" ? "android" : "other");
+    return record;
+  }
+  const recordCalendarDiagnostic = initCalendarDiagnostics();
+
   const invitationUrl = new URL(window.location.href);
   invitationUrl.hash = "";
+  invitationUrl.searchParams.delete("calendarDebug");
   const calendarSave = document.getElementById("calendar-save");
   calendarSave.hidden = !eventReady;
+  const calendarPicker = document.getElementById("calendar-picker");
+  const calendarAndroid = navigator.userAgentData?.platform === "Android" || /Android/i.test(navigator.userAgent);
+  if (eventReady) {
+    const start = eventDate.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+    const googleCalendar = new URL("https://calendar.google.com/calendar/render");
+    googleCalendar.search = new URLSearchParams({
+      action: "TEMPLATE",
+      text: `${content.couple} 결혼식`,
+      dates: `${start}/${start}`,
+      ctz: "Asia/Seoul",
+      location: [content.venue, content.address].filter(Boolean).join(" · "),
+      details: `예식 시작: ${content.date} (대한민국 / Asia/Seoul)\n종료 시간은 안내되지 않았습니다. 저장 전 확인해 주세요.`
+    }).toString();
+    const googleLink = document.getElementById("calendar-google");
+    googleLink.href = googleCalendar.href;
+    const webLink = document.getElementById("calendar-web");
+    webLink.href = googleCalendar.href;
+    if (calendarAndroid) {
+      const deviceLink = document.getElementById("calendar-device");
+      // The browser resolves supported apps; it cannot detect installation or confirm a save.
+      // INSERT is supported only if the calendar exposes a browser-accessible activity.
+      // Use the browser's fallback, not a timer that could interrupt a successful app launch.
+      const googleFallback = `S.browser_fallback_url=${encodeURIComponent(googleCalendar.href)}`;
+      const deviceFallback = new URL(window.location.href);
+      deviceFallback.hash = "calendar-google";
+      deviceLink.href = [
+        "intent://com.android.calendar/events#Intent", "scheme=content",
+        "action=android.intent.action.INSERT", "type=vnd.android.cursor.dir/event",
+        `S.title=${encodeURIComponent(`${content.couple} 결혼식`)}`,
+        `S.eventLocation=${encodeURIComponent([content.venue, content.address].filter(Boolean).join(" · "))}`,
+        `S.description=${encodeURIComponent(googleCalendar.searchParams.get("details"))}`,
+        `l.beginTime=${eventDate.getTime()}`, "B.allDay=false",
+        `S.browser_fallback_url=${encodeURIComponent(deviceFallback.href)}`, "end"
+      ].join(";");
+      googleLink.href = `intent://${googleCalendar.href.slice("https://".length)}#Intent;scheme=https;action=android.intent.action.VIEW;package=com.google.android.calendar;${googleFallback};end`;
+      deviceLink.removeAttribute("target");
+      googleLink.removeAttribute("target");
+      document.getElementById("calendar-device-description").textContent = "설치된 캘린더 앱으로 연결";
+      document.getElementById("calendar-google-description").textContent = "Google 캘린더 앱으로 연결";
+      document.getElementById("calendar-picker-help").textContent = "기기 캘린더가 열리지 않으면 Google 캘린더 앱을 선택해 주세요.";
+      webLink.hidden = false;
+    }
+  }
+  function openCalendarPicker(deviceFailed = false) {
+    if (!eventReady) return;
+    document.getElementById("calendar-device").hidden = deviceFailed;
+    document.getElementById("calendar-web").hidden = !calendarAndroid || deviceFailed;
+    document.getElementById("calendar-picker-help").hidden = deviceFailed;
+    document.getElementById("calendar-picker-title").textContent = deviceFailed ? "Google 캘린더로 저장" : "어디에 저장할까요?";
+    document.getElementById("calendar-picker-description").textContent = deviceFailed
+      ? "기본 캘린더를 열지 못했어요. 아래 버튼을 눌러 이어서 저장해 주세요."
+      : "사용하실 캘린더를 선택해 주세요.";
+    document.querySelector("#calendar-google strong").textContent = deviceFailed ? "Google 캘린더 앱으로 열기" : "Google 캘린더";
+    recordCalendarDiagnostic("picker", deviceFailed ? "fallback" : "normal");
+    if (!calendarPicker.open) calendarPicker.showModal();
+    document.documentElement.classList.add("calendar-picker-open");
+    document.getElementById("calendar-picker-title").focus({ preventScroll: true });
+  }
+  calendarSave.addEventListener("click", () => openCalendarPicker());
+  function handleCalendarFallback() {
+    if (!calendarAndroid || !eventReady || window.location.hash !== "#calendar-google") return;
+    // A second app launch needs a fresh user gesture. A fallback URL cannot safely
+    // chain another intent or a timed redirect, so keep the working Google app link.
+    recordCalendarDiagnostic("fallback", "device-to-google-app");
+    const cleanUrl = new URL(window.location.href);
+    cleanUrl.hash = "calendar";
+    window.history.replaceState(window.history.state, "", cleanUrl.href);
+    openCalendarPicker(true);
+  }
+  window.addEventListener("hashchange", handleCalendarFallback);
+  // Supports both same-document fallback and browsers that reload the fallback URL.
+  if (document.readyState === "complete") handleCalendarFallback();
+  else window.addEventListener("load", handleCalendarFallback, { once: true });
+  document.getElementById("calendar-picker-close").addEventListener("click", () => calendarPicker.close());
+  calendarPicker.addEventListener("click", (event) => {
+    if (event.target !== calendarPicker) return;
+    const rect = calendarPicker.getBoundingClientRect();
+    if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) calendarPicker.close();
+  });
+  calendarPicker.addEventListener("keydown", (event) => {
+    if (event.key !== "Tab") return;
+    const choices = [...calendarPicker.querySelectorAll("a[href], button, summary")].filter((element) => {
+      const details = element.closest("details");
+      return !element.closest("[hidden]") && element.getClientRects().length &&
+        (!details || details.open || element.tagName === "SUMMARY");
+    });
+    const index = choices.indexOf(document.activeElement);
+    if ((event.shiftKey && index <= 0) || (!event.shiftKey && index === choices.length - 1)) {
+      event.preventDefault();
+      choices[event.shiftKey ? choices.length - 1 : 0].focus();
+    }
+  });
+  calendarPicker.addEventListener("close", () => {
+    recordCalendarDiagnostic("close", "picker");
+    document.documentElement.classList.remove("calendar-picker-open");
+    calendarSave.focus({ preventScroll: true });
+  });
 
   document.getElementById("copy-link").addEventListener("click", () => copyText(invitationUrl.href));
   document.getElementById("share-invitation").addEventListener("click", async () => {
@@ -734,7 +1086,20 @@
       details.className = "account__details";
       const number = document.createElement("strong");
       number.textContent = account.number;
-      details.append(number, document.createTextNode(`${account.bank} · 예금주 ${account.holder}`));
+      const bank = document.createElement("span");
+      bank.className = "account__bank";
+      bank.textContent = account.bank;
+      const holder = document.createElement("span");
+      holder.className = "account__holder";
+      holder.textContent = account.holder;
+      holder.setAttribute("aria-label", `예금주 ${account.holder}`);
+      const meta = document.createElement("span");
+      meta.className = "account__meta";
+      const separator = document.createElement("span");
+      separator.textContent = "·";
+      separator.setAttribute("aria-hidden", "true");
+      meta.append(bank, separator, holder);
+      details.append(number, meta);
       const button = document.createElement("button");
       button.className = "button button--light";
       button.type = "button";
@@ -1124,6 +1489,7 @@
     openingLoader.hidden = true;
     openingLoader.classList.remove("is-exiting");
     updateScroll();
+    preloadGallery();
     if (navigate) navigateToInvitation();
   }
 
@@ -1157,7 +1523,7 @@
     requestOpeningFrame(0, true);
     updateScroll();
     if (autoplayActive) playOpening(playbackRun);
-    else startBgm();
+    else { startBgm(); preloadGallery(); }
   }
 
   document.querySelectorAll('a[href="#opening"]').forEach((link) => {
@@ -1227,6 +1593,7 @@
       if (!autoplayActive || run !== playbackRun) return;
       openingLoader.hidden = true;
     }
+    preloadGallery();
     const middleFrameMs = 200;
     const preparedNext = new Map();
     const warmNext = (index) => {
@@ -1336,6 +1703,7 @@
     // Enter directly, without starting the photo intro or an intermediate notice.
     opening.hidden = true;
     stopPendingOpeningLoads();
+    preloadGallery();
     firstSection.tabIndex = -1;
     firstSection.focus({ preventScroll: true });
     firstSection.scrollIntoView({ behavior: "instant", block: "start" });
@@ -1492,4 +1860,5 @@
 
   if (resumeInvitation && !galleryDialog.open) enterInvitation();
   if (autoplayActive) playOpening(++playbackRun);
+  else if (!welcomeWanted) preloadGallery();
 })();
