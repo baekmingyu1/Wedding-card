@@ -957,3 +957,15 @@ html.parking-map-open, html.parking-map-open body { overflow: hidden; }
 /* Recognizable transport symbols stay aligned with their visible text labels. */
 .directions__transport-title { display: flex; align-items: center; justify-content: center; gap: 8px; }
 .directions__transport-icon { display: block; flex: 0 0 24px; width: 24px; height: 24px; pointer-events: none; }
+
+/* Keep name and party size together beneath attendance on small screens too. */
+.rsvp-form__guest-row { display: grid; grid-template-columns: minmax(0, 1fr) 112px; gap: 12px; margin-bottom: 24px; }
+.rsvp-form .rsvp-form__guest-row > label { min-width: 0; margin: 0; }
+.rsvp-form .rsvp-form__guest-row input[name], .rsvp-form .rsvp-form__guest-row select { width: 100%; min-width: 0; min-height: 52px; }
+.rsvp-form__guest-label { white-space: nowrap; }
+.rsvp-form__guest-label small { font-size: 11px; color: var(--muted); }
+.rsvp-form__guest-row select:disabled { opacity: .5; cursor: not-allowed; }
+@media (max-width: 360px) {
+  .rsvp-form__guest-row { grid-template-columns: minmax(0, 1fr) 96px; gap: 8px; }
+  .rsvp-form .rsvp-form__guest-row input[name] { padding-inline: 8px; font-size: 14px; }
+}
