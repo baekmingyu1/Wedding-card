@@ -42,7 +42,8 @@ window.WEDDING_CONTENT = {
   parkingDuration: "도보 약 5분 · 2시간 무료 주차",
   parkingLocations: [
     { label: "제1주차장 · 경복주차장", address: "서울시 강남구 논현동 237-12" },
-    { label: "제2주차장 · 국민은행", address: "서울시 강남구 언주로 603" }
+    { label: "제2주차장 · 국민은행", address: "서울시 강남구 언주로 603" },
+    { label: "제3주차장 · PAXTOWER", address: "위치는 주차장 약도를 참고해 주세요." }
   ],
   subwayRoutes: [
     { station: "9호선 선정릉역", directions: "4번 출구 · 도보 5분" },

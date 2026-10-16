@@ -157,7 +157,7 @@
       button.className = "gallery__open";
       button.setAttribute("aria-label", "사진 " + (index + 1) + " 확대 보기");
       button.setAttribute("aria-haspopup", "dialog");
-      button.addEventListener("click", () => openGalleryPhoto(index));
+      button.addEventListener("click", () => openGalleryPhoto(index, false, button));
       while (wrapper.firstChild) button.append(wrapper.firstChild);
       wrapper.append(button);
     }
@@ -186,6 +186,11 @@
   let previousBodyOverflow = "";
   let photoDialogActive = false;
   let photoHistoryPending = false;
+  let photoRestorePending = false;
+  let photoReturnPosition = { top: 0, left: 0 };
+  let photoReturnFocus = null;
+  let previousPhotoScrollRestoration = "auto";
+  let photoRestoreFrame = 0;
   const photoHistoryKey = "weddingGalleryPhoto";
   const historyPhotoIndex = () => {
     const index = history.state?.[photoHistoryKey];
@@ -333,10 +338,16 @@
     }
   }
 
-  function openGalleryPhoto(index, fromHistory = false) {
+  function openGalleryPhoto(index, fromHistory = false, opener = null) {
     // Closing traverses history asynchronously; do not create another entry meanwhile.
-    if (photoHistoryPending) return;
+    if (photoHistoryPending || photoRestorePending) return;
     if (!galleryDialog.open) {
+      photoReturnPosition = { top: window.scrollY, left: window.scrollX };
+      photoReturnFocus = opener || (galleryHost.contains(document.activeElement) ? document.activeElement : galleryHost.querySelector("button"));
+      previousPhotoScrollRestoration = history.scrollRestoration;
+      history.scrollRestoration = "manual";
+      // Set native dialog's return target, including touch browsers that do not focus buttons.
+      photoReturnFocus?.focus({ preventScroll: true });
       if (!fromHistory) history.pushState({ ...history.state, [photoHistoryKey]: index }, "");
       previousBodyOverflow = document.body.style.overflow;
       document.body.style.overflow = "hidden";
@@ -364,8 +375,28 @@
     }
     showGalleryPhoto(index);
   }
+  function restoreGalleryPosition() {
+    photoRestorePending = true;
+    cancelAnimationFrame(photoRestoreFrame);
+    const restore = () => {
+      if (photoReturnFocus?.isConnected) photoReturnFocus.focus({ preventScroll: true });
+      window.scrollTo({ ...photoReturnPosition, behavior: "instant" });
+    };
+    restore();
+    // Run after history traversal/native focus restoration, before enabling intro replay.
+    photoRestoreFrame = requestAnimationFrame(() => {
+      restore();
+      photoRestoreFrame = requestAnimationFrame(() => {
+        restore();
+        if (photoHistoryPending) return; // popstate completes the restoration.
+        history.scrollRestoration = previousPhotoScrollRestoration;
+        photoRestorePending = false;
+      });
+    });
+  }
   function closeGalleryPhoto() {
     if (!photoDialogActive) return;
+    photoRestorePending = true;
     photoDialogActive = false;
     galleryDialog.close();
     document.body.style.overflow = previousBodyOverflow;
@@ -375,6 +406,7 @@
     photoStage.replaceChildren();
     swipeStart = null;
     lastPhotoTap = null;
+    restoreGalleryPosition();
   }
   function requestGalleryClose() {
     if (!photoDialogActive || photoHistoryPending) return;
@@ -399,8 +431,10 @@
   window.addEventListener("popstate", () => {
     photoHistoryPending = false;
     const index = historyPhotoIndex();
-    if (index === null) closeGalleryPhoto();
-    else openGalleryPhoto(index, true);
+    if (index === null) {
+      if (photoDialogActive) closeGalleryPhoto();
+      else if (photoRestorePending) restoreGalleryPosition();
+    } else openGalleryPhoto(index, true);
   });
 
   // Older mobile webviews may ignore touch-action. Cancel zoom gestures only
@@ -1392,7 +1426,7 @@
   function updateScroll() {
     pending = false;
     if (openingLocked && window.scrollY !== 0) instantOpeningTop();
-    if (playbackComplete && hasLeftOpening && window.scrollY < 5) {
+    if (!photoDialogActive && !photoHistoryPending && !photoRestorePending && playbackComplete && hasLeftOpening && window.scrollY < 5) {
       replayOpening();
       return;
     }
