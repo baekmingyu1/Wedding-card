@@ -931,11 +931,10 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 /* Parking directions: a centered heading with a compact action at the right. */
 .directions__parking-heading { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; }
 .directions__parking-heading h3 { grid-column: 2; margin: 0; }
-.parking-map-link { grid-column: 3; justify-self: end; display: inline-flex; align-items: center; justify-content: center; gap: 4px; min-height: 44px; padding: 4px 0; border: 0; border-radius: 6px; background: transparent; color: var(--accent); font: inherit; font-size: 12px; white-space: nowrap; cursor: pointer; }
-.parking-map-link span { text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--line); }
+.parking-map-link { grid-column: 3; justify-self: end; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--accent-soft); color: var(--accent); font: inherit; font-size: 12px; white-space: nowrap; cursor: pointer; }
 .parking-map-link svg { flex-shrink: 0; }
-.parking-map-link:active { color: var(--ink); background: var(--accent-soft); }
-@media (hover: hover) and (pointer: fine) { .parking-map-link:hover span { text-decoration-color: currentColor; } }
+.parking-map-link:active { color: var(--ink); border-color: var(--accent); background: #e6d9cd; }
+@media (hover: hover) and (pointer: fine) { .parking-map-link:hover { border-color: var(--accent); background: #eee6dc; } }
 .parking-map-dialog { box-sizing: border-box; width: min(920px, calc(100% - 24px)); max-width: none; max-height: calc(100dvh - 32px); padding: 16px; border: 1px solid var(--line); border-radius: 22px; background: var(--surface); color: var(--ink); overflow: auto; overscroll-behavior: contain; }
 .parking-map-dialog::backdrop { background: rgba(30, 26, 23, .55); }
 .parking-map-dialog__header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
