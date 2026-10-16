@@ -610,7 +610,10 @@
             const icon = document.createElement("span");
             icon.setAttribute("aria-hidden", "true");
             icon.textContent = "↗";
-            link.append(icon);
+            const name = document.createElement("span");
+            name.textContent = title.textContent;
+            title.textContent = "";
+            link.append(name, icon);
             title.append(link);
           }
         } catch { /* Keep the address readable when no valid map link is available. */ }
@@ -652,7 +655,7 @@
         const icon = document.createElement("span");
         icon.setAttribute("aria-hidden", "true");
         icon.textContent = "↗";
-        link.append(icon);
+        link.append(name, icon);
         heading.append(link);
       }
     } catch { /* Keep the stop name readable if a map link is unavailable. */ }
@@ -725,9 +728,9 @@
         const position = new naver.maps.LatLng(latitude, longitude);
         map = new naver.maps.Map(canvas, {
           center: position, zoom: 16, minZoom: 7, maxZoom: 20,
-          draggable: true, pinchZoom: true, scrollWheel: true, keyboardShortcuts: true,
+          draggable: true, pinchZoom: true, scrollWheel: false, keyboardShortcuts: true,
           disableDoubleClickZoom: false, disableDoubleTapZoom: false, disableTwoFingerTapZoom: false,
-          zoomControl: true
+          zoomControl: false
         });
         const label = document.createElement("span");
         label.className = "venue-map__marker";
