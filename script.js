@@ -588,7 +588,8 @@
   const hasMaps = [
     setExternalLink("naver-map-link", content.naverMapUrl),
     setExternalLink("kakao-map-link", content.kakaoMapUrl),
-    setExternalLink("google-map-link", content.googleMapUrl)
+    setExternalLink("google-map-link", content.googleMapUrl),
+    setExternalLink("tmap-link", content.tmapUrl)
   ].some(Boolean);
   document.getElementById("map-pending").hidden = hasMaps;
   function initVenueMap() {
@@ -615,6 +616,7 @@
         disableDoubleClickZoom: !active, disableDoubleTapZoom: !active,
         disableTwoFingerTapZoom: !active, scrollWheel: false, zoomControl: active });
       canvas.inert = !active;
+      canvas.style.touchAction = active ? "none" : "pan-y";
       activate.hidden = active;
       controls.hidden = !active;
     };
@@ -627,6 +629,7 @@
       canvas.hidden = true;
       activate.hidden = controls.hidden = true;
       root.dataset.state = "fallback";
+      document.getElementById("venue-map-notice").hidden = false;
       status.hidden = false;
       status.textContent = "아래 지도 버튼에서 위치를 확인해 주세요.";
       if (!/^https?:$/.test(location.protocol)) return;
@@ -655,15 +658,17 @@
         label.className = "venue-map__marker";
         label.textContent = content.venue;
         marker = new naver.maps.Marker({ position, map, title: content.venue,
-          icon: { content: label, anchor: new naver.maps.Point(0, 0) } });
-        naver.maps.Event.once(map, "tilesloaded", () => {
-          if (failed) return;
+          icon: { content: label.outerHTML, anchor: new naver.maps.Point(0, 0) } });
+        const markReady = () => {
+          if (failed || ready) return;
           clearTimeout(timer);
           ready = true;
           root.dataset.state = "ready";
           status.hidden = true;
           setInteractive(false);
-        });
+        };
+        naver.maps.Event.once(map, "init", markReady);
+        naver.maps.Event.once(map, "tilesloaded", markReady);
       } catch { showFallback(); }
     };
     const load = () => {
