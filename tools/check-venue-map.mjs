@@ -1,6 +1,5 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { execFileSync } from "node:child_process";
 import vm from "node:vm";
 
 const current = readFileSync(new URL("../script.js", import.meta.url), "utf8");
@@ -38,22 +37,11 @@ function harness(source) {
     exportSdk() {
       context.naver = { maps: {
         LatLng: class {}, Point: class {},
-        Map: class { constructor() { constructions++; } setOptions(options) { element("venue-map-canvas").options = options; } destroy() {} },
+        Map: class { constructor(canvas, options) { constructions++; canvas.options = options; } setOptions(options) { element("venue-map-canvas").options = options; } destroy() {} },
         Marker: class { setMap() {} }, Event: { once() {} }
       } };
     }
   };
-}
-
-// Reproduce the previous permanent fallback when callback precedes the namespace export.
-if (process.argv.includes("--compare-head")) {
-  const previous = execFileSync("git", ["show", "HEAD:script.js"], { encoding: "utf8" });
-  const old = harness(previous);
-  old.context.initWeddingVenueMap();
-  old.exportSdk();
-  old.sdk.onload();
-  assert.equal(old.element("venue-map").dataset.state, "fallback");
-  assert.equal(old.constructions, 0);
 }
 
 const early = harness(current);
@@ -64,11 +52,11 @@ early.sdk.onload();
 early.tick(0);
 assert.equal(early.element("venue-map").dataset.state, "ready");
 assert.equal(early.constructions, 1);
-early.element("venue-map-activate").listeners.click();
 assert.equal(early.element("venue-map-canvas").inert, false);
 assert.equal(early.element("venue-map-canvas").options.draggable, true);
-early.element("venue-map-lock").listeners.click();
-assert.equal(early.element("venue-map-canvas").inert, true);
+assert.equal(early.element("venue-map-canvas").options.pinchZoom, true);
+assert.equal(early.element("venue-map-canvas").options.scrollWheel, true);
+assert.equal(early.element("venue-map-canvas").options.zoomControl, true);
 early.context.initWeddingVenueMap();
 early.tick(0);
 assert.equal(early.constructions, 1);
@@ -92,4 +80,4 @@ for (const failure of ["timeout", "network", "auth"]) {
   test.tick(0);
   assert.equal(test.constructions, 0);
 }
-console.log("PASS: early callback, delayed SDK export, single construction, interaction controls, timeout/network/auth fallback");
+console.log("PASS: early callback, delayed SDK export, single construction, immediate map interaction, timeout/network/auth fallback");
