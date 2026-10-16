@@ -869,7 +869,7 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
   outline-offset: 3px;
 }
 @media (hover: hover) and (pointer: fine) {
-  :where(button, a[href], summary, [role="button"]):not(:disabled):not([aria-disabled="true"]):hover {
+  :where(.button, .bgm-toggle, .location__copy, .opening__control, .calendar-picker__close, .gallery__pagination button, .gallery-dialog__controls button, .gallery-dialog__header button):not(:disabled):not([aria-disabled="true"]):hover {
     box-shadow: inset 0 0 0 1px rgba(155, 100, 68, .22);
   }
   :is(.account__group, .rsvp-disclosure, .calendar-diagnostics) > summary:hover {
@@ -877,7 +877,7 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
   }
   .rsvp-choice:hover input:not(:disabled) + span { background-color: var(--accent-soft); }
 }
-:where(button, a[href], summary, [role="button"]):not(:disabled):not([aria-disabled="true"]):active {
+:where(.button, .bgm-toggle, .location__copy, .opening__control, .calendar-picker__close, .gallery__pagination button, .gallery-dialog__controls button, .gallery-dialog__header button):not(:disabled):not([aria-disabled="true"]):active {
   box-shadow: inset 0 0 0 2px rgba(155, 100, 68, .3);
   transition-duration: 70ms;
 }
@@ -918,7 +918,15 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 .location__map-heading h3 { margin: 0 0 5px; font-size: clamp(19px, 4.5vw, 22px); line-height: 1.5; font-weight: 500; }
 
 /* Summary backgrounds follow the disclosure card instead of painting square corners. */
-:is(.account__group, .rsvp-disclosure, .calendar-diagnostics) > summary { border-radius: inherit; }
+.account__group > summary, .rsvp-disclosure > summary {
+  border-radius: 21px;
+  background-clip: padding-box;
+  box-shadow: none;
+}
+.calendar-diagnostics > summary { border-radius: 10px; }
+:is(.account__group, .rsvp-disclosure, .calendar-diagnostics) > summary:active { background-color: var(--accent-soft); }
+.side-nav a:is(:hover, :active) { box-shadow: none; }
+
 .account__group > summary::after,
 .rsvp-disclosure__icon { width: 24px; height: 24px; display: grid; place-items: center; flex-shrink: 0; line-height: 1; }
 .rsvp-disclosure__icon::before { line-height: 1; }
