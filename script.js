@@ -669,7 +669,7 @@
     canvas.setAttribute("aria-label", `${content.venue} 위치 지도`);
     fallbackImage.alt = `${content.venue} 위치 안내 지도`;
     fallback.href = document.getElementById("naver-map-link").href;
-    let map, marker, timer, started = false, failed = false, ready = false;
+    let map, marker, timer, readinessTimer, started = false, failed = false, ready = false;
     const setInteractive = (active) => {
       if (!ready || failed) return;
       map.setOptions({ draggable: active, pinchZoom: active, keyboardShortcuts: active,
@@ -684,6 +684,7 @@
       if (failed) return;
       failed = true;
       clearTimeout(timer);
+      clearTimeout(readinessTimer);
       marker?.setMap(null);
       map?.destroy();
       canvas.hidden = true;
@@ -707,7 +708,14 @@
     };
     const createMap = () => {
       if (failed || map) return;
-      if (!window.naver?.maps?.Map) { showFallback("sdk-unavailable"); return; }
+      // Some SDK builds call their callback before exporting naver.maps.
+      // Absence here is a readiness state, not a permanent network failure.
+      if (!window.naver?.maps?.Map) {
+        clearTimeout(readinessTimer);
+        readinessTimer = window.setTimeout(createMap, 100);
+        return;
+      }
+      clearTimeout(readinessTimer);
       try {
         const position = new naver.maps.LatLng(latitude, longitude);
         map = new naver.maps.Map(canvas, {
@@ -747,11 +755,17 @@
       timer = window.setTimeout(() => showFallback("sdk-timeout"), 20000);
       window.navermap_authFailure = () => showFallback("authentication-failed");
       if (window.naver?.maps?.Map) { createMap(); return; }
-      window.initWeddingVenueMap = createMap;
+      const scheduleCreateMap = () => {
+        if (failed || map) return;
+        clearTimeout(readinessTimer);
+        // Let the complete SDK script (including its namespace exports) finish first.
+        readinessTimer = window.setTimeout(createMap, 0);
+      };
+      window.initWeddingVenueMap = scheduleCreateMap;
       const sdk = document.createElement("script");
       sdk.src = `https://oapi.map.naver.com/openapi/v3/maps.js?${new URLSearchParams({ ncpKeyId: key, callback: "initWeddingVenueMap" })}`;
       sdk.async = true;
-      sdk.onload = createMap;
+      sdk.onload = scheduleCreateMap;
       sdk.onerror = () => showFallback("sdk-network-error");
       document.head.append(sdk);
     };
