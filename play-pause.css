@@ -907,3 +907,11 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
   .location__map-heading { padding: 20px 12px 16px; }
   .location__address-row .location__address { font-size: 14px; }
 }
+
+.directions__content .directions__links { grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 560px; }
+.directions__content .directions__links .button { flex-direction: column; gap: 6px; padding: 12px 4px; font-size: 13px; }
+.directions__links img { display: block; width: 24px; height: 24px; border-radius: 6px; object-fit: contain; flex-shrink: 0; }
+.venue-map__canvas { width: 100%; height: 100%; }
+.venue-map__notice { margin: 10px 0 0; font-size: 13px; line-height: 1.7; color: var(--muted); }
+/* Map controls must not dim or scale the whole map interaction surface. */
+.venue-map__activate:not(:disabled):is(:hover, :active) { filter: none; scale: none; }

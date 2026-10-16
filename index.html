@@ -21,11 +21,11 @@
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=28">
-  <link rel="stylesheet" href="play-pause.css?v=49">
+  <link rel="stylesheet" href="play-pause.css?v=50">
   <script src="opening-images.js" defer></script>
   <script src="gallery-images.js" defer></script>
-  <script src="content.js?v=27" defer></script>
-  <script src="script.js?v=52" defer></script>
+  <script src="content.js?v=28" defer></script>
+  <script src="script.js?v=53" defer></script>
 </head>
 <body>
   <audio id="wedding-bgm" src="assets/audio/wedding-bgm.m4a" preload="none" loop></audio>
@@ -204,9 +204,10 @@
             <p id="venue-map-status" class="venue-map__status" role="status">지도를 불러오고 있습니다.</p>
             <button id="venue-map-activate" class="venue-map__activate" type="button" aria-controls="venue-map-canvas" hidden><span>눌러서 지도 움직이기</span></button>
           </div>
+          <p id="venue-map-notice" class="venue-map__notice" hidden>현재 지도는 이미지입니다. 아래 지도 앱에서 길을 확인해 주세요.</p>
           <div id="venue-map-tools" class="venue-map__tools" hidden><button id="venue-map-reset" class="button button--light" type="button">예식장 위치로</button><button id="venue-map-lock" class="button button--light" type="button">지도 조작 마치기</button></div>
         </div>
-        <div class="directions__links"><a id="naver-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="네이버 지도에서 예식장 보기">네이버</a><a id="kakao-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="카카오맵에서 예식장 보기">카카오맵</a><a id="google-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="구글 지도에서 예식장 보기">구글 지도</a><p class="section__pending" id="map-pending">지도 링크를 준비하고 있습니다.</p></div>
+        <div class="directions__links"><a id="naver-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="네이버 지도에서 예식장 보기"><img src="assets/map-icons/naver.png" width="24" height="24" alt="" loading="lazy"><span>네이버</span></a><a id="kakao-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="카카오맵에서 예식장 보기"><img src="assets/map-icons/kakao.png" width="24" height="24" alt="" loading="lazy"><span>카카오맵</span></a><a id="google-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="구글 지도에서 예식장 보기"><img src="assets/map-icons/google.png" width="24" height="24" alt="" loading="lazy"><span>구글 지도</span></a><a id="tmap-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="티맵에서 예식장 길안내"><img src="assets/map-icons/tmap.png" width="24" height="24" alt="" loading="lazy"><span>티맵</span></a><p class="section__pending" id="map-pending">지도 링크를 준비하고 있습니다.</p></div>
         <div class="directions__list">
           <div class="directions__item"><h3>자가용</h3><div><p data-field="parkingMessage"></p><p class="directions__detail" data-field="parkingDuration"></p><div class="directions__places" id="parking-locations"></div></div></div>
           <div class="directions__item"><h3>버스</h3><div class="directions__bus-stops" id="bus-stops"></div></div>
