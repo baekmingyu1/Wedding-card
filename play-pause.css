@@ -857,12 +857,12 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 .calendar-diagnostics pre { max-height: 160px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 11px; line-height: 1.6; }
 .calendar-diagnostics a, .calendar-diagnostics button { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 44px; margin-top: 8px; padding: 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--accent-soft); color: var(--accent); font: inherit; font-size: 13px; text-decoration: none; cursor: pointer; }
 
-/* Shared, quiet feedback. Individual scale preserves positioned controls' transforms. */
+/* Keep icons crisp: feedback changes surfaces, never scales or filters content. */
 :where(button, a[href], summary, [role="button"]):not(:disabled):not([aria-disabled="true"]) {
   -webkit-tap-highlight-color: rgba(155, 100, 68, .14);
   transition-duration: 150ms;
   transition-timing-function: ease;
-  transition-property: background-color, border-color, color, box-shadow, opacity, filter, scale;
+  transition-property: background-color, border-color, color, box-shadow, opacity;
 }
 :where(button, a[href], summary, [role="button"]):not(:disabled):not([aria-disabled="true"]):focus-visible {
   outline: 2px solid var(--accent);
@@ -870,7 +870,7 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 }
 @media (hover: hover) and (pointer: fine) {
   :where(button, a[href], summary, [role="button"]):not(:disabled):not([aria-disabled="true"]):hover {
-    filter: brightness(.95);
+    box-shadow: inset 0 0 0 1px rgba(155, 100, 68, .22);
   }
   :is(.account__group, .rsvp-disclosure, .calendar-diagnostics) > summary:hover {
     background-color: var(--accent-soft);
@@ -878,17 +878,15 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
   .rsvp-choice:hover input:not(:disabled) + span { background-color: var(--accent-soft); }
 }
 :where(button, a[href], summary, [role="button"]):not(:disabled):not([aria-disabled="true"]):active {
-  filter: brightness(.89);
-  scale: .98;
+  box-shadow: inset 0 0 0 2px rgba(155, 100, 68, .3);
   transition-duration: 70ms;
 }
-/* Replace the earlier transform-based press effect to avoid double shrinking. */
+/* Positioned controls and their icons retain their original geometry. */
 .button:active:not(:disabled), .opening__control:active { transform: none; }
 .rsvp-choice:active input:not(:disabled) + span { background-color: var(--accent-soft); border-color: var(--accent); }
 .rsvp-choice span { transition: background-color 150ms ease, border-color 150ms ease; }
 @media (prefers-reduced-motion: reduce) {
   :where(button, a[href], summary, [role="button"]):not(:disabled):not([aria-disabled="true"]), .rsvp-choice span { transition: none; }
-  :where(button, a[href], summary, [role="button"]):not(:disabled):not([aria-disabled="true"]):active { scale: none; }
 }
 
 /* A compact venue heading keeps the address and its action together. */
@@ -918,3 +916,18 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 
 .location__map-heading .location__title { margin: 0 0 18px; font-size: clamp(25px, 5.5vw, 30px); line-height: 1.4; font-weight: 500; color: var(--ink); }
 .location__map-heading h3 { margin: 0 0 5px; font-size: clamp(19px, 4.5vw, 22px); line-height: 1.5; font-weight: 500; }
+
+/* Summary backgrounds follow the disclosure card instead of painting square corners. */
+:is(.account__group, .rsvp-disclosure, .calendar-diagnostics) > summary { border-radius: inherit; }
+.account__group > summary::after,
+.rsvp-disclosure__icon { width: 24px; height: 24px; display: grid; place-items: center; flex-shrink: 0; line-height: 1; }
+.rsvp-disclosure__icon::before { line-height: 1; }
+:where(button, a.button) > :is(svg, img, [aria-hidden="true"]) { flex-shrink: 0; }
+@media (hover: hover) and (pointer: fine) {
+  .bgm-toggle:hover, .calendar-picker__close:hover,
+  .gallery-dialog__header button:hover, .gallery-dialog__controls button:hover { background-color: var(--accent-soft); }
+  .gallery-dialog__thumbnail:hover { border-color: var(--accent); opacity: 1; }
+  .welcome__text-button:hover { text-decoration: underline; text-underline-offset: 4px; }
+}
+/* The full-size map activation surface must not gain an inset frame. */
+.venue-map__activate:is(:hover, :active) { box-shadow: none; }
