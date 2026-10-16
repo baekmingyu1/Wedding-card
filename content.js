@@ -41,8 +41,8 @@ window.WEDDING_CONTENT = {
   parkingMessage: ["외부 주차장에", "먼저 주차한 뒤", "웨딩홀로 이동해 주세요."],
   parkingDuration: "도보 약 5분 · 2시간 무료 주차",
   parkingLocations: [
-    { label: "제1주차장 · 경복주차장", address: "서울시 강남구 논현동 237-12" },
-    { label: "제2주차장 · 국민은행", address: "서울시 강남구 언주로 603" },
+    { label: "제1주차장 · 경복주차장", address: "서울 강남구 논현동 237-12", mapUrl: "https://naver.me/Fz8EdZ8W" },
+    { label: "제2주차장 · 국민은행", address: "서울 강남구 언주로 603", mapUrl: "https://naver.me/FfsvQHRn" },
     { label: "제3주차장 · PAX타워", address: "서울 강남구 언주로 609", mapUrl: "https://naver.me/x4lYymfV" }
   ],
   subwayRoutes: [
