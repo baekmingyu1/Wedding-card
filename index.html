@@ -21,7 +21,7 @@
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=28">
-  <link rel="stylesheet" href="play-pause.css?v=57">
+  <link rel="stylesheet" href="play-pause.css?v=58">
   <script src="opening-images.js" defer></script>
   <script src="gallery-images.js" defer></script>
   <script src="content.js?v=29" defer></script>
@@ -149,10 +149,12 @@
           <fieldset id="rsvp-fields" disabled>
             <legend class="rsvp-form__legend">참석 여부 알려주기</legend>
             <fieldset class="rsvp-choice-group"><legend>구분</legend><div class="rsvp-choices"><label class="rsvp-choice"><input type="radio" name="side" value="신랑측" required><span>신랑 측</span></label><label class="rsvp-choice"><input type="radio" name="side" value="신부측" required><span>신부 측</span></label></div></fieldset>
-            <label>성함<input name="name" autocomplete="name" maxlength="40" required placeholder="성함을 입력해 주세요"></label>
             <fieldset class="rsvp-choice-group"><legend>참석 여부</legend><div class="rsvp-choices"><label class="rsvp-choice"><input type="radio" name="attendance" value="참석" required><span>참석</span></label><label class="rsvp-choice"><input type="radio" name="attendance" value="불참" required><span>불참</span></label></div></fieldset>
+            <div class="rsvp-form__guest-row">
+              <label>성함<input name="name" autocomplete="name" maxlength="40" required placeholder="성함을 입력해 주세요"></label>
+              <label><span class="rsvp-form__guest-label">인원 <small>(본인 포함)</small></span><select name="guests" aria-label="본인 포함 참석 인원" disabled><option value="1">1명</option><option value="2">2명</option><option value="3">3명</option><option value="4">4명</option><option value="5">5명</option><option value="6">6명</option><option value="7">7명</option><option value="8">8명</option><option value="9">9명</option><option value="10">10명</option><option value="11">11명</option><option value="12">12명</option><option value="13">13명</option><option value="14">14명</option><option value="15">15명</option><option value="16">16명</option><option value="17">17명</option><option value="18">18명</option><option value="19">19명</option><option value="20">20명</option></select></label>
+            </div>
             <div id="rsvp-attending" hidden>
-              <label>본인 포함 참석 인원<input name="guests" type="number" inputmode="numeric" min="1" max="20" step="1" value="1"></label>
               <fieldset class="rsvp-choice-group"><legend>식사 여부</legend><div class="rsvp-choices rsvp-choices--meal"><label class="rsvp-choice"><input type="radio" name="meal" value="식사 예정"><span>식사 예정</span></label><label class="rsvp-choice"><input type="radio" name="meal" value="식사 안 함"><span>식사 안 함</span></label><label class="rsvp-choice"><input type="radio" name="meal" value="미정"><span>미정</span></label></div></fieldset>
             </div>
             <label>전달 메시지 (선택)<textarea name="message" maxlength="500" rows="3" placeholder="전하고 싶은 말을 남겨 주세요"></textarea></label>
