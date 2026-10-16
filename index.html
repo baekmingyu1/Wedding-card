@@ -21,11 +21,11 @@
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=28">
-  <link rel="stylesheet" href="play-pause.css?v=53">
+  <link rel="stylesheet" href="play-pause.css?v=54">
   <script src="opening-images.js" defer></script>
   <script src="gallery-images.js" defer></script>
   <script src="content.js?v=28" defer></script>
-  <script src="script.js?v=55" defer></script>
+  <script src="script.js?v=56" defer></script>
 </head>
 <body>
   <audio id="wedding-bgm" src="assets/audio/wedding-bgm.m4a" preload="none" loop></audio>
@@ -210,7 +210,7 @@
         </div>
         <div class="directions__links"><a id="naver-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="네이버 지도에서 예식장 보기"><img src="assets/map-icons/naver.png" width="24" height="24" alt="" loading="lazy"><span>네이버</span></a><a id="kakao-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="카카오맵에서 예식장 보기"><img src="assets/map-icons/kakao.png" width="24" height="24" alt="" loading="lazy"><span>카카오맵</span></a><a id="google-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="구글 지도에서 예식장 보기"><img src="assets/map-icons/google.png" width="24" height="24" alt="" loading="lazy"><span>구글 지도</span></a><a id="tmap-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="티맵에서 예식장 길안내"><img src="assets/map-icons/tmap.png" width="24" height="24" alt="" loading="lazy"><span>티맵</span></a><p class="section__pending" id="map-pending">지도 링크를 준비하고 있습니다.</p></div>
         <div class="directions__list">
-          <div class="directions__item"><h3>자가용</h3><div><p data-field="parkingMessage"></p><p class="directions__detail" data-field="parkingDuration"></p><div class="directions__places" id="parking-locations"></div></div></div>
+          <div class="directions__item directions__item--parking"><div class="directions__parking-heading"><h3>자가용</h3><button id="parking-map-open" class="button button--light" type="button" aria-label="주차장 약도 보기" aria-haspopup="dialog" aria-controls="parking-map-dialog">보기</button></div><div><p data-field="parkingMessage"></p><p class="directions__detail" data-field="parkingDuration"></p><div class="directions__places" id="parking-locations"></div></div></div>
           <div class="directions__item"><h3>버스</h3><div class="directions__bus-stops" id="bus-stops"></div></div>
           <div class="directions__item"><h3>지하철</h3><div class="directions__places" id="subway-routes"></div></div>
         </div>
@@ -229,6 +229,11 @@
   </main>
 
   <footer class="footer"><svg class="pace-mark" viewBox="0 0 240 100" fill="none" aria-hidden="true"><path pathLength="1" d="M8 16 C75 16 65 76 120 76 S181 35 232 35"/><path pathLength="1" d="M8 48 C66 48 77 76 120 76"/><circle cx="232" cy="35" r="3"/></svg><span class="footer__signature"><span>OUR PACE</span><span aria-hidden="true">/</span><span>PLAY · PAUSE · TOGETHER</span></span><strong data-field="couple"></strong><a href="#opening">처음부터 다시 보기 ↑</a></footer>
+  <dialog id="parking-map-dialog" class="parking-map-dialog" aria-labelledby="parking-map-title">
+    <div class="parking-map-dialog__header"><h2 id="parking-map-title">주차장 약도</h2><button id="parking-map-close" class="button button--light" type="button" aria-label="주차장 약도 닫기" autofocus>닫기 ×</button></div>
+    <img id="parking-map-image" data-src="assets/location/parking-map.png" width="872" height="644" alt="아르베 웨딩 주차장 약도. 언주역 5번 출구와 선정릉역 4번 출구 사이, 웨딩홀 맞은편에 제1 경복주차장, 제2 국민은행 주차장, 제3 PAXTOWER 주차장이 있습니다.">
+    <p id="parking-map-error" role="status" hidden>약도를 불러오지 못했습니다. 팝업을 닫고 다시 열어 주세요.</p>
+  </dialog>
   <dialog id="calendar-picker" class="calendar-picker" aria-labelledby="calendar-picker-title" aria-describedby="calendar-picker-description">
     <h2 id="calendar-picker-title" tabindex="-1">어디에 저장할까요?</h2>
     <p id="calendar-picker-description">사용하실 캘린더를 선택해 주세요.</p>

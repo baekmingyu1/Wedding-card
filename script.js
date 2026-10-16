@@ -4,6 +4,32 @@
   const content = window.WEDDING_CONTENT;
   if (!content) return;
 
+  const parkingDialog = document.getElementById("parking-map-dialog");
+  const parkingImage = document.getElementById("parking-map-image");
+  const parkingError = document.getElementById("parking-map-error");
+  document.getElementById("parking-map-open").addEventListener("click", () => {
+    if (!parkingImage.getAttribute("src") || !parkingError.hidden) {
+      parkingError.hidden = true;
+      parkingImage.src = parkingImage.dataset.src;
+    }
+    parkingDialog.showModal();
+    document.documentElement.classList.add("parking-map-open");
+  });
+  parkingImage.addEventListener("error", () => { parkingError.hidden = false; });
+  parkingImage.addEventListener("load", () => { parkingError.hidden = true; });
+  document.getElementById("parking-map-close").addEventListener("click", () => parkingDialog.close());
+  parkingDialog.addEventListener("close", () => document.documentElement.classList.remove("parking-map-open"));
+  let parkingBackdropDown = false;
+  const outsideParking = (event) => {
+    const rect = parkingDialog.getBoundingClientRect();
+    return event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom;
+  };
+  parkingDialog.addEventListener("pointerdown", (event) => { parkingBackdropDown = event.target === parkingDialog && outsideParking(event); });
+  parkingDialog.addEventListener("click", (event) => {
+    if (parkingBackdropDown && event.target === parkingDialog && outsideParking(event)) parkingDialog.close();
+    parkingBackdropDown = false;
+  });
+
   const welcomeDialog = document.getElementById("welcome-dialog");
   const visitKey = "wedding-guest-visit";
   let rememberedGuest = "";
