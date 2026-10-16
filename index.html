@@ -20,14 +20,16 @@
   <link rel="preload" as="image" media="(min-width: 761px)" href="assets/opening/frames/01-1600-bffa7b263d.webp" imagesrcset="assets/opening/frames/01-480-4ff597cf5f.webp 480w, assets/opening/frames/01-768-32b972d6aa.webp 768w, assets/opening/frames/01-1024-2442ce091a.webp 1024w, assets/opening/frames/01-1600-bffa7b263d.webp 1600w" imagesizes="100vw" fetchpriority="high">
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=25">
+  <link rel="stylesheet" href="styles.css?v=26">
   <link rel="stylesheet" href="play-pause.css?v=35">
   <script src="opening-images.js" defer></script>
   <script src="gallery-images.js" defer></script>
   <script src="content.js?v=21" defer></script>
-  <script src="script.js?v=41" defer></script>
+  <script src="script.js?v=42" defer></script>
 </head>
 <body>
+  <audio id="wedding-bgm" src="assets/audio/wedding-bgm.m4a" preload="none" loop></audio>
+  <button id="bgm-toggle" class="bgm-toggle" type="button" aria-label="배경음악 켜기" aria-pressed="false" hidden>♪ 음악 켜기</button>
   <a class="skip-link" href="#invitation">본문으로 건너뛰기</a>
 
   <nav class="side-nav is-hidden" aria-label="청첩장 바로가기" aria-hidden="true" inert>
@@ -200,7 +202,7 @@
         </div>
         <div class="directions__links"><a id="naver-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="네이버 지도에서 예식장 보기">네이버</a><a id="kakao-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="카카오맵에서 예식장 보기">카카오맵</a><a id="google-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="구글 지도에서 예식장 보기">구글 지도</a><p class="section__pending" id="map-pending">지도 링크를 준비하고 있습니다.</p></div>
         <div class="directions__list">
-          <div class="directions__item"><h3>자가용</h3><div><p>외부 주차장에 먼저 주차한 뒤 웨딩홀로 이동해 주세요.</p><p class="directions__detail"> 도보 약 5분, 2시간 무료 주차입니다.</p><p class="directions__detail">제1주차장 · 서울시 강남구 논현동 237-12 경복주차장<br>제2주차장 · 서울시 강남구 언주로 603 국민은행</p><p class="directions__aside">외부 주차장은 토·일요일 이용 가능합니다.</p></div></div>
+          <div class="directions__item"><h3>자가용</h3><div><p>외부 주차장에 먼저 주차한 뒤 웨딩홀로 이동해 주세요.</p><p class="directions__detail"> 도보 약 5분, 2시간 무료 주차입니다.</p><p class="directions__detail">제1주차장 · 서울시 강남구 논현동 237-12 경복주차장<br>제2주차장 · 서울시 강남구 언주로 603 국민은행</p></div></div>
           <div class="directions__item"><h3>버스</h3><div class="directions__bus-stops" id="bus-stops"></div></div>
           <div class="directions__item"><h3>지하철</h3><div><p>9호선 선정릉역 4번 출구 · 도보 5분</p><p>9호선 언주역 5번 출구 · 도보 5분</p></div></div>
         </div>
