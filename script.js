@@ -1120,6 +1120,70 @@
     accountHost.append(group);
   }
 
+  const bgm = document.getElementById("wedding-bgm");
+  const bgmButton = document.getElementById("bgm-toggle");
+  let bgmStarted = false;
+  let bgmMuted = false;
+  let bgmBlocked = false;
+  let bgmSuspended = false;
+  let bgmAttempt = 0;
+  function renderBgm() {
+    const audible = bgmStarted && !bgmMuted && !bgmBlocked && !bgm.paused;
+    bgmButton.textContent = audible ? "♪ 음악 끄기" : "♪ 음악 켜기";
+    bgmButton.setAttribute("aria-label", audible ? "배경음악 음소거" : "배경음악 켜기");
+    bgmButton.setAttribute("aria-pressed", String(audible));
+  }
+  function playBgm() {
+    if (!bgmStarted || bgmSuspended || document.hidden) return;
+    const attempt = ++bgmAttempt;
+    bgm.muted = bgmMuted;
+    bgm.play().then(() => {
+      if (attempt !== bgmAttempt) return;
+      bgmBlocked = false;
+      renderBgm();
+    }).catch(() => {
+      if (attempt !== bgmAttempt) return;
+      bgmBlocked = true;
+      renderBgm();
+    });
+  }
+  function prepareBgm() {
+    bgmAttempt += 1;
+    bgmStarted = false;
+    bgmSuspended = false;
+    bgmButton.hidden = true;
+    bgm.muted = true;
+    // Called synchronously by the invitation/replay tap to unlock mobile audio.
+    bgm.play().catch(() => {});
+  }
+  function startBgm() {
+    bgm.pause();
+    bgm.currentTime = 0;
+    bgmStarted = true;
+    bgmButton.hidden = false;
+    playBgm();
+  }
+  bgmButton.addEventListener("click", () => {
+    if (bgmBlocked || bgm.paused) bgmMuted = false;
+    else bgmMuted = !bgmMuted;
+    bgm.muted = bgmMuted;
+    playBgm();
+    renderBgm();
+  });
+  document.addEventListener("pointerup", (event) => {
+    if (bgmBlocked && !bgmMuted && !event.target.closest("#bgm-toggle")) playBgm();
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) { bgm.pause(); renderBgm(); }
+    else playBgm();
+  });
+  window.addEventListener("pagehide", () => { bgmAttempt += 1; bgm.pause(); });
+  window.addEventListener("pageshow", () => playBgm());
+  bgm.addEventListener("error", () => {
+    bgmButton.disabled = true;
+    bgmButton.textContent = "음악을 불러올 수 없어요";
+  });
+
   const opening = document.getElementById("opening");
   const frames = [...frameHost.children];
   const openingCopy = document.querySelector(".opening__copy");
@@ -1168,7 +1232,7 @@
       }
       instantOpeningTop();
       if (document.activeElement !== document.body && !opening.contains(document.activeElement) &&
-          !document.activeElement.matches(".skip-link")) skipButton.focus({ preventScroll: true });
+          !document.activeElement.matches(".skip-link, #bgm-toggle")) skipButton.focus({ preventScroll: true });
     } else {
       for (const [element, inert] of openingInertState) element.inert = inert;
       openingInertState.clear();
@@ -1186,7 +1250,7 @@
     if (scrollKeys.includes(event.key) && !(event.key === " " && event.target.closest("button"))) event.preventDefault();
   });
   document.addEventListener("focusin", (event) => {
-    if (openingLocked && !opening.contains(event.target) && !event.target.matches(".skip-link")) {
+    if (openingLocked && !opening.contains(event.target) && !event.target.matches(".skip-link, #bgm-toggle")) {
       skipButton.focus({ preventScroll: true });
     }
   });
@@ -1417,6 +1481,9 @@
     autoplayActive = false;
     setOpeningLocked(false);
     playbackComplete = true;
+    bgmSuspended = false;
+    if (bgmStarted) playBgm();
+    else { bgmAttempt += 1; bgm.pause(); }
     hasLeftOpening = false;
     stopPendingOpeningLoads();
     openingLoader.hidden = true;
@@ -1427,6 +1494,7 @@
   }
 
   function replayOpening() {
+    prepareBgm();
     opening.hidden = false;
     if (galleryDialog.open) return;
     playbackRun += 1;
@@ -1455,7 +1523,7 @@
     requestOpeningFrame(0, true);
     updateScroll();
     if (autoplayActive) playOpening(playbackRun);
-    else preloadGallery();
+    else { startBgm(); preloadGallery(); }
   }
 
   document.querySelectorAll('a[href="#opening"]').forEach((link) => {
@@ -1544,6 +1612,7 @@
       if (!autoplayActive || run !== playbackRun) return;
       warmNext(index + 1);
       if (ready) {
+        if (index === 0) startBgm();
         autoplayIndex = index;
         updateScroll();
       }

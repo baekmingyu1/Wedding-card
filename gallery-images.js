@@ -126,32 +126,32 @@ window.GALLERY_IMAGES = [
     "height": 1800
   },
   {
-    "src": "assets/gallery/web/22-1200-9011e556ba.webp",
-    "srcset": "assets/gallery/web/22-640-9011e556ba.webp 640w, assets/gallery/web/22-1200-9011e556ba.webp 1200w",
+    "src": "assets/gallery/web/22-1200-e229c729f4.webp",
+    "srcset": "assets/gallery/web/22-640-e229c729f4.webp 640w, assets/gallery/web/22-1200-e229c729f4.webp 1200w",
     "width": 1200,
     "height": 1801
   },
   {
-    "src": "assets/gallery/web/23-1200-f273a7fd26.webp",
-    "srcset": "assets/gallery/web/23-640-f273a7fd26.webp 640w, assets/gallery/web/23-1200-f273a7fd26.webp 1200w",
+    "src": "assets/gallery/web/23-1200-b241a36278.webp",
+    "srcset": "assets/gallery/web/23-640-b241a36278.webp 640w, assets/gallery/web/23-1200-b241a36278.webp 1200w",
     "width": 1200,
     "height": 1800
   },
   {
-    "src": "assets/gallery/web/24-1200-19a89069ee.webp",
-    "srcset": "assets/gallery/web/24-640-19a89069ee.webp 640w, assets/gallery/web/24-1200-19a89069ee.webp 1200w",
+    "src": "assets/gallery/web/24-1200-ed53818a27.webp",
+    "srcset": "assets/gallery/web/24-640-ed53818a27.webp 640w, assets/gallery/web/24-1200-ed53818a27.webp 1200w",
     "width": 1200,
     "height": 1800
   },
   {
-    "src": "assets/gallery/web/25-1200-efb12749e9.webp",
-    "srcset": "assets/gallery/web/25-640-efb12749e9.webp 640w, assets/gallery/web/25-1200-efb12749e9.webp 1200w",
+    "src": "assets/gallery/web/25-1200-fe544bd9a0.webp",
+    "srcset": "assets/gallery/web/25-640-fe544bd9a0.webp 640w, assets/gallery/web/25-1200-fe544bd9a0.webp 1200w",
     "width": 1200,
     "height": 1801
   },
   {
-    "src": "assets/gallery/web/26-1200-84eb16f7a3.webp",
-    "srcset": "assets/gallery/web/26-640-84eb16f7a3.webp 640w, assets/gallery/web/26-1200-84eb16f7a3.webp 1200w",
+    "src": "assets/gallery/web/26-1200-6d9368b236.webp",
+    "srcset": "assets/gallery/web/26-640-6d9368b236.webp 640w, assets/gallery/web/26-1200-6d9368b236.webp 1200w",
     "width": 1200,
     "height": 1800
   },
