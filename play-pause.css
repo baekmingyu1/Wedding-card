@@ -890,3 +890,20 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
   :where(button, a[href], summary, [role="button"]):not(:disabled):not([aria-disabled="true"]), .rsvp-choice span { transition: none; }
   :where(button, a[href], summary, [role="button"]):not(:disabled):not([aria-disabled="true"]):active { scale: none; }
 }
+
+/* A compact venue heading keeps the address and its action together. */
+.location__map-heading { padding: 24px 20px 20px; border-radius: 22px; }
+.location__map-heading h3 { margin: 0 0 8px; font-size: clamp(26px, 3.2vw, 36px); line-height: 1.4; }
+.location__address-row { display: flex; align-items: center; justify-content: center; gap: 2px; }
+.location__address-row .location__address { flex: 0 1 auto; min-width: 0; margin: 0; line-height: 1.6; }
+.location__copy { display: grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; }
+.location__copy svg { pointer-events: none; }
+.location__copy:disabled { opacity: .4; cursor: default; }
+@media (hover: hover) and (pointer: fine) {
+  .location__copy:not(:disabled):hover { background: var(--accent-soft); color: var(--accent); }
+}
+.location__copy:not(:disabled):active { background: var(--accent-soft); color: var(--accent); }
+@media (max-width: 480px) {
+  .location__map-heading { padding: 20px 12px 16px; }
+  .location__address-row .location__address { font-size: 14px; }
+}
