@@ -915,3 +915,6 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 .venue-map__notice { margin: 10px 0 0; font-size: 13px; line-height: 1.7; color: var(--muted); }
 /* Map controls must not dim or scale the whole map interaction surface. */
 .venue-map__activate:not(:disabled):is(:hover, :active) { filter: none; scale: none; }
+
+.location__map-heading .location__title { margin: 0 0 18px; font-size: clamp(25px, 5.5vw, 30px); line-height: 1.4; font-weight: 500; color: var(--ink); }
+.location__map-heading h3 { margin: 0 0 5px; font-size: clamp(19px, 4.5vw, 22px); line-height: 1.5; font-weight: 500; }

@@ -620,7 +620,7 @@
       activate.hidden = active;
       controls.hidden = !active;
     };
-    const showFallback = () => {
+    const showFallback = (reason = "load-timeout") => {
       if (failed) return;
       failed = true;
       clearTimeout(timer);
@@ -629,6 +629,8 @@
       canvas.hidden = true;
       activate.hidden = controls.hidden = true;
       root.dataset.state = "fallback";
+      root.dataset.failure = typeof reason === "string" ? reason : "network-error";
+      console.warn("Venue map fallback:", root.dataset.failure);
       document.getElementById("venue-map-notice").hidden = false;
       status.hidden = false;
       status.textContent = "아래 지도 버튼에서 위치를 확인해 주세요.";
@@ -645,7 +647,7 @@
     };
     const createMap = () => {
       if (failed || map) return;
-      if (!window.naver?.maps?.Map) { showFallback(); return; }
+      if (!window.naver?.maps?.Map) { showFallback("sdk-unavailable"); return; }
       try {
         const position = new naver.maps.LatLng(latitude, longitude);
         map = new naver.maps.Map(canvas, {
@@ -667,23 +669,30 @@
           status.hidden = true;
           setInteractive(false);
         };
+        // A dynamically injected SDK can finish init before listeners attach.
+        // Map construction enables controls; tiles may continue loading normally.
+        markReady();
         naver.maps.Event.once(map, "init", markReady);
         naver.maps.Event.once(map, "tilesloaded", markReady);
-      } catch { showFallback(); }
+      } catch (error) {
+        console.error("Venue map initialization failed:", error);
+        showFallback("initialization-error");
+      }
     };
     const load = () => {
       if (started) return;
       started = true;
       root.dataset.state = "loading";
       if (!/^https?:$/.test(location.protocol)) { showFallback(); return; }
-      timer = window.setTimeout(showFallback, 12000);
-      window.navermap_authFailure = showFallback;
+      timer = window.setTimeout(() => showFallback("sdk-timeout"), 20000);
+      window.navermap_authFailure = () => showFallback("authentication-failed");
       if (window.naver?.maps?.Map) { createMap(); return; }
       window.initWeddingVenueMap = createMap;
       const sdk = document.createElement("script");
       sdk.src = `https://oapi.map.naver.com/openapi/v3/maps.js?${new URLSearchParams({ ncpKeyId: key, callback: "initWeddingVenueMap" })}`;
       sdk.async = true;
-      sdk.onerror = showFallback;
+      sdk.onload = createMap;
+      sdk.onerror = () => showFallback("sdk-network-error");
       document.head.append(sdk);
     };
     activate.addEventListener("click", () => {
