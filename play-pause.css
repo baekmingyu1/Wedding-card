@@ -24,9 +24,8 @@ body { background: var(--paper); }
   background: var(--paper);
   transform: translateY(-50%);
 }
-.side-nav a:hover .side-nav__label,
-.side-nav a:focus-visible .side-nav__label,
-.side-nav a[aria-current="location"] .side-nav__label { max-width: none; }
+.side-nav a:focus-visible .side-nav__label, .side-nav a[aria-current="location"] .side-nav__label { max-width: none; }
+@media (hover: hover) and (pointer: fine) { .side-nav a:hover .side-nav__label { max-width: none; } }
 .side-nav__dot { border-radius: 2px; }
 .side-nav a[aria-current="location"] .side-nav__dot { transform: rotate(45deg) scale(1.25); }
 
@@ -48,7 +47,7 @@ body { background: var(--paper); }
   font-size: 11px;
   text-decoration: none;
 }
-.opening__control:hover { background: rgba(24,30,28,.75); }
+@media (hover: hover) and (pointer: fine) { .opening__control:hover { background: rgba(24,30,28,.75); } }
 .opening__bottom { z-index: 4; }
 .opening__loader {
   position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column;
@@ -180,7 +179,7 @@ body { background: var(--paper); }
 .location { background: var(--cream); }
 .account { background: var(--paper); }
 .button { transition: background .2s, color .2s; }
-.button:not(:disabled):hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+@media (hover: hover) and (pointer: fine) { .button:not(:disabled):hover { background: var(--accent); border-color: var(--accent); color: #fff; } }
 .footer { background: var(--ink); }
 
 @media (max-width: 900px) {
@@ -247,7 +246,8 @@ body { background: var(--paper); }
 .pace-score__step:nth-child(3) .pace-score__mark { width: 35px; height: 2px; border: 0; border-radius: 0; background: var(--paper); }
 .pace-score__step:nth-child(4) .pace-score__mark { background: var(--accent-bright); }
 .pace-score__step a { color: inherit; text-decoration: none; }
-.pace-score__step a:hover strong, .pace-score__step a:focus-visible strong { text-decoration: underline; text-decoration-color: var(--accent-bright); text-underline-offset: 5px; }
+.pace-score__step a:focus-visible strong { text-decoration: underline; text-decoration-color: var(--accent-bright); text-underline-offset: 5px; }
+@media (hover: hover) and (pointer: fine) { .pace-score__step a:hover strong { text-decoration: underline; text-decoration-color: var(--accent-bright); text-underline-offset: 5px; } }
 .pace-score__step small { display: block; margin-bottom: 10px; color: #f49865; font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .2em; }
 .pace-score__step strong { font-size: clamp(18px, 2vw, 27px); font-weight: 400; line-height: 1.45; letter-spacing: -.045em; }
 .story__first { position: relative; }
@@ -405,7 +405,7 @@ body { background: var(--paper); }
 .gallery__pagination { display: flex; align-items: center; justify-content: center; gap: 18px; margin-top: 32px; }
 .gallery__pagination button { min-width: 64px; min-height: 44px; border: 1px solid var(--ink); background: transparent; color: var(--ink); cursor: pointer; }
 .gallery__pagination button:disabled { opacity: .4; cursor: not-allowed; }
-.gallery__pagination button:not(:disabled):hover { background: var(--ink); color: var(--paper); }
+@media (hover: hover) and (pointer: fine) { .gallery__pagination button:not(:disabled):hover { background: var(--ink); color: var(--paper); } }
 .gallery__page-status { min-width: 52px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; }
 @media (max-width: 760px) {
   .section, .section.calendar, .section.countdown, .section.rsvp, .section.couple,
@@ -443,7 +443,7 @@ body { background: var(--paper); }
 .opening__veil { background: linear-gradient(180deg, rgba(19,25,35,.32), transparent 55%), linear-gradient(0deg, rgba(19,25,35,.35), transparent 25%); }
 .opening__copy, .opening__bottom, .opening__final { text-shadow: 0 2px 10px rgba(19,25,35,.65); }
 .opening__control { background: rgba(255,255,255,.94); color: var(--ink); border-color: rgba(255,255,255,.8); text-shadow: none; }
-.opening__control:hover { background: #fffdfa; }
+@media (hover: hover) and (pointer: fine) { .opening__control:hover { background: #fffdfa; } }
 .gallery-dialog, .gallery-dialog::backdrop { background: var(--paper); color: var(--ink); }
 .gallery-dialog button { border-color: var(--line); color: var(--ink); }
 .gallery-dialog button:focus-visible { outline-color: var(--accent); }
@@ -555,7 +555,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
 .welcome__couple { color: var(--ink); font-weight: 500; }
 .welcome h2 { font-weight: 500; letter-spacing: -.04em; }
 .welcome__choices button { min-height: 76px; border-radius: 12px; background: var(--cream); border-color: transparent; font-weight: 500; }
-.welcome__choices button:hover, .welcome__choices button[aria-pressed="true"] { background: #eee6dc; border-color: #bca594; }
+.welcome__choices button[aria-pressed="true"] { background: #eee6dc; border-color: #bca594; }
+@media (hover: hover) and (pointer: fine) { .welcome__choices button:hover { background: #eee6dc; border-color: #bca594; } }
 .welcome__text-button { color: var(--muted); }
 .invitation__message p { letter-spacing: -.025em; line-height: 2.05; }
 .calendar__month { color: var(--ink); }
@@ -563,8 +564,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
 .couple__child strong { font-weight: 500; letter-spacing: -.04em; }
 .couple, .account { background: var(--paper); }
 .wreath__inner { background: var(--cream); border-color: transparent; }
-.button:not(:disabled):hover { background: #644333; border-color: #644333; }
-.button--light:not(:disabled):hover { color: var(--ink); background: #eee6dc; border-color: #bca594; }
+@media (hover: hover) and (pointer: fine) { .button:not(:disabled):hover { background: #644333; border-color: #644333; } }
+@media (hover: hover) and (pointer: fine) { .button--light:not(:disabled):hover { color: var(--ink); background: #eee6dc; border-color: #bca594; } }
 #welcome-enter.button--light:focus-visible { outline-color: var(--accent); }
 
 /* OUR PACE: two paths, one shared rhythm. */
@@ -637,7 +638,7 @@ body, .welcome { background: var(--canvas); }
 .account__group > summary { color: var(--accent); }
 .account__group-body { padding-inline: 20px; }
 .account__card .button { background: var(--accent-soft); border-color: transparent; color: var(--accent); }
-.account__card .button:hover { background: #e6d9cd; border-color: var(--line); }
+@media (hover: hover) and (pointer: fine) { .account__card .button:hover { background: #e6d9cd; border-color: var(--line); } }
 .directions__content { max-width: 700px; }
 .location__map-heading { padding: 8px 12px 0; border: 0; border-radius: 0; background: transparent; margin-bottom: 24px; }
 .directions__list { display: grid; gap: 12px; margin-top: 24px; }
@@ -654,7 +655,8 @@ body, .welcome { background: var(--canvas); }
 .share__actions { margin-top: 24px; }
 .button, .opening__control { border-radius: 999px; }
 .welcome__choices button { border-radius: 22px; background: var(--surface); border-color: var(--line); box-shadow: var(--soft-shadow); }
-.welcome__choices button:hover, .welcome__choices button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+.welcome__choices button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+@media (hover: hover) and (pointer: fine) { .welcome__choices button:hover { background: var(--accent-soft); border-color: var(--accent); } }
 .welcome__inner > .pace-mark { width: 100px; margin-bottom: 24px; }
 .side-nav__label { border-radius: 999px; padding: 7px 10px; box-shadow: var(--soft-shadow); }
 .side-nav a { min-height: 44px; }
@@ -689,7 +691,7 @@ body, .welcome { background: var(--canvas); }
 .rsvp-choice input:checked + span::before { content: '✓'; font-size: 12px; }
 .rsvp-choice input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 3px; }
 .rsvp-choice input:disabled + span { cursor: not-allowed; opacity: .55; }
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .rsvp-choice:hover input:not(:disabled) + span { border-color: var(--accent); }
 }
 
@@ -718,7 +720,7 @@ body, .welcome { background: var(--canvas); }
 .countdown .section__lead { max-width: 340px; font-size: 14px; line-height: 1.8; }
 .gallery__item { transition: box-shadow .25s ease; }
 .gallery__item:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
-@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .gallery__item:hover { box-shadow: 0 8px 22px rgba(62,43,29,.12); }
 }
 @media (max-width: 760px) {
@@ -745,7 +747,7 @@ body, .welcome { background: var(--canvas); }
   text-shadow: none;
 }
 .opening__skip-arrow { display: grid; place-items: center; width: 34px; height: 34px; flex: none; border-radius: 50%; background: var(--accent); color: #fffdfa; font-size: 18px; line-height: 1; }
-.opening__skip:hover { background: var(--surface); color: var(--accent); border-color: var(--surface); }
+@media (hover: hover) and (pointer: fine) { .opening__skip:hover { background: var(--surface); color: var(--accent); border-color: var(--surface); } }
 .opening__skip:focus-visible { outline: 2px solid #fffdfa; outline-offset: 4px; box-shadow: 0 0 0 7px rgba(48,43,40,.75); }
 
 /* Korean copy wraps at words; related names and directions keep their grouping. */
@@ -826,7 +828,7 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 .calendar-picker__option strong, .calendar-picker__option small { display: block; }
 .calendar-picker__option strong { font-size: 16px; font-weight: 600; }
 .calendar-picker__option small { margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.6; }
-.calendar-picker__option:hover { background: var(--accent-soft); }
+@media (hover: hover) and (pointer: fine) { .calendar-picker__option:hover { background: var(--accent-soft); } }
 .calendar-picker .calendar-picker__help { margin-top: 20px; font-size: 12px; }
 .calendar-picker__close { width: 100%; min-height: 44px; margin-top: 12px; border: 0; border-radius: 16px; background: var(--accent-soft); color: var(--accent); cursor: pointer; }
 
@@ -852,9 +854,13 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 .calendar-diagnostics pre { max-height: 160px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 11px; line-height: 1.6; }
 .calendar-diagnostics a, .calendar-diagnostics button { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 44px; margin-top: 8px; padding: 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--accent-soft); color: var(--accent); font: inherit; font-size: 13px; text-decoration: none; cursor: pointer; }
 
+/* Labels also receive the WebView tap overlay; use the rounded control's own feedback. */
+:where(button, a[href], summary, [role="button"], label, input, select, textarea) {
+  -webkit-tap-highlight-color: transparent;
+}
+
 /* Keep icons crisp: feedback changes surfaces, never scales or filters content. */
 :where(button, a[href], summary, [role="button"]):not(:disabled):not([aria-disabled="true"]) {
-  -webkit-tap-highlight-color: rgba(155, 100, 68, .14);
   transition-duration: 150ms;
   transition-timing-function: ease;
   transition-property: background-color, border-color, color, box-shadow, opacity;
@@ -878,6 +884,7 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 }
 /* Positioned controls and their icons retain their original geometry. */
 .button:active:not(:disabled), .opening__control:active { transform: none; }
+.welcome__choices button:not(:disabled):active { background: var(--accent-soft); border-color: var(--accent); }
 .rsvp-choice:active input:not(:disabled) + span { background-color: var(--accent-soft); border-color: var(--accent); }
 .rsvp-choice span { transition: background-color 150ms ease, border-color 150ms ease; }
 @media (prefers-reduced-motion: reduce) {
