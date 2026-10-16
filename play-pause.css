@@ -949,3 +949,7 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 .parking-map-dialog img { display: block; width: 100%; height: auto; background: white; }
 .parking-map-dialog p { text-align: center; line-height: 1.7; }
 html.parking-map-open, html.parking-map-open body { overflow: hidden; }
+
+/* Recognizable transport symbols stay aligned with their visible text labels. */
+.directions__transport-title { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.directions__transport-icon { display: block; flex: 0 0 24px; width: 24px; height: 24px; pointer-events: none; }

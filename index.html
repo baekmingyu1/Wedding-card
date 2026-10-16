@@ -21,7 +21,7 @@
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=28">
-  <link rel="stylesheet" href="play-pause.css?v=55">
+  <link rel="stylesheet" href="play-pause.css?v=56">
   <script src="opening-images.js" defer></script>
   <script src="gallery-images.js" defer></script>
   <script src="content.js?v=28" defer></script>
@@ -210,9 +210,9 @@
         </div>
         <div class="directions__links"><a id="naver-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="네이버 지도에서 예식장 보기"><img src="assets/map-icons/naver.png" width="24" height="24" alt="" loading="lazy"><span>네이버</span></a><a id="kakao-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="카카오맵에서 예식장 보기"><img src="assets/map-icons/kakao.png" width="24" height="24" alt="" loading="lazy"><span>카카오맵</span></a><a id="google-map-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="구글 지도에서 예식장 보기"><img src="assets/map-icons/google.png" width="24" height="24" alt="" loading="lazy"><span>구글 지도</span></a><a id="tmap-link" class="button button--light" href="#directions" hidden target="_blank" rel="noopener noreferrer" aria-label="티맵에서 예식장 길안내"><img src="assets/map-icons/tmap.png" width="24" height="24" alt="" loading="lazy"><span>티맵</span></a><p class="section__pending" id="map-pending">지도 링크를 준비하고 있습니다.</p></div>
         <div class="directions__list">
-          <div class="directions__item directions__item--parking"><div class="directions__parking-heading"><h3>자가용</h3><button id="parking-map-open" class="button button--light" type="button" aria-label="주차장 약도 보기" aria-haspopup="dialog" aria-controls="parking-map-dialog">보기</button></div><div><p data-field="parkingMessage"></p><p class="directions__detail" data-field="parkingDuration"></p><div class="directions__places" id="parking-locations"></div></div></div>
-          <div class="directions__item"><h3>버스</h3><div class="directions__bus-stops" id="bus-stops"></div></div>
-          <div class="directions__item"><h3>지하철</h3><div class="directions__places" id="subway-routes"></div></div>
+          <div class="directions__item directions__item--parking"><div class="directions__parking-heading"><h3 class="directions__transport-title"><svg class="directions__transport-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m5 10 2-6h10l2 6M3 10h18v8H3zM5 18v2m14-2v2"/><path d="M6 14h2m8 0h2"/></svg><span>자가용</span></h3><button id="parking-map-open" class="button button--light" type="button" aria-label="주차장 약도 보기" aria-haspopup="dialog" aria-controls="parking-map-dialog">보기</button></div><div><p data-field="parkingMessage"></p><p class="directions__detail" data-field="parkingDuration"></p><div class="directions__places" id="parking-locations"></div></div></div>
+          <div class="directions__item"><h3 class="directions__transport-title"><svg class="directions__transport-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="3" width="14" height="16" rx="3"/><path d="M5 11h14M8 3v8m8-8v8M3 7v4m18-4v4M7 19v2m10-2v2M8 15h1m6 0h1"/></svg><span>버스</span></h3><div class="directions__bus-stops" id="bus-stops"></div></div>
+          <div class="directions__item"><h3 class="directions__transport-title"><svg class="directions__transport-icon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="3" width="14" height="15" rx="4"/><path d="M5 11h14M12 6v5M9 6h6M8 14h1m6 0h1M8 18l-3 4m11-4 3 4M7 20h10"/></svg><span>지하철</span></h3><div class="directions__places" id="subway-routes"></div></div>
         </div>
         <p class="directions__notice" data-field="travelNotice"></p>
         </div>
