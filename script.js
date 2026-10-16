@@ -1728,7 +1728,7 @@
   welcomeDialog.querySelectorAll("[data-guest]").forEach((button) => {
     button.addEventListener("click", () => {
       rememberGuest(button.dataset.guest);
-      if (button.dataset.guest === "parents") { enterInvitation(); return; }
+      if (button.dataset.guest === "parents") { enterOpening(); return; }
       storyIndex = 0;
       showStory();
     });
