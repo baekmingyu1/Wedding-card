@@ -484,7 +484,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
 .directions__bus-stops { display: grid; gap: 20px; }
 .directions__item .directions__stop-heading { display: flex; align-items: center; justify-content: center; gap: 4px; margin-bottom: 2px; font-weight: 600; }
 .directions__stop-heading > span { min-width: 0; }
-.directions__stop-map { display: inline-flex; flex: 0 1 auto; align-items: center; justify-content: center; gap: 6px; min-height: 44px; color: inherit; text-decoration: none; font: inherit; }
+.directions__stop-map { display: inline-flex; flex: 0 1 auto; align-items: center; justify-content: center; gap: var(--icon-gap); min-height: 44px; color: inherit; text-decoration: none; font: inherit; }
 .directions__stop-map > [aria-hidden="true"] { flex-shrink: 0; color: var(--accent); font: 400 20px/1 sans-serif; }
 @media (max-width: 760px) {
   .directions__content .directions__links { gap: 6px; }
@@ -735,8 +735,8 @@ body, .welcome { background: var(--canvas); }
 /* One clear exit from the opening photographs. */
 .opening__skip {
   min-height: 52px;
-  gap: 18px;
-  padding: 7px 8px 7px 22px;
+  gap: var(--icon-gap);
+  padding: 12px 20px;
   border: 1px solid rgba(255,253,250,.7);
   background: rgba(255,253,250,.96);
   color: var(--accent);
@@ -746,7 +746,7 @@ body, .welcome { background: var(--canvas); }
   letter-spacing: -.02em;
   text-shadow: none;
 }
-.opening__skip-arrow { display: grid; place-items: center; width: 34px; height: 34px; flex: none; border-radius: 50%; background: var(--accent); color: #fffdfa; font-size: 18px; line-height: 1; }
+.opening__skip-arrow { display: inline-block; flex: none; color: currentColor; font-size: 18px; line-height: 1; }
 @media (hover: hover) and (pointer: fine) { .opening__skip:hover { background: var(--surface); color: var(--accent); border-color: var(--surface); } }
 .opening__skip:focus-visible { outline: 2px solid #fffdfa; outline-offset: 4px; box-shadow: 0 0 0 7px rgba(48,43,40,.75); }
 
@@ -832,7 +832,8 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 .calendar-picker .calendar-picker__help { margin-top: 20px; font-size: 12px; }
 .calendar-picker__close { width: 100%; min-height: 44px; margin-top: 12px; border: 0; border-radius: 16px; background: var(--accent-soft); color: var(--accent); cursor: pointer; }
 
-.calendar-picker__option > span:last-child { position: absolute; right: 14px; }
+.calendar-picker__label { display: inline-flex; align-items: center; justify-content: center; gap: var(--icon-gap); }
+.calendar-picker__label > [aria-hidden="true"] { flex-shrink: 0; }
 
 /* Lazy interactive venue map: page scrolling remains available until activation. */
 .venue-map__stage { position: relative; width: 100%; min-width: 0; min-height: 240px; aspect-ratio: 900 / 580; overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: var(--accent-soft); }
@@ -906,7 +907,7 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 }
 
 .directions__content .directions__links { grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 560px; }
-.directions__content .directions__links .button { flex-direction: column; gap: 6px; padding: 12px 4px; font-size: 13px; }
+.directions__content .directions__links .button { flex-direction: column; gap: var(--icon-gap); padding: 12px 4px; font-size: 13px; }
 .directions__links img { display: block; width: 24px; height: 24px; border-radius: 6px; object-fit: contain; flex-shrink: 0; }
 .venue-map__canvas { width: 100%; height: 100%; }
 .venue-map__notice { margin: 10px 0 0; font-size: 13px; line-height: 1.7; color: var(--muted); }
@@ -938,7 +939,7 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 /* Keep the heading and its shortcut together at every screen width. */
 .directions__parking-heading { display: flex; justify-content: center; align-items: center; gap: 10px; }
 .directions__parking-heading h3 { margin: 0; }
-.parking-map-link { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--accent-soft); color: var(--accent); font: inherit; font-size: 12px; white-space: nowrap; cursor: pointer; }
+.parking-map-link { display: inline-flex; flex-shrink: 0; align-items: center; justify-content: center; gap: var(--icon-gap); min-height: 44px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--accent-soft); color: var(--accent); font: inherit; font-size: 12px; white-space: nowrap; cursor: pointer; }
 .parking-map-link svg { flex-shrink: 0; }
 .parking-map-link:active { color: var(--ink); border-color: var(--accent); background: #e6d9cd; }
 @media (hover: hover) and (pointer: fine) { .parking-map-link:hover { border-color: var(--accent); background: #eee6dc; } }
@@ -952,7 +953,7 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 html.parking-map-open, html.parking-map-open body { overflow: hidden; }
 
 /* Recognizable transport symbols stay aligned with their visible text labels. */
-.directions__transport-title { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.directions__transport-title { display: flex; align-items: center; justify-content: center; gap: var(--icon-gap); }
 .directions__transport-icon { display: block; flex: 0 0 24px; width: 24px; height: 24px; pointer-events: none; }
 
 /* Keep name and party size together beneath attendance on small screens too. */
@@ -974,7 +975,7 @@ html.parking-map-open, html.parking-map-open body { overflow: hidden; }
   --action-soft-hover: #e6d9cd;
   --action-soft-pressed: #d7c4b2;
 }
-.directions__place-map { display: inline-flex; align-items: center; justify-content: center; gap: 6px; max-width: 100%; min-height: 44px; border-radius: 12px; color: inherit; text-decoration: none; vertical-align: middle; }
+.directions__place-map { display: inline-flex; align-items: center; justify-content: center; gap: var(--icon-gap); max-width: 100%; min-height: 44px; border-radius: 12px; color: inherit; text-decoration: none; vertical-align: middle; }
 .directions__place-map > [aria-hidden="true"] { flex-shrink: 0; color: var(--accent); }
 .welcome__text-button, .directions__stop-map { border-radius: 12px; }
 @media (hover: hover) and (pointer: fine) {
@@ -985,3 +986,7 @@ html.parking-map-open, html.parking-map-open body { overflow: hidden; }
 .button:not(:disabled):not([aria-disabled="true"]):active { background: var(--action-pressed); border-color: var(--action-pressed); color: #fffdfa; }
 :is(.button.button--light, #welcome-enter.button--light, .account__card .button, .directions__content .directions__links .button):not(:disabled):not([aria-disabled="true"]):active { background: var(--action-soft-pressed); border-color: var(--accent); color: var(--ink); }
 :is(.welcome__text-button, .welcome__choices button, .bgm-toggle, .location__copy, .opening__control, .calendar-picker__close, .gallery__pagination button, .gallery-dialog__controls button, .gallery-dialog__header button, .directions__stop-map, .directions__place-map):not(:disabled):not([aria-disabled="true"]):active { background: var(--action-soft-pressed); color: var(--accent); }
+
+/* Text and meaningful action icons share one spacing rule. */
+.inline-action, .calendar-picker__web, .calendar-diagnostics a { display: inline-flex; align-items: center; justify-content: center; gap: var(--icon-gap); }
+.inline-action > [aria-hidden="true"] { flex-shrink: 0; }
