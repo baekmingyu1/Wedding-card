@@ -1181,7 +1181,7 @@
       const button = document.createElement("button");
       button.className = "button button--light";
       button.type = "button";
-      button.textContent = "복사 ↗";
+      button.textContent = "복사";
       button.setAttribute("aria-label", `${account.label || groupName} 계좌번호 복사`);
       button.addEventListener("click", () => copyText(account.number));
       card.append(label, details, button);
