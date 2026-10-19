@@ -504,10 +504,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
 .button, .opening__control, .gallery__pagination button { border-radius: 12px; transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .2s var(--ui-ease); }
 .button:active:not(:disabled), .opening__control:active { transform: scale(.98); }
 .button--light { background: var(--surface); }
-#welcome-enter.button--light { background: transparent; color: var(--ink); border-color: var(--line); }
-.welcome__choices button { border-radius: 16px; background: var(--surface); transition: background-color .2s ease, border-color .2s ease; }
-.welcome__story-card { border-radius: 14px; background: var(--surface); box-shadow: var(--soft-shadow); }
-.welcome__actions .button { min-height: 50px; }
 .calendar__sheet { border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: var(--soft-shadow); }
 .countdown { background: #eee6dc; }
 .countdown__value { font-size: clamp(64px, 10vw, 112px); font-weight: 600; letter-spacing: -.06em; }
@@ -546,18 +542,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
   .account__details strong { font-size: 16px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .button, .opening__control, .gallery__pagination button, .welcome__choices button { transition: none; }
+  .button, .opening__control, .gallery__pagination button { transition: none; }
   .button:active:not(:disabled), .opening__control:active { transform: none; }
 }
 
 /* Typography and action hierarchy. */
-.welcome__eyebrow { letter-spacing: .16em; font-size: 10px; }
-.welcome__couple { color: var(--ink); font-weight: 500; }
-.welcome h2 { font-weight: 500; letter-spacing: -.04em; }
-.welcome__choices button { min-height: 76px; border-radius: 12px; background: var(--cream); border-color: transparent; font-weight: 500; }
-.welcome__choices button[aria-pressed="true"] { background: #eee6dc; border-color: #bca594; }
-@media (hover: hover) and (pointer: fine) { .welcome__choices button:hover { background: #eee6dc; border-color: #bca594; } }
-.welcome__text-button { color: var(--muted); }
 .invitation__message p { letter-spacing: -.025em; line-height: 2.05; }
 .calendar__month { color: var(--ink); }
 .account__side { color: var(--muted); font-family: inherit; letter-spacing: 0; font-weight: 500; }
@@ -566,18 +555,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
 .wreath__inner { background: var(--cream); border-color: transparent; }
 @media (hover: hover) and (pointer: fine) { .button:not(:disabled):hover { background: #644333; border-color: #644333; } }
 @media (hover: hover) and (pointer: fine) { .button--light:not(:disabled):hover { color: var(--ink); background: #eee6dc; border-color: #bca594; } }
-#welcome-enter.button--light:focus-visible { outline-color: var(--accent); }
 
 /* OUR PACE: two paths, one shared rhythm. */
 .pace-mark { display: block; width: 150px; height: 64px; margin: 0 auto 28px; color: var(--accent); overflow: visible; }
 .pace-mark path { stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; }
 .pace-mark circle { fill: currentColor; }
-.welcome__inner > .pace-mark { width: 112px; height: 47px; margin-bottom: 18px; }
-.welcome__inner { max-width: 560px; }
-.welcome__eyebrow { margin-top: 0; }
-.welcome__story-card { border: 1px solid var(--line); border-radius: 24px; box-shadow: var(--soft-shadow); padding: 24px; min-height: 0; }
-#welcome-story .welcome__step { margin-top: 24px; font-size: 12px; letter-spacing: .08em; }
-#welcome-story h2 { font-size: clamp(24px, 5vw, 32px); }
 .opening h1, .opening__final .poster-title { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; letter-spacing: -.065em; line-height: .95; }
 .opening h1 { font-size: clamp(66px, 13vw, 150px); }
 .opening h1 em, .poster-title em { font-weight: 400; }
@@ -597,16 +579,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR
 .footer .pace-mark { width: 100px; height: 42px; margin-bottom: 18px; }
 @keyframes pace-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 @keyframes poster-arrive { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-@media (max-width: 760px) {
-  .welcome__inner { padding-top: 28px; padding-bottom: max(28px, env(safe-area-inset-bottom)); }
-}
 @media (prefers-reduced-motion: reduce) {
   .opening__final.is-visible .poster-title, .opening__final.is-visible .pace-mark path { animation: none; }
 }
 
 /* Photo-inspired app layout: dress-white surfaces, champagne panels, sunset-brown actions. */
 :root { --canvas: #f7f5f2; --accent-soft: #eee6dc; --content: 960px; }
-body, .welcome { background: var(--canvas); }
+body { background: var(--canvas); }
 .section[id] { padding: clamp(48px, 7vw, 88px) 32px; background: transparent; }
 .section.invitation { padding-block: clamp(80px, 12vw, 140px) 48px; }
 .invitation__body { max-width: 560px; }
@@ -654,10 +633,6 @@ body, .welcome { background: var(--canvas); }
 .section.share { padding-top: 32px; }
 .share__actions { margin-top: 24px; }
 .button, .opening__control { border-radius: 999px; }
-.welcome__choices button { border-radius: 22px; background: var(--surface); border-color: var(--line); box-shadow: var(--soft-shadow); }
-.welcome__choices button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
-@media (hover: hover) and (pointer: fine) { .welcome__choices button:hover { background: var(--accent-soft); border-color: var(--accent); } }
-.welcome__inner > .pace-mark { width: 100px; margin-bottom: 24px; }
 .side-nav__label { border-radius: 999px; padding: 7px 10px; box-shadow: var(--soft-shadow); }
 .side-nav a { min-height: 44px; }
 .footer { background: var(--accent-soft); padding: 48px 24px; border-radius: 32px 32px 0 0; }
@@ -754,7 +729,7 @@ body, .welcome { background: var(--canvas); }
 body { word-break: keep-all; overflow-wrap: break-word; }
 .section__inner, .directions__item > div, .couple__identity, .rsvp-form label { min-width: 0; }
 .section__lead, .directions__item p, .directions__notice, .location__address,
-.welcome__description, .welcome__step, .rsvp-form__consent span, .wreath__inner p { text-wrap: balance; }
+.rsvp-form__consent span, .wreath__inner p { text-wrap: balance; }
 .section__lead { max-width: 34em; }
 .invitation__message p { font-size: clamp(15px, 4vw, 18px); line-height: 2; letter-spacing: -.015em; text-wrap: balance; }
 .calendar .calendar__caption { font-size: clamp(16px, 4.1vw, 20px); line-height: 1.75; }
@@ -791,8 +766,6 @@ body { word-break: keep-all; overflow-wrap: break-word; }
   .directions__item .directions__stop-heading { font-size: 15px; }
   .location__main h3 { font-size: clamp(24px, 6.5vw, 32px); line-height: 1.4; }
   .location__address { max-width: 22em; margin-inline: auto; }
-  .welcome__choices--guests { gap: 8px; }
-  .welcome__choices--guests button { line-height: 1.6; }
 }
 /* Left-aligned account details with the copy action centered vertically on the right. */
 .account__card { grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; text-align: left; }
@@ -885,7 +858,6 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
 }
 /* Positioned controls and their icons retain their original geometry. */
 .button:active:not(:disabled), .opening__control:active { transform: none; }
-.welcome__choices button:not(:disabled):active { background: var(--accent-soft); border-color: var(--accent); }
 .rsvp-choice:active input:not(:disabled) + span { background-color: var(--accent-soft); border-color: var(--accent); }
 .rsvp-choice span { transition: background-color 150ms ease, border-color 150ms ease; }
 @media (prefers-reduced-motion: reduce) {
@@ -933,7 +905,6 @@ html.calendar-picker-open, html.calendar-picker-open body { overflow: hidden; }
   .bgm-toggle:hover, .calendar-picker__close:hover,
   .gallery-dialog__header button:hover, .gallery-dialog__controls button:hover { background-color: var(--accent-soft); }
   .gallery-dialog__thumbnail:hover { border-color: var(--accent); opacity: 1; }
-  .welcome__text-button:hover { text-decoration: underline; text-underline-offset: 4px; }
 }
 
 /* Keep the heading and its shortcut together at every screen width. */
@@ -977,15 +948,15 @@ html.parking-map-open, html.parking-map-open body { overflow: hidden; }
 }
 .directions__place-map { display: inline-flex; align-items: center; justify-content: center; gap: var(--icon-gap); max-width: 100%; min-height: 44px; border-radius: 12px; color: inherit; text-decoration: none; vertical-align: middle; }
 .directions__place-map > [aria-hidden="true"] { flex-shrink: 0; color: var(--accent); }
-.welcome__text-button, .directions__stop-map { border-radius: 12px; }
+.directions__stop-map { border-radius: 12px; }
 @media (hover: hover) and (pointer: fine) {
   .button:not(:disabled):not([aria-disabled="true"]):hover { background: var(--action-hover); border-color: var(--action-hover); color: #fffdfa; }
-  :is(.button.button--light, #welcome-enter.button--light, .account__card .button, .directions__content .directions__links .button):not(:disabled):not([aria-disabled="true"]):hover { background: var(--action-soft-hover); border-color: var(--accent); color: var(--ink); }
-  :is(.welcome__text-button, .welcome__choices button, .bgm-toggle, .location__copy, .opening__control, .calendar-picker__close, .gallery__pagination button, .gallery-dialog__controls button, .gallery-dialog__header button, .directions__stop-map, .directions__place-map):not(:disabled):not([aria-disabled="true"]):hover { background: var(--action-soft-hover); color: var(--accent); }
+  :is(.button.button--light, .account__card .button, .directions__content .directions__links .button):not(:disabled):not([aria-disabled="true"]):hover { background: var(--action-soft-hover); border-color: var(--accent); color: var(--ink); }
+  :is(.bgm-toggle, .location__copy, .opening__control, .calendar-picker__close, .gallery__pagination button, .gallery-dialog__controls button, .gallery-dialog__header button, .directions__stop-map, .directions__place-map):not(:disabled):not([aria-disabled="true"]):hover { background: var(--action-soft-hover); color: var(--accent); }
 }
 .button:not(:disabled):not([aria-disabled="true"]):active { background: var(--action-pressed); border-color: var(--action-pressed); color: #fffdfa; }
-:is(.button.button--light, #welcome-enter.button--light, .account__card .button, .directions__content .directions__links .button):not(:disabled):not([aria-disabled="true"]):active { background: var(--action-soft-pressed); border-color: var(--accent); color: var(--ink); }
-:is(.welcome__text-button, .welcome__choices button, .bgm-toggle, .location__copy, .opening__control, .calendar-picker__close, .gallery__pagination button, .gallery-dialog__controls button, .gallery-dialog__header button, .directions__stop-map, .directions__place-map):not(:disabled):not([aria-disabled="true"]):active { background: var(--action-soft-pressed); color: var(--accent); }
+:is(.button.button--light, .account__card .button, .directions__content .directions__links .button):not(:disabled):not([aria-disabled="true"]):active { background: var(--action-soft-pressed); border-color: var(--accent); color: var(--ink); }
+:is(.bgm-toggle, .location__copy, .opening__control, .calendar-picker__close, .gallery__pagination button, .gallery-dialog__controls button, .gallery-dialog__header button, .directions__stop-map, .directions__place-map):not(:disabled):not([aria-disabled="true"]):active { background: var(--action-soft-pressed); color: var(--accent); }
 
 /* Text and meaningful action icons share one spacing rule. */
 .inline-action, .calendar-picker__web, .calendar-diagnostics a { display: inline-flex; align-items: center; justify-content: center; gap: var(--icon-gap); }
