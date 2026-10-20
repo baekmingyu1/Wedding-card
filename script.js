@@ -1206,15 +1206,6 @@
       renderBgm();
     });
   }
-  function prepareBgm() {
-    bgmAttempt += 1;
-    bgmStarted = false;
-    bgmSuspended = false;
-    bgmButton.hidden = true;
-    bgm.muted = true;
-    // Called synchronously by the replay tap to unlock mobile audio.
-    bgm.play().catch(() => {});
-  }
   function startBgm() {
     if (bgmStarted) return;
     bgm.pause();
@@ -1224,6 +1215,7 @@
     playBgm();
   }
   bgmButton.addEventListener("click", () => {
+    if (!bgmStarted) { startBgm(); return; }
     if (bgmBlocked || bgm.paused) bgmMuted = false;
     else bgmMuted = !bgmMuted;
     bgm.muted = bgmMuted;
@@ -1246,9 +1238,6 @@
     bgmButton.title = "음악을 불러올 수 없어요";
   });
 
-  // Attempt audio playback while photos load, without restarting it on the first scene.
-  startBgm();
-
   const opening = document.getElementById("opening");
   const frames = [...frameHost.children];
   const openingCopy = document.querySelector(".opening__copy");
@@ -1267,7 +1256,13 @@
   const links = [...document.querySelectorAll("[data-nav]")];
   const startAtOpening = window.scrollY < 10 && (!location.hash || location.hash === "#opening") &&
     !galleryDialog.open;
-  let autoplayActive = startAtOpening && !motionReduced.matches;
+  const coverDialog = document.getElementById("invitation-cover");
+  const coverButton = document.getElementById("cover-open");
+  const coverWanted = startAtOpening && typeof coverDialog.showModal === "function";
+  let coverPending = coverWanted;
+  let coverOpening = false;
+  let coverTimer;
+  let autoplayActive = startAtOpening && !coverWanted && !motionReduced.matches;
   let playbackComplete = false;
   let autoplayIndex = 0;
   let playbackRun = 0;
@@ -1327,7 +1322,7 @@
   setOpeningLocked(autoplayActive);
   openingLoader.hidden = !autoplayActive;
 
-  if (autoplayActive || motionReduced.matches) {
+  if (coverWanted || autoplayActive || motionReduced.matches) {
     opening.classList.add("opening--short");
   } else {
     // Keep the original scroll-driven sequence for deep links and restored scroll positions.
@@ -1559,9 +1554,11 @@
   }
 
   function replayOpening() {
-    prepareBgm();
-    opening.hidden = false;
     if (galleryDialog.open) return;
+    opening.hidden = false;
+    // Keep audio continuous across the cover transition and intro replays.
+    if (bgmStarted) playBgm();
+    else startBgm();
     playbackRun += 1;
     cancelFrameCleanup();
     autoplayActive = !motionReduced.matches;
@@ -1815,6 +1812,53 @@
   }
   initContentMotion();
 
-  if (autoplayActive) playOpening(++playbackRun);
-  else preloadGallery();
+  function finishCoverOpening(skip = false) {
+    if (!coverPending) return;
+    coverPending = false;
+    window.clearTimeout(coverTimer);
+    coverDialog.close();
+    document.documentElement.classList.remove("invitation-cover-open");
+    bgmButton.hidden = false;
+    if (skip) {
+      stopPendingOpeningLoads();
+      preloadGallery();
+      navigateToInvitation();
+    } else {
+      replayOpening();
+      skipButton.focus({ preventScroll: true });
+    }
+  }
+  coverButton.addEventListener("click", () => {
+    if (!coverPending || coverOpening) return;
+    coverOpening = true;
+    // This call must stay in the actual click, before any animation or await.
+    startBgm();
+    if (motionReduced.matches) { finishCoverOpening(); return; }
+    coverButton.setAttribute("aria-busy", "true");
+    coverDialog.classList.add("is-opening");
+    coverTimer = window.setTimeout(() => finishCoverOpening(), 850);
+  });
+  coverDialog.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    finishCoverOpening(true);
+  });
+  motionReduced.addEventListener("change", () => {
+    if (motionReduced.matches && coverOpening) finishCoverOpening();
+  });
+  if (coverWanted) {
+    document.documentElement.classList.add("invitation-cover-open");
+    coverDialog.showModal();
+    // Reuse the opening's loading queue and cached first photo for the inside page.
+    requestOpeningFrame(0, true).then((ready) => {
+      if (!ready) return;
+      const photo = document.getElementById("cover-photo");
+      photo.src = frames[0].querySelector("img").currentSrc;
+      photo.hidden = false;
+    });
+    if (!navigator.connection?.saveData) frames.forEach((_, index) => requestOpeningFrame(index));
+  } else {
+    startBgm();
+    if (autoplayActive) playOpening(++playbackRun);
+    else preloadGallery();
+  }
 })();
