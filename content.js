@@ -1,6 +1,9 @@
 // 예식 정보는 제공된 종이 청첩장 시안을 기준으로 입력했습니다.
 // 참석 응답 링크와 계좌 정보는 확정 후 이 파일에서 교체하세요.
 window.WEDDING_CONTENT = {
+  coverMessage: "우리의 시작을 함께해 주세요",
+  coverAction: "청첩장 열기",
+  coverHint: "누르면 음악과 함께 시작됩니다",
   couple: "백민규 · 박지해",
   groomName: "백민규",
   brideName: "박지해",
