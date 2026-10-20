@@ -1259,7 +1259,7 @@
   const coverDialog = document.getElementById("invitation-cover");
   const coverButton = document.getElementById("cover-open");
   const coverReveal = document.getElementById("cover-reveal");
-  const coverScene = document.querySelector(".invitation-cover__scene");
+  const coverPhoto = document.getElementById("cover-photo");
   const coverHint = document.getElementById("cover-hint");
   const openingStage = document.querySelector(".opening__sticky");
   const openingVeil = document.querySelector(".opening__veil");
@@ -1267,6 +1267,7 @@
   let coverPending = coverWanted;
   let coverOpening = false;
   let coverTimer;
+  let coverExpansion;
   let autoplayActive = startAtOpening && !coverWanted && !motionReduced.matches;
   let playbackComplete = false;
   let autoplayIndex = 0;
@@ -1821,9 +1822,11 @@
 
   function finishCoverOpening(skip = false) {
     if (!coverPending) return;
-    const fromCover = frameHost.parentElement === coverReveal;
+    const fromCover = frameHost.parentElement === coverReveal || frameHost.parentElement === coverPhoto;
     coverPending = false;
     window.clearTimeout(coverTimer);
+    coverExpansion?.cancel();
+    coverExpansion = null;
     if (fromCover) openingStage.prepend(frameHost, openingVeil);
     coverReveal.hidden = true;
     coverDialog.classList.remove("is-opening");
@@ -1846,22 +1849,29 @@
     if (!coverPending) return;
     // A failed photo still reaches the existing intro fallback, without a blank reveal.
     if (!decoded || motionReduced.matches) { finishCoverOpening(); return; }
-    const card = coverScene.getBoundingClientRect();
-    const viewport = coverDialog.getBoundingClientRect();
-    const left = card.left - viewport.left;
-    const top = card.top - viewport.top;
-    const scale = Math.max(card.width / viewport.width, card.height / viewport.height);
-    const x = left + (card.width - viewport.width * scale) / 2;
-    const y = top + (card.height - viewport.height * scale) / 2;
-    coverDialog.style.setProperty("--cover-window",
-      `inset(${top}px ${viewport.width - left - card.width}px ${viewport.height - top - card.height}px ${left}px)`);
-    coverDialog.style.setProperty("--cover-photo-transform", `translate(${x}px, ${y}px) scale(${scale})`);
-    // Move the real layers so the crop, source and decoding stay identical at handoff.
-    coverReveal.append(frameHost, openingVeil);
-    coverReveal.hidden = false;
     coverDialog.classList.add("is-opening");
-    coverTimer = window.setTimeout(() => finishCoverOpening(), 1300);
+    // Let the seal, flap and card finish before expanding the actual photo layers.
+    coverTimer = window.setTimeout(() => {
+      if (!coverPending) return;
+      const card = coverPhoto.getBoundingClientRect();
+      const viewport = coverDialog.getBoundingClientRect();
+      const start = {
+        left: `${card.left - viewport.left}px`,
+        top: `${card.top - viewport.top + coverDialog.scrollTop}px`,
+        width: `${card.width}px`, height: `${card.height}px`
+      };
+      Object.assign(coverReveal.style, start);
+      coverReveal.append(frameHost, openingVeil);
+      coverReveal.hidden = false;
+      if (typeof coverReveal.animate !== "function") { finishCoverOpening(); return; }
+      coverExpansion = coverReveal.animate([start, {
+        left: "0px", top: `${coverDialog.scrollTop}px`, width: `${viewport.width}px`, height: `${viewport.height}px`
+      }], { duration: 700, easing: "cubic-bezier(.22,.61,.36,1)", fill: "forwards" });
+      coverExpansion.onfinish = () => finishCoverOpening();
+      coverTimer = window.setTimeout(() => finishCoverOpening(), 900);
+    }, 1050);
   }
+
   coverButton.addEventListener("click", () => {
     if (!coverPending || coverOpening) return;
     coverOpening = true;
@@ -1882,7 +1892,8 @@
   if (coverWanted) {
     document.documentElement.classList.add("invitation-cover-open");
     coverDialog.showModal();
-    // The closed panels hide the intro while its photos are prepared underneath.
+    // Reuse the real first-photo layers in the envelope; no duplicate image request.
+    coverPhoto.append(frameHost, openingVeil);
     requestOpeningFrame(0, true);
     if (!navigator.connection?.saveData) frames.forEach((_, index) => requestOpeningFrame(index));
   } else {
