@@ -1258,6 +1258,11 @@
     !galleryDialog.open;
   const coverDialog = document.getElementById("invitation-cover");
   const coverButton = document.getElementById("cover-open");
+  const coverReveal = document.getElementById("cover-reveal");
+  const coverScene = document.querySelector(".invitation-cover__scene");
+  const coverHint = document.getElementById("cover-hint");
+  const openingStage = document.querySelector(".opening__sticky");
+  const openingVeil = document.querySelector(".opening__veil");
   const coverWanted = startAtOpening && typeof coverDialog.showModal === "function";
   let coverPending = coverWanted;
   let coverOpening = false;
@@ -1553,7 +1558,7 @@
     if (navigate) navigateToInvitation();
   }
 
-  function replayOpening() {
+  function replayOpening({ fromCover = false } = {}) {
     if (galleryDialog.open) return;
     opening.hidden = false;
     // Keep audio continuous across the cover transition and intro replays.
@@ -1569,9 +1574,11 @@
     loadsEnabled = true;
     pumpOpeningLoads();
     opening.classList.add("opening--short");
+    opening.classList.toggle("opening--cover-handoff", fromCover);
     opening.style.removeProperty("--sequence-height");
     openingLoader.classList.remove("is-exiting");
-    openingLoader.hidden = !autoplayActive || frames.every((frame) => ["ready", "failed"].includes(frame.dataset.status));
+    // Keep the revealed photograph visible while the remaining frames prepare.
+    openingLoader.hidden = fromCover || !autoplayActive || frames.every((frame) => ["ready", "failed"].includes(frame.dataset.status));
     setOpeningLocked(autoplayActive);
     const root = document.documentElement;
     const previousScrollBehavior = root.style.scrollBehavior;
@@ -1814,8 +1821,12 @@
 
   function finishCoverOpening(skip = false) {
     if (!coverPending) return;
+    const fromCover = frameHost.parentElement === coverReveal;
     coverPending = false;
     window.clearTimeout(coverTimer);
+    if (fromCover) openingStage.prepend(frameHost, openingVeil);
+    coverReveal.hidden = true;
+    coverDialog.classList.remove("is-opening");
     coverDialog.close();
     document.documentElement.classList.remove("invitation-cover-open");
     bgmButton.hidden = false;
@@ -1824,9 +1835,32 @@
       preloadGallery();
       navigateToInvitation();
     } else {
-      replayOpening();
+      replayOpening({ fromCover });
       skipButton.focus({ preventScroll: true });
     }
+  }
+  async function revealCoverPhoto() {
+    const loaded = await requestOpeningFrame(0, true);
+    if (!coverPending) return;
+    const decoded = loaded && await decodeOpeningForPlayback(0);
+    if (!coverPending) return;
+    // A failed photo still reaches the existing intro fallback, without a blank reveal.
+    if (!decoded || motionReduced.matches) { finishCoverOpening(); return; }
+    const card = coverScene.getBoundingClientRect();
+    const viewport = coverDialog.getBoundingClientRect();
+    const left = card.left - viewport.left;
+    const top = card.top - viewport.top;
+    const scale = Math.max(card.width / viewport.width, card.height / viewport.height);
+    const x = left + (card.width - viewport.width * scale) / 2;
+    const y = top + (card.height - viewport.height * scale) / 2;
+    coverDialog.style.setProperty("--cover-window",
+      `inset(${top}px ${viewport.width - left - card.width}px ${viewport.height - top - card.height}px ${left}px)`);
+    coverDialog.style.setProperty("--cover-photo-transform", `translate(${x}px, ${y}px) scale(${scale})`);
+    // Move the real layers so the crop, source and decoding stay identical at handoff.
+    coverReveal.append(frameHost, openingVeil);
+    coverReveal.hidden = false;
+    coverDialog.classList.add("is-opening");
+    coverTimer = window.setTimeout(() => finishCoverOpening(), 1300);
   }
   coverButton.addEventListener("click", () => {
     if (!coverPending || coverOpening) return;
@@ -1835,8 +1869,8 @@
     startBgm();
     if (motionReduced.matches) { finishCoverOpening(); return; }
     coverButton.setAttribute("aria-busy", "true");
-    coverDialog.classList.add("is-opening");
-    coverTimer = window.setTimeout(() => finishCoverOpening(), 1300);
+    if (frames[0].dataset.status !== "ready") coverHint.textContent = content.coverLoading;
+    void revealCoverPhoto();
   });
   coverDialog.addEventListener("cancel", (event) => {
     event.preventDefault();
