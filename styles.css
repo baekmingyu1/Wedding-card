@@ -359,6 +359,26 @@ html.invitation-cover-open, html.invitation-cover-open body { overflow: hidden; 
 @keyframes envelope-card-rise { to { transform: translateY(-22%) rotate(0deg); } }
 @keyframes envelope-type-away { to { opacity: 0; transform: translateY(5px); } }
 .opening--cover-handoff .opening__copy { animation: cover-copy-arrive .4s .1s ease backwards; }
+.opening--cover-handoff .opening__loader {
+  inset: auto 20px calc(100px + env(safe-area-inset-bottom, 0px));
+  width: min(340px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255, 253, 250, .96);
+}
+.opening--cover-handoff .opening__loader-kicker,
+.opening--cover-handoff .opening__loader-mark { display: none; }
+.opening--cover-handoff .opening__loader-track,
+.opening--cover-handoff .opening__loader p { width: 100%; }
+.opening .opening__motion-hint {
+  max-width: 290px;
+  margin: 0 20px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+#opening-play { min-height: 44px; padding: 10px 22px; cursor: pointer; }
 @keyframes cover-copy-arrive { from { opacity: 0; } to { opacity: 1; } }
 @media (max-height: 700px) {
   .invitation-cover__open { padding-top: max(22px, env(safe-area-inset-top)); padding-bottom: max(18px, env(safe-area-inset-bottom)); }
