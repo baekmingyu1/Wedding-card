@@ -8,6 +8,7 @@ const prepare = between("  function prepareOpeningImage(", "  function addPhoto(
 const decode = between("  function decodeOpeningForPlayback(", "  function updateScroll(");
 const replay = between("  function replayOpening(", '  document.querySelectorAll(\'a[href="#opening"]\')');
 const play = between("  async function playOpening(", "  // Progressive enhancement:");
+const prepareAll = between("  async function prepareOpeningFrames(", "  async function playOpening(");
 const update = between("  function updateScroll(", "  function scheduleUpdate(");
 const flush = () => new Promise((resolve) => setImmediate(resolve));
 const image = (decode = () => Promise.resolve()) => ({
@@ -73,7 +74,7 @@ function playbackContext(reduced = false) {
     waitPlayback: async (ms) => { context.delays.push(ms); },
     finishOpening() { context.autoplayActive = false; context.finished = true; }
   };
-  runInNewContext(prepare + decode + play, context);
+  runInNewContext(prepare + decode + prepareAll + play, context);
   return context;
 }
 for (const reduced of [false, true]) {
@@ -115,8 +116,11 @@ for (const [reduce, pending] of [
   assert.equal(context.autoplayActive, true);
   assert.equal(context.locked, true);
   assert.equal(context.played, true, "opening the envelope starts playback without a second tap");
+  assert.equal(context.openingLoader.hidden, true,
+    "cover handoff never shows a second loader");
+  context.replayOpening();
   assert.equal(context.openingLoader.hidden, !pending,
-    "cover handoff shows loading progress while photos are pending");
+    "a direct replay can still prepare photos if the initial loader was skipped");
 }
 {
   const context = playbackContext();
