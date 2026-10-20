@@ -4,7 +4,6 @@ window.WEDDING_CONTENT = {
   coverMessage: "우리의 시작을 함께해 주세요",
   coverAction: "청첩장 열기",
   coverHint: "누르면 음악과 함께 시작됩니다",
-  coverPhoto: window.GALLERY_IMAGES?.[0] || null,
   couple: "백민규 · 박지해",
   groomName: "백민규",
   brideName: "박지해",

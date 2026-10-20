@@ -1848,26 +1848,8 @@
   if (coverWanted) {
     document.documentElement.classList.add("invitation-cover-open");
     coverDialog.showModal();
-    // A portrait keeps both people in frame on narrow screens; reuse the intro if unavailable.
-    const photo = document.getElementById("cover-photo");
-    const useOpeningPhoto = () => requestOpeningFrame(0, true).then((ready) => {
-      if (!ready) return;
-      photo.src = frames[0].querySelector("img").currentSrc;
-      photo.hidden = false;
-    });
-    if (photoUrl(content.coverPhoto)) {
-      photo.onload = () => { photo.hidden = false; };
-      photo.onerror = () => {
-        photo.onerror = null;
-        photo.removeAttribute("srcset");
-        useOpeningPhoto();
-      };
-      if (content.coverPhoto.srcset) {
-        photo.sizes = "100vw";
-        photo.srcset = content.coverPhoto.srcset;
-      }
-      photo.src = photoUrl(content.coverPhoto);
-    } else useOpeningPhoto();
+    // The closed panels hide the intro while its photos are prepared underneath.
+    requestOpeningFrame(0, true);
     if (!navigator.connection?.saveData) frames.forEach((_, index) => requestOpeningFrame(index));
   } else {
     startBgm();
