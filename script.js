@@ -58,6 +58,19 @@
 
   const photoUrl = (photo) => typeof photo === "string" ? photo : photo?.src;
 
+  function prepareOpeningImage(image) {
+    const source = image.currentSrc;
+    const usable = () => image.complete && image.naturalWidth > 0 && image.currentSrc === source;
+    if (!usable()) return Promise.resolve(false);
+    // Some webviews reject or never settle decode() for an already loaded image.
+    // Allow native rendering, but never accept a broken or replaced source.
+    return new Promise((resolve) => {
+      const finish = () => { clearTimeout(timer); resolve(usable()); };
+      const timer = setTimeout(finish, 1200);
+      Promise.resolve().then(() => image.decode?.()).then(finish, finish);
+    });
+  }
+
   function addPhoto(host, photo, index, kind, sizes = "100vw") {
     const wrapper = document.createElement(kind === "opening" ? "div" : "figure");
     wrapper.className = kind === "opening"
@@ -103,8 +116,11 @@
         wrapper.style.setProperty("--frame-image", `url(${JSON.stringify(photo.blur)})`);
       }
       img.addEventListener("load", async () => {
-        if (kind === "opening" && img.decode) {
-          try { await img.decode(); } catch {
+        if (kind === "opening") {
+          const loadingSource = img.currentSrc;
+          const usable = await prepareOpeningImage(img);
+          if (img.currentSrc !== loadingSource) return;
+          if (!usable) {
             if (wrapper.dataset.status !== "failed") {
               placeholder.textContent = `SCENE ${String(index + 1).padStart(2, "0")} · 사진을 불러올 수 없습니다`;
               wrapper.dataset.status = "failed";
@@ -1248,6 +1264,8 @@
   const openingCount = document.getElementById("opening-count");
   const openingProgress = document.getElementById("opening-progress");
   const skipButton = document.getElementById("opening-skip");
+  const openingPlay = document.getElementById("opening-play");
+  const openingMotionHint = document.getElementById("opening-motion-hint");
   const sections = ["opening", "invitation", "calendar", "countdown", "gallery", "rsvp", "couple", "account", "location", "directions", "wreath", "share"]
     .map((id) => document.getElementById(id));
   const firstSection = document.getElementById("invitation");
@@ -1269,6 +1287,7 @@
   let coverTimer;
   let coverExpansion;
   let autoplayActive = startAtOpening && !coverWanted && !motionReduced.matches;
+  let reducedPlaybackRequested = false;
   let playbackComplete = false;
   let autoplayIndex = 0;
   let playbackRun = 0;
@@ -1403,14 +1422,7 @@
     const frame = frames[index];
     const image = frame?.querySelector("img");
     if (frame?.dataset.status !== "ready" || !image?.complete || !image.naturalWidth) return Promise.resolve(false);
-    const source = image.currentSrc;
-    return new Promise((resolve) => {
-      const timer = setTimeout(() => resolve(false), 1800);
-      Promise.resolve().then(() => image.decode?.()).then(() => {
-        clearTimeout(timer);
-        resolve(image.complete && image.naturalWidth > 0 && image.currentSrc === source);
-      }, () => { clearTimeout(timer); resolve(false); });
-    });
+    return prepareOpeningImage(image);
   }
 
   function updateScroll() {
@@ -1427,7 +1439,10 @@
     // Hold the last photograph long enough for the closing line to be read.
     const sequenceEnd = .86;
     const sequenceProgress = Math.min(1, Math.max(0, (progress - introEnd) / (sequenceEnd - introEnd)));
-    const sceneIndex = motionReduced.matches
+    const staticOpening = motionReduced.matches && !reducedPlaybackRequested;
+    openingPlay.hidden = !staticOpening || autoplayActive;
+    openingMotionHint.hidden = !staticOpening || autoplayActive;
+    const sceneIndex = staticOpening
       ? 0
       : playbackComplete || autoplayActive
         ? autoplayIndex
@@ -1460,10 +1475,10 @@
         openingCount.textContent = `${String(displayIndex + 1).padStart(2, "0")} / ${String(frames.length).padStart(2, "0")}`;
         keepPreviousUntilCovered(next);
       }
-      openingCopy.style.opacity = motionReduced.matches ? "1" : autoplayActive || playbackComplete
+      openingCopy.style.opacity = staticOpening ? "1" : autoplayActive || playbackComplete
         ? (sceneIndex === 0 ? "1" : "0")
         : Math.max(0, 1 - progress / (introEnd * .8));
-      const showFinal = !motionReduced.matches && openingVisible && (
+      const showFinal = !staticOpening && openingVisible && (
         autoplayActive || playbackComplete ? finalMessageReady : sceneIndex === frames.length - 1
       );
       openingFinal.classList.toggle("is-visible", showFinal);
@@ -1559,7 +1574,7 @@
     if (navigate) navigateToInvitation();
   }
 
-  function replayOpening({ fromCover = false } = {}) {
+  function replayOpening({ fromCover = false, manual = false } = {}) {
     if (galleryDialog.open) return;
     opening.hidden = false;
     // Keep audio continuous across the cover transition and intro replays.
@@ -1567,7 +1582,8 @@
     else startBgm();
     playbackRun += 1;
     cancelFrameCleanup();
-    autoplayActive = !motionReduced.matches;
+    reducedPlaybackRequested = manual && motionReduced.matches;
+    autoplayActive = !motionReduced.matches || reducedPlaybackRequested;
     playbackComplete = false;
     hasLeftOpening = false;
     autoplayIndex = 0;
@@ -1579,7 +1595,7 @@
     opening.style.removeProperty("--sequence-height");
     openingLoader.classList.remove("is-exiting");
     // Keep the revealed photograph visible while the remaining frames prepare.
-    openingLoader.hidden = fromCover || !autoplayActive || frames.every((frame) => ["ready", "failed"].includes(frame.dataset.status));
+    openingLoader.hidden = !autoplayActive || frames.every((frame) => ["ready", "failed"].includes(frame.dataset.status));
     setOpeningLocked(autoplayActive);
     const root = document.documentElement;
     const previousScrollBehavior = root.style.scrollBehavior;
@@ -1616,6 +1632,7 @@
   document.querySelector(".skip-link").addEventListener("click", skipOpening);
 
   motionReduced.addEventListener("change", () => {
+    reducedPlaybackRequested = false;
     if (!motionReduced.matches || !autoplayActive) return;
     finishOpening(false);
     loadsEnabled = true;
@@ -1624,6 +1641,10 @@
   });
 
   skipButton.addEventListener("click", skipOpening);
+  openingPlay.addEventListener("click", () => {
+    replayOpening({ fromCover: true, manual: true });
+    skipButton.focus({ preventScroll: true });
+  });
 
   async function waitPlayback(milliseconds, run) {
     let remaining = milliseconds;
@@ -1664,7 +1685,8 @@
       openingLoader.hidden = true;
     }
     preloadGallery();
-    const middleFrameMs = 200;
+    // Explicit playback with reduced motion uses readable stills, not a rapid montage.
+    const middleFrameMs = reducedPlaybackRequested ? 1800 : 200;
     const preparedNext = new Map();
     const warmNext = (index) => {
       if (index < frames.length && !preparedNext.has(index)) preparedNext.set(index, decodeOpeningForPlayback(index));
