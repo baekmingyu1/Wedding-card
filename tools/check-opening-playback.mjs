@@ -4,7 +4,7 @@ import { runInNewContext } from "node:vm";
 
 const source = await readFile(new URL("../script.js", import.meta.url), "utf8");
 const between = (start, end) => source.slice(source.indexOf(start), source.indexOf(end, source.indexOf(start)));
-const prepare = between("  function prepareOpeningImage(", "  function addPhoto(");
+const prepare = between("  const openingImagePreparations =", "  function addPhoto(");
 const decode = between("  function decodeOpeningForPlayback(", "  function updateScroll(");
 const replay = between("  function replayOpening(", '  document.querySelectorAll(\'a[href="#opening"]\')');
 const play = between("  async function playOpening(", "  // Progressive enhancement:");
@@ -36,6 +36,29 @@ for (const outcome of ["success", "reject", "throw", "absent", "pending"]) {
   if (outcome === "pending") for (const fn of [...timers]) fn();
   assert.equal(await result, true, `${outcome}: loaded photo remains usable`);
   assert.equal(timers.size, 0, `${outcome}: timer released`);
+}
+{
+  const timers = new Set();
+  const context = {
+    setTimeout(fn) { timers.add(fn); return fn; },
+    clearTimeout(fn) { timers.delete(fn); }
+  };
+  runInNewContext(prepare, context);
+  let calls = 0;
+  const img = image(() => { calls++; return new Promise(() => {}); });
+  const first = context.prepareOpeningImage(img);
+  assert.equal(context.prepareOpeningImage(img), first, "concurrent preparation shares one promise");
+  await flush();
+  for (const fn of [...timers]) fn();
+  assert.equal(await first, true);
+  assert.equal(await context.prepareOpeningImage(img), true);
+  assert.equal(calls, 1, "playback must not repeat a timed-out decode on the same photo");
+  img.currentSrc = "replacement.webp";
+  const replacement = context.prepareOpeningImage(img);
+  await flush();
+  for (const fn of [...timers]) fn();
+  assert.equal(await replacement, true);
+  assert.equal(calls, 2, "responsive source changes require fresh preparation");
 }
 {
   const context = { setTimeout, clearTimeout };

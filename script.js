@@ -58,17 +58,28 @@
 
   const photoUrl = (photo) => typeof photo === "string" ? photo : photo?.src;
 
+  const openingImagePreparations = new WeakMap();
   function prepareOpeningImage(image) {
     const source = image.currentSrc;
     const usable = () => image.complete && image.naturalWidth > 0 && image.currentSrc === source;
     if (!usable()) return Promise.resolve(false);
+    const cached = openingImagePreparations.get(image);
+    if (cached?.source === source) return cached.promise;
     // Some webviews reject or never settle decode() for an already loaded image.
     // Allow native rendering, but never accept a broken or replaced source.
-    return new Promise((resolve) => {
-      const finish = () => { clearTimeout(timer); resolve(usable()); };
+    const entry = { source, promise: null };
+    entry.promise = new Promise((resolve) => {
+      const finish = () => {
+        clearTimeout(timer);
+        const ready = usable();
+        if (!ready && openingImagePreparations.get(image) === entry) openingImagePreparations.delete(image);
+        resolve(ready);
+      };
       const timer = setTimeout(finish, 1200);
       Promise.resolve().then(() => image.decode?.()).then(finish, finish);
     });
+    openingImagePreparations.set(image, entry);
+    return entry.promise;
   }
 
   function addPhoto(host, photo, index, kind, sizes = "100vw") {
@@ -117,6 +128,8 @@
       }
       img.addEventListener("load", async () => {
         if (kind === "opening") {
+          // Free the download slot before decoding; preparation still gates the cover.
+          wrapper.dispatchEvent(new Event("frame-downloaded"));
           const loadingSource = img.currentSrc;
           const usable = await prepareOpeningImage(img);
           if (img.currentSrc !== loadingSource) return;
@@ -1529,12 +1542,20 @@
         if (placeholder) placeholder.textContent = `SCENE ${String(job.index + 1).padStart(2, "0")} · 사진을 불러올 수 없습니다`;
         frame.dispatchEvent(new Event("frame-settled"));
       }, 8000);
-      frame.addEventListener("frame-settled", () => {
+      let downloadReleased = false;
+      const releaseDownload = () => {
+        if (downloadReleased) return;
+        downloadReleased = true;
         window.clearTimeout(timeout);
         activeLoads -= 1;
+        pumpOpeningLoads();
+      };
+      frame.addEventListener("frame-downloaded", releaseDownload, { once: true });
+      frame.addEventListener("frame-settled", () => {
+        frame.removeEventListener("frame-downloaded", releaseDownload);
+        releaseDownload();
         frameRequests.delete(job.index);
         job.resolve(frame.dataset.status === "ready");
-        pumpOpeningLoads();
       }, { once: true });
       loadOpeningFrame(job.index, job.highPriority);
     }
