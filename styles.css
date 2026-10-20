@@ -306,16 +306,20 @@ html.invitation-cover-open, html.invitation-cover-open body { overflow: hidden; 
   backface-visibility: hidden; -webkit-backface-visibility: hidden;
 }
 .invitation-cover__seal {
-  position: absolute; z-index: 5; top: 57%; left: 50%; display: grid; place-items: center;
-  width: 66px; height: 65px; transform: translateX(-50%) rotate(-9deg);
-  border-radius: 45% 51% 47% 49% / 48% 44% 54% 50%;
-  background: radial-gradient(ellipse at 27% 18%, #bb9982, transparent 52%), var(--accent);
-  box-shadow: inset 2px 3px 3px #f3dcc184, inset -3px -4px 5px #442b24a6, 1px 5px 8px #302b2840;
+  position: absolute; z-index: 5; top: 54%; left: 50%; display: grid; place-items: center;
+  width: 84px; height: 84px; transform: translateX(-50%) rotate(-9deg);
+  border-radius: 50%; isolation: isolate;
 }
-.invitation-cover__seal-rim {
-  display: grid; place-items: center; width: 49px; height: 49px; border-radius: 50%;
-  border: 1px solid #e3c2a67d; box-shadow: inset 1px 2px 3px #4a2e2559, 0 1px 1px #edc6a96b;
-  color: #f6e4cf; font: italic 18px/1 Georgia, serif; text-shadow: 0 1px 1px #452a24;
+.invitation-cover__seal-wax {
+  display: block; width: 100%; height: 100%; object-fit: contain;
+  user-select: none; pointer-events: none;
+  filter: drop-shadow(1px 3px 2px #302b2829);
+}
+.invitation-cover__seal-mark {
+  position: absolute; inset: 25% 17%; display: grid; place-items: center;
+  color: #654534; font: italic 21px/1 Georgia, 'Times New Roman', serif;
+  letter-spacing: -.06em; white-space: nowrap; pointer-events: none;
+  text-shadow: .65px .8px .5px #e9c3a0a6, -.5px -.65px .7px #442a2173;
 }
 .invitation-cover__details { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .invitation-cover__names { font-family: 'Gowun Dodum', sans-serif; font-size: 22px; letter-spacing: .09em; line-height: 1.6; }
@@ -328,7 +332,7 @@ html.invitation-cover-open, html.invitation-cover-open body { overflow: hidden; 
 .invitation-cover__open:focus-visible { outline: none; }
 .invitation-cover__open:focus-visible .invitation-cover__seal { outline: 2px solid var(--accent); outline-offset: 6px; }
 @media (hover: hover) and (pointer: fine) {
-  .invitation-cover__open:not([aria-busy]):hover .invitation-cover__seal { filter: brightness(1.08); }
+  .invitation-cover__open:not([aria-busy]):hover .invitation-cover__seal { filter: brightness(1.035); }
 }
 .invitation-cover__reveal { position: absolute; z-index: 10; overflow: hidden; background: var(--cream); pointer-events: none; }
 .invitation-cover.is-opening .invitation-cover__open { cursor: default; }
@@ -356,8 +360,8 @@ html.invitation-cover-open, html.invitation-cover-open body { overflow: hidden; 
   .invitation-cover__scene { width: 200px; margin: 12px 0; }
   .invitation-cover__heading, .invitation-cover__eyebrow { display: none; }
   .invitation-cover__names { font-size: 18px; }
-  .invitation-cover__seal { width: 52px; height: 52px; }
-  .invitation-cover__seal-rim { width: 39px; height: 39px; font-size: 15px; }
+  .invitation-cover__seal { width: 66px; height: 66px; }
+  .invitation-cover__seal-mark { font-size: 17px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .invitation-cover *, .invitation-cover *::before, .invitation-cover *::after,
