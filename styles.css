@@ -265,8 +265,15 @@ html.invitation-cover-open, html.invitation-cover-open body { overflow: hidden; 
   background: transparent;
 }
 .invitation-cover::backdrop { background: #e9ece5; }
+.invitation-cover__reveal {
+  position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+  background: #d4c3b2; clip-path: var(--cover-window);
+}
+.invitation-cover__reveal > * {
+  transform-origin: 0 0; transform: var(--cover-photo-transform);
+}
 .invitation-cover__open {
-  position: relative; display: flex; flex-direction: column; gap: 48px;
+  position: relative; z-index: 1; display: flex; flex-direction: column; gap: 48px;
   align-items: center; justify-content: center; width: 100%; min-height: 100%; min-height: 100dvh;
   margin: 0; padding: max(64px, env(safe-area-inset-top)) 42px max(64px, env(safe-area-inset-bottom));
   border: 0; background: transparent; color: inherit; text-align: center; cursor: pointer;
@@ -315,14 +322,14 @@ html.invitation-cover-open, html.invitation-cover-open body { overflow: hidden; 
   .invitation-cover__open:hover .invitation-cover__action { background: #41483b; }
 }
 .invitation-cover__open:active .invitation-cover__action { transform: scale(.98); }
-.invitation-cover.is-opening { animation: cover-depart .3s 1s ease forwards; }
-.invitation-cover.is-opening::backdrop { animation: cover-backdrop-depart .55s .75s ease forwards; }
-.invitation-cover.is-opening .invitation-cover__open { cursor: default; }
+.invitation-cover.is-opening .invitation-cover__open { cursor: default; animation: cover-depart .25s 1.05s ease forwards; }
+.invitation-cover.is-opening .invitation-cover__reveal { animation: cover-window-expand .6s .7s cubic-bezier(.4,0,.2,1) forwards; }
+.invitation-cover.is-opening .invitation-cover__reveal > * { animation: cover-photo-expand .6s .7s cubic-bezier(.4,0,.2,1) forwards; }
 .invitation-cover.is-opening .invitation-cover__sheet,
 .invitation-cover.is-opening .invitation-cover__eyebrow,
 .invitation-cover.is-opening .invitation-cover__hint { animation: cover-type-depart .25s ease forwards; }
-.invitation-cover.is-opening .invitation-cover__scene::before { animation: cover-unfold-left 1.1s .2s cubic-bezier(.4,0,.4,1) forwards; }
-.invitation-cover.is-opening .invitation-cover__scene::after { animation: cover-unfold-right 1.1s .2s cubic-bezier(.4,0,.4,1) forwards; }
+.invitation-cover.is-opening .invitation-cover__scene::before { animation: cover-unfold-left .85s .15s cubic-bezier(.4,0,.4,1) forwards; }
+.invitation-cover.is-opening .invitation-cover__scene::after { animation: cover-unfold-right .85s .15s cubic-bezier(.4,0,.4,1) forwards; }
 @keyframes cover-type-depart { to { opacity: 0; transform: translateY(-6px); } }
 @keyframes cover-unfold-left {
   45% { box-shadow: inset -32px 0 48px #2528240d, 18px 0 40px #18201426; }
@@ -333,7 +340,10 @@ html.invitation-cover-open, html.invitation-cover-open body { overflow: hidden; 
   to { transform: rotateY(100deg); box-shadow: inset 1px 0 #ffffff00, 0 0 0 #18201400; }
 }
 @keyframes cover-depart { to { opacity: 0; } }
-@keyframes cover-backdrop-depart { to { background-color: #e9ece500; } }
+@keyframes cover-window-expand { to { clip-path: inset(0px 0px 0px 0px); } }
+@keyframes cover-photo-expand { to { transform: translate(0px, 0px) scale(1); } }
+.opening--cover-handoff .opening__copy { animation: cover-copy-arrive .4s .1s ease backwards; }
+@keyframes cover-copy-arrive { from { opacity: 0; } to { opacity: 1; } }
 @media (max-height: 560px) {
   .invitation-cover__open { gap: 32px; padding-top: max(48px, env(safe-area-inset-top)); padding-bottom: max(48px, env(safe-area-inset-bottom)); }
   .invitation-cover__scene { min-height: 260px; }
@@ -341,5 +351,5 @@ html.invitation-cover-open, html.invitation-cover-open body { overflow: hidden; 
 }
 @media (prefers-reduced-motion: reduce) {
   .invitation-cover, .invitation-cover::backdrop, .invitation-cover *, .invitation-cover *::before,
-  .invitation-cover *::after { animation: none !important; transition: none !important; }
+  .invitation-cover *::after, .opening--cover-handoff .opening__copy { animation: none !important; transition: none !important; }
 }
