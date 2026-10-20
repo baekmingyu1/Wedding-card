@@ -372,13 +372,6 @@ html.invitation-cover-open, html.invitation-cover-open body { overflow: hidden; 
 .opening--cover-handoff .opening__loader-mark { display: none; }
 .opening--cover-handoff .opening__loader-track,
 .opening--cover-handoff .opening__loader p { width: 100%; }
-.opening .opening__motion-hint {
-  max-width: 290px;
-  margin: 0 20px;
-  font-size: 12px;
-  line-height: 1.7;
-}
-#opening-play { min-height: 44px; padding: 10px 22px; cursor: pointer; }
 @keyframes cover-copy-arrive { from { opacity: 0; } to { opacity: 1; } }
 @media (max-height: 700px) {
   .invitation-cover__open { padding-top: max(22px, env(safe-area-inset-top)); padding-bottom: max(18px, env(safe-area-inset-bottom)); }

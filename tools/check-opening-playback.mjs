@@ -8,6 +8,7 @@ const prepare = between("  function prepareOpeningImage(", "  function addPhoto(
 const decode = between("  function decodeOpeningForPlayback(", "  function updateScroll(");
 const replay = between("  function replayOpening(", '  document.querySelectorAll(\'a[href="#opening"]\')');
 const play = between("  async function playOpening(", "  // Progressive enhancement:");
+const update = between("  function updateScroll(", "  function scheduleUpdate(");
 const flush = () => new Promise((resolve) => setImmediate(resolve));
 const image = (decode = () => Promise.resolve()) => ({
   complete: true, naturalWidth: 768, currentSrc: "photo.webp", decode
@@ -52,7 +53,8 @@ for (const outcome of ["success", "reject", "throw", "absent", "pending"]) {
 
 const element = () => ({
   hidden: false, style: { removeProperty() {} },
-  classList: { add() {}, remove() {}, toggle() {} }
+  classList: { add() {}, remove() {}, toggle() {} },
+  setAttribute() {}, removeAttribute() {}, toggleAttribute() {}
 });
 function playbackContext(reduced = false) {
   const context = {
@@ -62,7 +64,7 @@ function playbackContext(reduced = false) {
       querySelector: () => image(() => Promise.reject(new Error("webview decode")))
     })),
     autoplayActive: true, playbackRun: 1, autoplayIndex: 0,
-    reducedPlaybackRequested: reduced, finalMessageReady: false,
+    motionReduced: { matches: reduced }, finalMessageReady: false,
     openingLoader: element(), loaderCount: {}, loaderProgress: { style: {} },
     requestOpeningFrame: () => Promise.resolve(true),
     waitUntilActive: async () => {}, preloadGallery() {}, startBgm() {},
@@ -78,7 +80,7 @@ for (const reduced of [false, true]) {
   const context = playbackContext(reduced);
   await context.playOpening(1);
   assert.deepEqual(context.painted, [0, 1, 2, 2], "decode rejection must not skip loaded photos");
-  assert.ok(context.delays.includes(reduced ? 1800 : 200), "manual reduced playback uses slow stills");
+  assert.ok(context.delays.includes(reduced ? 1800 : 200), "reduced-motion autoplay uses slow stills");
   assert.equal(context.finished, true);
 }
 {
@@ -95,9 +97,8 @@ for (const reduced of [false, true]) {
   await playing;
   assert.equal(context.painted.length, 0, "skipping during loading cancels the old run");
 }
-for (const [reduce, manual, pending, active] of [
-  [true, false, false, false], [true, true, false, true],
-  [false, false, true, true], [false, false, false, true]
+for (const [reduce, pending] of [
+  [true, false], [true, true], [false, true], [false, false]
 ]) {
   const context = {
     galleryDialog: { open: false }, opening: element(), openingLoader: element(),
@@ -110,11 +111,52 @@ for (const [reduce, manual, pending, active] of [
     playOpening() { context.played = true; }, preloadGallery() {}
   };
   runInNewContext(replay, context);
-  context.replayOpening({ fromCover: true, manual });
-  assert.equal(context.autoplayActive, active);
-  assert.equal(context.locked, active);
-  assert.equal(!!context.played, active);
-  assert.equal(context.openingLoader.hidden, !active || !pending,
+  context.replayOpening({ fromCover: true });
+  assert.equal(context.autoplayActive, true);
+  assert.equal(context.locked, true);
+  assert.equal(context.played, true, "opening the envelope starts playback without a second tap");
+  assert.equal(context.openingLoader.hidden, !pending,
     "cover handoff shows loading progress while photos are pending");
 }
-console.log("PASS: decode fallback/timeout, broken and replaced sources, photo progression, slow manual playback, all-frame preparation, cancellation, reduced-motion opt-in and cover loading feedback.");
+{
+  const context = playbackContext();
+  context.waitPlayback = async (ms) => {
+    context.delays.push(ms);
+    if (ms === 1300) context.motionReduced.matches = true;
+  };
+  await context.playOpening(1);
+  assert.deepEqual(context.painted, [0, 1, 2, 2]);
+  assert.ok(context.delays.includes(1800), "preference changes slow subsequent stills without stopping");
+  assert.equal(context.finished, true);
+}
+// Exercise the actual renderer: advancing the playback index must also change
+// the visible photo when reduced motion is enabled, including its final caption.
+{
+  const context = {
+    openingLocked: true, photoDialogActive: false, photoHistoryPending: false,
+    photoRestorePending: false, playbackComplete: false, hasLeftOpening: false,
+    autoplayActive: true, autoplayIndex: 1, paintedScene: 0, frameLayer: 1,
+    motionReduced: { matches: true }, finalMessageReady: false,
+    window: { scrollY: 0, innerHeight: 800 },
+    opening: { offsetHeight: 800, getBoundingClientRect: () => ({ top: 0, bottom: 800 }) },
+    firstSection: { getBoundingClientRect: () => ({ top: 800 }) }, sections: [],
+    document: { documentElement: { scrollHeight: 6000 } }, links: [],
+    frames: Array.from({ length: 3 }, () => ({ ...element(), dataset: { status: "ready" } })),
+    openingCount: {}, openingCopy: element(), openingFinal: element(),
+    openingProgress: element(), sideNav: element(), navProgress: element(),
+    keepPreviousUntilCovered() {}
+  };
+  runInNewContext(update, context);
+  context.updateScroll();
+  assert.equal(context.paintedScene, 1, "reduced motion must not pin scene zero");
+  assert.equal(context.frames[1].style.visibility, "visible");
+  assert.equal(context.openingCopy.style.opacity, "0");
+  context.autoplayIndex = 2;
+  context.finalMessageReady = true;
+  let finalVisible;
+  context.openingFinal.classList.toggle = (_, visible) => { finalVisible = visible; };
+  context.updateScroll();
+  assert.equal(context.paintedScene, 2);
+  assert.equal(finalVisible, true);
+}
+console.log("PASS: decode fallback/timeout, broken and replaced sources, automatic photo progression with reduced motion, runtime preference changes, all-frame preparation, cancellation and cover loading feedback.");
