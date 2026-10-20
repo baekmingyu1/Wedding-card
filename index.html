@@ -20,12 +20,12 @@
   <link rel="preload" as="image" media="(min-width: 761px)" href="assets/opening/frames/01-1600-bffa7b263d.webp" imagesrcset="assets/opening/frames/01-480-4ff597cf5f.webp 480w, assets/opening/frames/01-768-32b972d6aa.webp 768w, assets/opening/frames/01-1024-2442ce091a.webp 1024w, assets/opening/frames/01-1600-bffa7b263d.webp 1600w" imagesizes="100vw" fetchpriority="high">
   <!-- OPENING_PRELOAD_END -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Gowun+Dodum&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=36">
+  <link rel="stylesheet" href="styles.css?v=37">
   <link rel="stylesheet" href="play-pause.css?v=64">
   <script src="opening-images.js" defer></script>
   <script src="gallery-images.js" defer></script>
-  <script src="content.js?v=35" defer></script>
-  <script src="script.js?v=67" defer></script>
+  <script src="content.js?v=36" defer></script>
+  <script src="script.js?v=68" defer></script>
 </head>
 <body>
   <audio id="wedding-bgm" src="assets/audio/wedding-bgm-soft.m4a" preload="none" loop></audio>
@@ -35,16 +35,26 @@
   <dialog class="invitation-cover" id="invitation-cover" aria-labelledby="cover-action">
     <div class="invitation-cover__reveal" id="cover-reveal" aria-hidden="true" hidden></div>
     <button class="invitation-cover__open" id="cover-open" type="button" aria-labelledby="cover-action" aria-describedby="cover-hint" autofocus>
-      <span class="invitation-cover__eyebrow" aria-hidden="true">OUR WEDDING</span>
+      <span class="invitation-cover__eyebrow" data-field="coverEyebrow" aria-hidden="true"></span>
+      <span class="invitation-cover__heading" data-field="coverMessage"></span>
       <span class="invitation-cover__scene">
+        <span class="invitation-cover__back" aria-hidden="true"></span>
         <span class="invitation-cover__sheet">
-          <span class="invitation-cover__names" data-field="couple"></span>
-          <span class="invitation-cover__message" data-field="coverMessage"></span>
-          <span class="invitation-cover__date" data-field="date"></span>
-          <span class="invitation-cover__action"><span id="cover-action" data-field="coverAction"></span></span>
+          <span class="invitation-cover__photo" id="cover-photo" aria-hidden="true"></span>
+          <span class="invitation-cover__card-caption" data-field="coverCardCaption" aria-hidden="true"></span>
+        </span>
+        <span class="invitation-cover__pocket" aria-hidden="true"></span>
+        <span class="invitation-cover__flap" aria-hidden="true"></span>
+        <span class="invitation-cover__seal" aria-hidden="true">
+          <span class="invitation-cover__seal-rim"><span data-field="coverMonogram"></span></span>
         </span>
       </span>
-      <span class="invitation-cover__hint" id="cover-hint" data-field="coverHint"></span>
+      <span class="invitation-cover__details">
+        <span class="invitation-cover__names" data-field="couple"></span>
+        <span class="invitation-cover__date" data-field="date"></span>
+      </span>
+      <span class="invitation-cover__action" id="cover-action" data-field="coverAction"></span>
+      <span class="invitation-cover__hint" id="cover-hint" data-field="coverHint" role="status" aria-live="polite"></span>
     </button>
   </dialog>
 

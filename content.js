@@ -1,8 +1,11 @@
 // 예식 정보는 제공된 종이 청첩장 시안을 기준으로 입력했습니다.
 // 참석 응답 링크와 계좌 정보는 확정 후 이 파일에서 교체하세요.
 window.WEDDING_CONTENT = {
+  coverEyebrow: "A LETTER FOR YOU",
+  coverCardCaption: "Our pace.",
+  coverMonogram: "M & J",
   coverMessage: "우리의 시작을 함께해 주세요",
-  coverAction: "청첩장 열기",
+  coverAction: "봉투를 열어 주세요",
   coverHint: "누르면 음악과 함께 시작됩니다",
   coverLoading: "첫 장면을 준비하고 있어요",
   couple: "백민규 · 박지해",
