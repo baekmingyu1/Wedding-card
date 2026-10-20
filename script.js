@@ -1836,7 +1836,7 @@
     if (motionReduced.matches) { finishCoverOpening(); return; }
     coverButton.setAttribute("aria-busy", "true");
     coverDialog.classList.add("is-opening");
-    coverTimer = window.setTimeout(() => finishCoverOpening(), 850);
+    coverTimer = window.setTimeout(() => finishCoverOpening(), 1300);
   });
   coverDialog.addEventListener("cancel", (event) => {
     event.preventDefault();
@@ -1848,13 +1848,8 @@
   if (coverWanted) {
     document.documentElement.classList.add("invitation-cover-open");
     coverDialog.showModal();
-    // Reuse the opening's loading queue and cached first photo for the inside page.
-    requestOpeningFrame(0, true).then((ready) => {
-      if (!ready) return;
-      const photo = document.getElementById("cover-photo");
-      photo.src = frames[0].querySelector("img").currentSrc;
-      photo.hidden = false;
-    });
+    // The closed panels hide the intro while its photos are prepared underneath.
+    requestOpeningFrame(0, true);
     if (!navigator.connection?.saveData) frames.forEach((_, index) => requestOpeningFrame(index));
   } else {
     startBgm();

@@ -256,73 +256,66 @@ html.opening-scroll-locked, html.opening-scroll-locked body { overflow: hidden; 
 .bgm-toggle[aria-pressed="true"] .bgm-toggle__muted, .bgm-toggle[aria-pressed="false"] .bgm-toggle__sound { display: none; }
 .bgm-toggle:disabled { opacity: .5; cursor: default; }
 
-/* A paper cover opens on the same gesture that starts the music. */
+/* Two quiet paper panels part to reveal the existing intro underneath. */
 html.invitation-cover-open, html.invitation-cover-open body { overflow: hidden; }
 .invitation-cover-open .bgm-toggle { visibility: hidden; }
 .invitation-cover {
   width: 100%; max-width: none; height: 100%; height: 100dvh; max-height: none;
-  margin: 0; padding: 0; border: 0; color: #51483f; overflow-x: hidden; overflow-y: auto;
-  background: radial-gradient(ellipse at 50% 30%, #faf8f3, #e9e4db);
+  margin: 0; padding: 0; border: 0; color: #252824; overflow-x: hidden; overflow-y: auto;
+  background: transparent;
 }
-.invitation-cover::backdrop { background: #ece7de; }
+.invitation-cover::backdrop { background: transparent; }
 .invitation-cover__open {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 30px; width: 100%; min-height: 100%; margin: 0;
-  padding: max(40px, env(safe-area-inset-top)) 24px max(28px, env(safe-area-inset-bottom));
+  position: relative; isolation: isolate; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; width: 100%; min-height: 100%; min-height: 100dvh;
+  margin: 0; padding: max(100px, env(safe-area-inset-top)) 24px max(64px, env(safe-area-inset-bottom));
   border: 0; background: transparent; color: inherit; text-align: center; cursor: pointer;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
 }
-.invitation-cover__scene {
-  display: block; position: relative; width: min(100%, 354px);
-  perspective: 1600px; isolation: isolate;
-  box-shadow: 0 30px 60px -24px #64513d40, 0 3px 12px #64513d0c;
+.invitation-cover__open::before, .invitation-cover__open::after {
+  content: ""; position: absolute; z-index: -1; top: 0; bottom: 0; width: calc(50% + 1px);
+  background: #f7f7f2; pointer-events: none;
 }
-.invitation-cover__inside {
-  position: absolute; inset: 0; display: block; overflow: hidden;
-  background: linear-gradient(135deg, #d8cbb8, #f7f2e8); border-radius: 2px 5px 5px 2px;
+.invitation-cover__open::before { left: 0; box-shadow: inset -1px 0 #2228200a; }
+.invitation-cover__open::after { right: 0; background: #f4f5f0; box-shadow: inset 1px 0 #ffffff90; }
+.invitation-cover__eyebrow {
+  position: absolute; top: max(36px, env(safe-area-inset-top)); left: 24px; right: 24px;
+  font-size: 10px; font-weight: 500; letter-spacing: .24em; line-height: 1.6; color: #72776d;
 }
-.invitation-cover__inside img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.invitation-cover__sheet {
-  position: relative; display: flex; flex-direction: column; align-items: center;
-  justify-content: center; min-height: 506px; padding: 36px 28px 30px; border-radius: 2px 5px 5px 2px;
-  background: linear-gradient(90deg, #e3daca 0, #f3eddf 3px, #fbf7ee 14px, #faf6ec 85%, #f1ebdf);
-  transform-origin: left center; backface-visibility: hidden; -webkit-backface-visibility: hidden;
-  box-shadow: inset -1px 0 #fffdf8, 2px 0 5px #4433220a;
+.invitation-cover__scene { display: block; width: min(100%, 440px); }
+.invitation-cover__sheet { display: flex; flex-direction: column; align-items: center; }
+.invitation-cover__names { font-size: clamp(32px, 8vw, 48px); line-height: 1.45; font-weight: 500; letter-spacing: -.065em; }
+.invitation-cover__message { margin-top: 22px; font-size: 13px; line-height: 1.8; font-weight: 400; color: #62685e; }
+.invitation-cover__date { margin-top: 10px; font-size: 12px; line-height: 1.9; color: #72776d; word-break: keep-all; }
+.invitation-cover__action {
+  display: flex; align-items: center; justify-content: center; width: min(100%, 224px); min-height: 52px;
+  margin-top: 48px; padding: 15px 24px; border: 1px solid #252824; border-radius: 999px;
+  background: #252824; color: #fff; font-size: 14px; line-height: 1.5; font-weight: 500;
+  transition: background-color .2s ease, transform .2s ease;
 }
-.invitation-cover__sheet::before { content: ""; position: absolute; inset: 15px; border: 1px solid #b5a48b40; pointer-events: none; }
-.invitation-cover__sheet > * { flex-shrink: 0; }
-.invitation-cover__eyebrow { font: 500 9px 'DM Sans', sans-serif; letter-spacing: .26em; color: #8a7b68; }
-.invitation-cover__names { margin-top: 20px; font-size: 17px; letter-spacing: .12em; }
-.invitation-cover__title { margin-top: 28px; font: 48px/.98 Georgia, 'Times New Roman', serif; letter-spacing: -.05em; color: #65553f; }
-.invitation-cover__title em { font-weight: 400; }
-.invitation-cover__mark { width: 88px; height: 37px; margin: 20px 0 14px; color: #a38a65; }
-.invitation-cover__mark path { stroke: currentColor; stroke-width: 1.2; stroke-linecap: round; }
-.invitation-cover__mark circle { fill: currentColor; }
-.invitation-cover__message { font-size: 13px; line-height: 1.8; letter-spacing: -.02em; }
-.invitation-cover__date { max-width: 210px; margin-top: 10px; font-size: 11px; line-height: 1.9; color: #887965; word-break: keep-all; }
-.invitation-cover__action { display: inline-flex; align-items: center; gap: 22px; margin-top: 28px; padding-bottom: 8px; border-bottom: 1px solid #aa977a70; font-size: 12px; letter-spacing: .04em; animation: cover-invitation 1.2s ease both; }
-.invitation-cover__action > [aria-hidden] { font-size: 18px; }
-.invitation-cover__hint { font-size: 11px; line-height: 1.8; letter-spacing: .02em; color: #8b7e6d; }
+.invitation-cover__hint { margin-top: 18px; font-size: 11px; line-height: 1.8; color: #72776d; }
 .invitation-cover__open:focus-visible { outline: none; }
-.invitation-cover__open:focus-visible .invitation-cover__scene { outline: 2px solid #805642; outline-offset: 7px; }
-.invitation-cover.is-opening { animation: cover-depart .25s .6s ease forwards; }
+.invitation-cover__open:focus-visible .invitation-cover__action { outline: 2px solid #252824; outline-offset: 5px; }
+@media (hover: hover) and (pointer: fine) {
+  .invitation-cover__open:hover .invitation-cover__action { background: #41483b; }
+}
+.invitation-cover__open:active .invitation-cover__action { transform: scale(.98); }
+.invitation-cover.is-opening { animation: cover-depart .15s 1.15s ease forwards; }
 .invitation-cover.is-opening .invitation-cover__open { cursor: default; }
-.invitation-cover.is-opening .invitation-cover__sheet { animation: cover-unfold .85s cubic-bezier(.22,.65,.28,1) forwards; }
-.invitation-cover.is-opening .invitation-cover__scene { animation: cover-approach .85s ease forwards; }
-.invitation-cover.is-opening .invitation-cover__hint { opacity: 0; transition: opacity .15s; }
-@keyframes cover-invitation { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes cover-unfold { from { transform: rotateY(0); } to { transform: rotateY(-112deg); } }
-@keyframes cover-approach { from { transform: scale(1); } to { transform: scale(1.06); } }
+.invitation-cover.is-opening .invitation-cover__sheet,
+.invitation-cover.is-opening .invitation-cover__eyebrow,
+.invitation-cover.is-opening .invitation-cover__hint { animation: cover-type-depart .4s ease forwards; }
+.invitation-cover.is-opening .invitation-cover__open::before { animation: cover-part-left 1.1s .2s cubic-bezier(.65,0,.2,1) forwards; }
+.invitation-cover.is-opening .invitation-cover__open::after { animation: cover-part-right 1.1s .2s cubic-bezier(.65,0,.2,1) forwards; }
+@keyframes cover-type-depart { to { opacity: 0; transform: translateY(-6px); } }
+@keyframes cover-part-left { to { transform: translateX(-101%); } }
+@keyframes cover-part-right { to { transform: translateX(101%); } }
 @keyframes cover-depart { to { opacity: 0; } }
 @media (max-width: 360px), (max-height: 640px) {
-  .invitation-cover__open { padding: max(24px, env(safe-area-inset-top)) 22px max(20px, env(safe-area-inset-bottom)); gap: 20px; }
-  .invitation-cover__scene { width: min(100%, 294px); }
-  .invitation-cover__sheet { min-height: 440px; padding: 24px; }
-  .invitation-cover__title { margin-top: 18px; font-size: 40px; }
-  .invitation-cover__names { margin-top: 15px; font-size: 15px; }
-  .invitation-cover__mark { height: 28px; margin: 14px 0 10px; }
-  .invitation-cover__action { margin-top: 20px; }
+  .invitation-cover__open { padding: max(80px, env(safe-area-inset-top)) 22px max(40px, env(safe-area-inset-bottom)); }
+  .invitation-cover__action { margin-top: 36px; min-height: 48px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .invitation-cover, .invitation-cover *, .invitation-cover.is-opening .invitation-cover__sheet,
-  .invitation-cover.is-opening .invitation-cover__scene { animation: none !important; transition: none !important; }
+  .invitation-cover, .invitation-cover *, .invitation-cover *::before,
+  .invitation-cover *::after { animation: none !important; transition: none !important; }
 }
