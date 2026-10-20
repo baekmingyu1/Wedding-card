@@ -1281,6 +1281,7 @@
   const openingVeil = document.querySelector(".opening__veil");
   const coverWanted = startAtOpening && typeof coverDialog.showModal === "function";
   let coverPending = coverWanted;
+  let coverPreparing = coverWanted;
   let coverOpening = false;
   let coverTimer;
   let coverExpansion;
@@ -1339,10 +1340,10 @@
   // Release DOM state when leaving; reapply it if a running intro is restored from BFCache.
   window.addEventListener("pagehide", () => setOpeningLocked(false));
   window.addEventListener("pageshow", () => {
-    if (autoplayActive) setOpeningLocked(true);
+    if (autoplayActive || coverPreparing) setOpeningLocked(true);
   });
-  setOpeningLocked(autoplayActive);
-  openingLoader.hidden = !autoplayActive;
+  setOpeningLocked(autoplayActive || coverPreparing);
+  openingLoader.hidden = !(autoplayActive || coverPreparing);
 
   if (coverWanted || autoplayActive || motionReduced.matches) {
     opening.classList.add("opening--short");
@@ -1585,8 +1586,8 @@
     opening.classList.toggle("opening--cover-handoff", fromCover);
     opening.style.removeProperty("--sequence-height");
     openingLoader.classList.remove("is-exiting");
-    // Keep the revealed photograph visible while the remaining frames prepare.
-    openingLoader.hidden = !autoplayActive || frames.every((frame) => ["ready", "failed"].includes(frame.dataset.status));
+    // The cover is shown only after preparation; never show a second loader after it.
+    openingLoader.hidden = fromCover || frames.every((frame) => ["ready", "failed"].includes(frame.dataset.status));
     setOpeningLocked(autoplayActive);
     const root = document.documentElement;
     const previousScrollBehavior = root.style.scrollBehavior;
@@ -1616,7 +1617,8 @@
   }
   function skipOpening(event) {
     event.preventDefault();
-    if (autoplayActive) finishOpening();
+    if (coverPending) finishCoverOpening(true);
+    else if (autoplayActive) finishOpening();
     else navigateToInvitation();
   }
   document.querySelector(".skip-link").addEventListener("click", skipOpening);
@@ -1638,21 +1640,25 @@
     }
   }
 
-  async function playOpening(run) {
-    if (!autoplayActive || run !== playbackRun) return;
+  async function prepareOpeningFrames(isCurrent) {
     let settled = 0;
     loaderCount.textContent = `00 / ${String(frames.length).padStart(2, "0")}`;
     loaderProgress.style.width = "0%";
     const prepared = frames.map((_, index) =>
       requestOpeningFrame(index, index === 0).then(() => {
         settled += 1;
-        if (autoplayActive && run === playbackRun) {
+        if (isCurrent()) {
           loaderCount.textContent = `${String(settled).padStart(2, "0")} / ${String(frames.length).padStart(2, "0")}`;
           loaderProgress.style.width = `${settled / frames.length * 100}%`;
         }
       })
     );
     await Promise.all(prepared);
+  }
+
+  async function playOpening(run) {
+    if (!autoplayActive || run !== playbackRun) return;
+    await prepareOpeningFrames(() => autoplayActive && run === playbackRun);
     await waitUntilActive(run);
     if (!autoplayActive || run !== playbackRun) return;
     if (!openingLoader.hidden) {
@@ -1824,6 +1830,7 @@
     if (!coverPending) return;
     const fromCover = frameHost.parentElement === coverReveal || frameHost.parentElement === coverPhoto;
     coverPending = false;
+    coverPreparing = false;
     window.clearTimeout(coverTimer);
     coverExpansion?.cancel();
     coverExpansion = null;
@@ -1834,6 +1841,8 @@
     document.documentElement.classList.remove("invitation-cover-open");
     bgmButton.hidden = false;
     if (skip) {
+      openingLoader.hidden = true;
+      setOpeningLocked(false);
       stopPendingOpeningLoads();
       preloadGallery();
       navigateToInvitation();
@@ -1879,7 +1888,7 @@
   });
   coverDialog.addEventListener("pointerdown", () => coverDialog.classList.remove("has-keyboard-focus"));
   coverButton.addEventListener("click", () => {
-    if (!coverPending || coverOpening) return;
+    if (!coverPending || coverPreparing || coverOpening) return;
     coverOpening = true;
     // This call must stay in the actual click, before any animation or await.
     startBgm();
@@ -1895,13 +1904,19 @@
   motionReduced.addEventListener("change", () => {
     if (motionReduced.matches && coverOpening) finishCoverOpening();
   });
-  if (coverWanted) {
+  async function prepareCover() {
+    await prepareOpeningFrames(() => coverPending && coverPreparing);
+    if (!coverPending || !coverPreparing) return;
+    coverPreparing = false;
+    setOpeningLocked(false);
     document.documentElement.classList.add("invitation-cover-open");
-    coverDialog.showModal();
     // Reuse the real first-photo layers in the envelope; no duplicate image request.
     coverPhoto.append(frameHost, openingVeil);
-    requestOpeningFrame(0, true);
-    if (!navigator.connection?.saveData) frames.forEach((_, index) => requestOpeningFrame(index));
+    coverDialog.showModal();
+    openingLoader.hidden = true;
+  }
+  if (coverWanted) {
+    void prepareCover();
   } else {
     startBgm();
     if (autoplayActive) playOpening(++playbackRun);
