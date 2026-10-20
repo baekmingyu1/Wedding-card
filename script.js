@@ -1216,6 +1216,7 @@
     bgm.play().catch(() => {});
   }
   function startBgm() {
+    if (bgmStarted) return;
     bgm.pause();
     bgm.currentTime = 0;
     bgmStarted = true;
@@ -1244,6 +1245,9 @@
     bgmButton.setAttribute("aria-label", "음악을 불러올 수 없어요");
     bgmButton.title = "음악을 불러올 수 없어요";
   });
+
+  // Attempt audio playback while photos load, without restarting it on the first scene.
+  startBgm();
 
   const opening = document.getElementById("opening");
   const frames = [...frameHost.children];
