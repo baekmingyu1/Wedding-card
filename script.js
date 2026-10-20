@@ -1872,6 +1872,12 @@
     }, 1050);
   }
 
+  // showModal/autofocus can trigger :focus-visible on touch browsers too.
+  // Show the cue on the action label only after actual keyboard interaction.
+  coverDialog.addEventListener("keydown", (event) => {
+    if (["Tab", "Enter", " "].includes(event.key)) coverDialog.classList.add("has-keyboard-focus");
+  });
+  coverDialog.addEventListener("pointerdown", () => coverDialog.classList.remove("has-keyboard-focus"));
   coverButton.addEventListener("click", () => {
     if (!coverPending || coverOpening) return;
     coverOpening = true;

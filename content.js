@@ -3,7 +3,6 @@
 window.WEDDING_CONTENT = {
   coverEyebrow: "A LETTER FOR YOU",
   coverCardCaption: "Our pace.",
-  coverMonogram: "M & J",
   coverMessage: "우리의 시작을 함께해 주세요",
   coverAction: "봉투를 열어 주세요",
   coverHint: "누르면 음악과 함께 시작됩니다",
