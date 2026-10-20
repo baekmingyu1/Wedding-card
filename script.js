@@ -1264,8 +1264,6 @@
   const openingCount = document.getElementById("opening-count");
   const openingProgress = document.getElementById("opening-progress");
   const skipButton = document.getElementById("opening-skip");
-  const openingPlay = document.getElementById("opening-play");
-  const openingMotionHint = document.getElementById("opening-motion-hint");
   const sections = ["opening", "invitation", "calendar", "countdown", "gallery", "rsvp", "couple", "account", "location", "directions", "wreath", "share"]
     .map((id) => document.getElementById(id));
   const firstSection = document.getElementById("invitation");
@@ -1286,8 +1284,7 @@
   let coverOpening = false;
   let coverTimer;
   let coverExpansion;
-  let autoplayActive = startAtOpening && !coverWanted && !motionReduced.matches;
-  let reducedPlaybackRequested = false;
+  let autoplayActive = startAtOpening && !coverWanted;
   let playbackComplete = false;
   let autoplayIndex = 0;
   let playbackRun = 0;
@@ -1439,12 +1436,7 @@
     // Hold the last photograph long enough for the closing line to be read.
     const sequenceEnd = .86;
     const sequenceProgress = Math.min(1, Math.max(0, (progress - introEnd) / (sequenceEnd - introEnd)));
-    const staticOpening = motionReduced.matches && !reducedPlaybackRequested;
-    openingPlay.hidden = !staticOpening || autoplayActive;
-    openingMotionHint.hidden = !staticOpening || autoplayActive;
-    const sceneIndex = staticOpening
-      ? 0
-      : playbackComplete || autoplayActive
+    const sceneIndex = playbackComplete || autoplayActive
         ? autoplayIndex
         : Math.min(frames.length - 1, Math.floor(sequenceProgress * frames.length));
     const openingVisible = openingRect.bottom > 0 && openingRect.top < window.innerHeight;
@@ -1475,10 +1467,10 @@
         openingCount.textContent = `${String(displayIndex + 1).padStart(2, "0")} / ${String(frames.length).padStart(2, "0")}`;
         keepPreviousUntilCovered(next);
       }
-      openingCopy.style.opacity = staticOpening ? "1" : autoplayActive || playbackComplete
+      openingCopy.style.opacity = autoplayActive || playbackComplete
         ? (sceneIndex === 0 ? "1" : "0")
         : Math.max(0, 1 - progress / (introEnd * .8));
-      const showFinal = !staticOpening && openingVisible && (
+      const showFinal = openingVisible && (
         autoplayActive || playbackComplete ? finalMessageReady : sceneIndex === frames.length - 1
       );
       openingFinal.classList.toggle("is-visible", showFinal);
@@ -1574,7 +1566,7 @@
     if (navigate) navigateToInvitation();
   }
 
-  function replayOpening({ fromCover = false, manual = false } = {}) {
+  function replayOpening({ fromCover = false } = {}) {
     if (galleryDialog.open) return;
     opening.hidden = false;
     // Keep audio continuous across the cover transition and intro replays.
@@ -1582,8 +1574,7 @@
     else startBgm();
     playbackRun += 1;
     cancelFrameCleanup();
-    reducedPlaybackRequested = manual && motionReduced.matches;
-    autoplayActive = !motionReduced.matches || reducedPlaybackRequested;
+    autoplayActive = true;
     playbackComplete = false;
     hasLeftOpening = false;
     autoplayIndex = 0;
@@ -1608,8 +1599,7 @@
     }
     requestOpeningFrame(0, true);
     updateScroll();
-    if (autoplayActive) playOpening(playbackRun);
-    else { startBgm(); preloadGallery(); }
+    playOpening(playbackRun);
   }
 
   document.querySelectorAll('a[href="#opening"]').forEach((link) => {
@@ -1631,20 +1621,7 @@
   }
   document.querySelector(".skip-link").addEventListener("click", skipOpening);
 
-  motionReduced.addEventListener("change", () => {
-    reducedPlaybackRequested = false;
-    if (!motionReduced.matches || !autoplayActive) return;
-    finishOpening(false);
-    loadsEnabled = true;
-    requestOpeningFrame(0, true);
-    updateScroll();
-  });
-
   skipButton.addEventListener("click", skipOpening);
-  openingPlay.addEventListener("click", () => {
-    replayOpening({ fromCover: true, manual: true });
-    skipButton.focus({ preventScroll: true });
-  });
 
   async function waitPlayback(milliseconds, run) {
     let remaining = milliseconds;
@@ -1685,8 +1662,6 @@
       openingLoader.hidden = true;
     }
     preloadGallery();
-    // Explicit playback with reduced motion uses readable stills, not a rapid montage.
-    const middleFrameMs = reducedPlaybackRequested ? 1800 : 200;
     const preparedNext = new Map();
     const warmNext = (index) => {
       if (index < frames.length && !preparedNext.has(index)) preparedNext.set(index, decodeOpeningForPlayback(index));
@@ -1715,6 +1690,9 @@
         finalMessageReady = true;
         updateScroll();
       }
+      // Reduced motion changes the pace and effects, never whether photos advance.
+      // Read the preference at each handoff so changing it does not stop playback.
+      const middleFrameMs = motionReduced.matches ? 1800 : 200;
       await waitPlayback(index === 0 ? 1300 : index === frames.length - 1 ? 3200 : middleFrameMs, run);
     }
     if (run === playbackRun) finishOpening();
