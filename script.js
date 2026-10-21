@@ -1951,21 +1951,77 @@
     }, 1050);
   }
 
-  // showModal/autofocus can trigger :focus-visible on touch browsers too.
-  // Show the cue on the action label only after actual keyboard interaction.
-  coverDialog.addEventListener("keydown", (event) => {
-    if (["Tab", "Enter", " "].includes(event.key)) coverDialog.classList.add("has-keyboard-focus");
-  });
-  coverDialog.addEventListener("pointerdown", () => coverDialog.classList.remove("has-keyboard-focus"));
-  coverButton.addEventListener("click", () => {
+  function openCover() {
     if (!coverPending || coverPreparing || coverOpening) return;
     coverOpening = true;
-    // This call must stay in the actual click, before any animation or await.
+    // Keep this in the trusted click/touchend event, before any animation or await.
     startBgm();
     if (motionReduced.matches) { finishCoverOpening(); return; }
     coverButton.setAttribute("aria-busy", "true");
     if (frames[0].dataset.status !== "ready") coverHint.textContent = content.coverLoading;
     void revealCoverPhoto();
+  }
+
+  let coverTouch = null;
+  let suppressCoverClick = false;
+  coverDialog.addEventListener("touchstart", (event) => {
+    coverTouch = null;
+    suppressCoverClick = event.touches.length !== 1;
+    if (!coverPending || coverPreparing || coverOpening || event.touches.length !== 1) return;
+    const touch = event.touches[0];
+    coverTouch = { id: touch.identifier, x: touch.clientX, y: touch.clientY };
+  }, { passive: true });
+  coverDialog.addEventListener("touchmove", (event) => {
+    if (!coverTouch) return;
+    if (event.touches.length !== 1) { coverTouch = null; suppressCoverClick = true; return; }
+    const touch = event.touches[0];
+    const dx = touch.clientX - coverTouch.x;
+    const up = coverTouch.y - touch.clientY;
+    if (Math.hypot(dx, up) > 12) suppressCoverClick = true;
+    // Reserve upward motion from its first move so native scrolling cannot take it over.
+    // The release still needs 60px; horizontal navigation and pinch zoom stay native.
+    if (up > 0 && up > Math.abs(dx) * 1.25 && event.cancelable) {
+      event.preventDefault();
+      coverTouch.intercepted = true;
+    }
+  }, { passive: false });
+  coverDialog.addEventListener("touchend", (event) => {
+    const gesture = coverTouch;
+    coverTouch = null;
+    if (!gesture || event.touches.length) return;
+    const touch = Array.from(event.changedTouches).find((item) => item.identifier === gesture.id);
+    if (!touch) return;
+    const dx = touch.clientX - gesture.x;
+    const up = gesture.y - touch.clientY;
+    if (Math.hypot(dx, up) > 12) suppressCoverClick = true;
+    if (suppressCoverClick && event.cancelable) event.preventDefault();
+    const swipe = up >= 60 && up > Math.abs(dx) * 1.25;
+    // A tiny intercepted move is still a tap; its native click was cancelled above.
+    if (swipe || (gesture.intercepted && !suppressCoverClick)) {
+      if (event.cancelable) event.preventDefault();
+      openCover();
+    }
+  }, { passive: false });
+  coverDialog.addEventListener("touchcancel", () => {
+    coverTouch = null;
+    suppressCoverClick = true;
+  });
+
+  // showModal/autofocus can trigger :focus-visible on touch browsers too.
+  // Show the cue on the action label only after actual keyboard interaction.
+  coverDialog.addEventListener("keydown", (event) => {
+    if (["Tab", "Enter", " "].includes(event.key)) {
+      suppressCoverClick = false;
+      coverDialog.classList.add("has-keyboard-focus");
+    }
+  });
+  coverDialog.addEventListener("pointerdown", (event) => {
+    coverDialog.classList.remove("has-keyboard-focus");
+    if (event.pointerType === "mouse") suppressCoverClick = false;
+  });
+  coverButton.addEventListener("click", (event) => {
+    if (suppressCoverClick && event.detail !== 0) { event.preventDefault(); return; }
+    openCover();
   });
   coverDialog.addEventListener("cancel", (event) => {
     event.preventDefault();
