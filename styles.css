@@ -53,6 +53,7 @@ h2 em { color: var(--accent); font-style: normal; }
 .opening__frames, .opening__frame, .opening__veil { position: absolute; inset: 0; }
 .opening__frames { z-index: 0; pointer-events: none; }
 .opening__frame { overflow: hidden; opacity: 0; visibility: hidden; transition: opacity .1s ease; }
+.opening__frame.is-rendering { will-change: opacity; transform: translateZ(0); backface-visibility: hidden; }
 .opening__frame picture { display: block; width: 100%; height: 100%; }
 .opening__frame img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
 [hidden] { display: none !important; }

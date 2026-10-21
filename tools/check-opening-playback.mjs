@@ -10,6 +10,7 @@ const replay = between("  function replayOpening(", '  document.querySelectorAll
 const play = between("  async function playOpening(", "  // Progressive enhancement:");
 const prepareAll = between("  async function prepareOpeningFrames(", "  async function playOpening(");
 const update = between("  function updateScroll(", "  function scheduleUpdate(");
+const coverage = between("  function keepPreviousUntilCovered(", "  function decodeOpeningForPlayback(");
 const flush = () => new Promise((resolve) => setImmediate(resolve));
 const image = (decode = () => Promise.resolve()) => ({
   complete: true, naturalWidth: 768, currentSrc: "photo.webp", decode
@@ -51,7 +52,7 @@ for (const outcome of ["success", "reject", "throw", "absent", "pending"]) {
   await flush();
   for (const fn of [...timers]) fn();
   assert.equal(await first, true);
-  assert.equal(await context.prepareOpeningImage(img), true);
+  assert.equal(await context.prepareOpeningImage(img, true), true);
   assert.equal(calls, 1, "playback must not repeat a timed-out decode on the same photo");
   img.currentSrc = "replacement.webp";
   const replacement = context.prepareOpeningImage(img);
@@ -59,6 +60,31 @@ for (const outcome of ["success", "reject", "throw", "absent", "pending"]) {
   for (const fn of [...timers]) fn();
   assert.equal(await replacement, true);
   assert.equal(calls, 2, "responsive source changes require fresh preparation");
+}
+{
+  const timers = new Map();
+  const context = {
+    setTimeout(fn, ms) { timers.set(fn, ms); return fn; },
+    clearTimeout(fn) { timers.delete(fn); }
+  };
+  runInNewContext(prepare, context);
+  let calls = 0, release;
+  const img = image(() => {
+    calls++;
+    return calls === 1 ? Promise.resolve() : new Promise((resolve) => { release = resolve; });
+  });
+  await context.prepareOpeningImage(img);
+  const refreshed = context.prepareOpeningImage(img, true);
+  assert.equal(context.prepareOpeningImage(img, true), refreshed, "concurrent refresh shares its decode");
+  await flush();
+  assert.equal(calls, 2, "a successful preload decode is refreshed before display");
+  assert.deepEqual([...timers.values()], [120], "playback refresh has a short bounded fallback");
+  for (const fn of [...timers.keys()]) fn();
+  assert.equal(await refreshed, true);
+  release();
+  await flush();
+  await context.prepareOpeningImage(img, true);
+  assert.equal(calls, 2, "a late decode completion must not re-enable repeated timeout waits");
 }
 {
   const context = { setTimeout, clearTimeout };
@@ -83,10 +109,11 @@ const element = () => ({
 function playbackContext(reduced = false) {
   const context = {
     setTimeout, clearTimeout,
-    frames: Array.from({ length: 3 }, () => ({
-      dataset: { status: "ready" },
-      querySelector: () => image(() => Promise.reject(new Error("webview decode")))
-    })),
+    requestAnimationFrame: (fn) => setImmediate(fn), paintedScene: 0,
+    frames: Array.from({ length: 3 }, () => {
+      const img = image(() => Promise.reject(new Error("webview decode")));
+      return { ...element(), dataset: { status: "ready" }, querySelector: () => img };
+    }),
     autoplayActive: true, playbackRun: 1, autoplayIndex: 0,
     motionReduced: { matches: reduced }, finalMessageReady: false,
     openingLoader: element(), loaderCount: {}, loaderProgress: { style: {} },
@@ -127,7 +154,7 @@ for (const [reduce, pending] of [
   const context = {
     galleryDialog: { open: false }, opening: element(), openingLoader: element(),
     bgmStarted: true, playBgm() {}, startBgm() {}, playbackRun: 0,
-    cancelFrameCleanup() {}, motionReduced: { matches: reduce },
+    cancelFrameCleanup() {}, clearStagedOpeningFrames() {}, motionReduced: { matches: reduce },
     pumpOpeningLoads() {}, frames: [{ dataset: { status: pending ? "loading" : "ready" } }],
     setOpeningLocked(locked) { context.locked = locked; },
     document: { documentElement: { style: {} } }, window: { scrollTo() {} },
@@ -185,5 +212,63 @@ for (const [reduce, pending] of [
   context.updateScroll();
   assert.equal(context.paintedScene, 2);
   assert.equal(finalVisible, true);
+
+  // Drive the actual staging, renderer and cleanup together. Model the browser's
+  // paint callbacks separately from decode to catch premature photo promotion.
+  const paints = new Map();
+  let paintId = 0;
+  Object.assign(context, {
+    setTimeout, clearTimeout, performance,
+    playbackRun: 1, cancelFrameCleanup() {},
+    requestAnimationFrame(fn) { paints.set(++paintId, fn); return paintId; },
+    cancelAnimationFrame(id) { paints.delete(id); },
+    getComputedStyle: (frame) => ({ opacity: frame.style.opacity || "0" })
+  });
+  for (const frame of context.frames) {
+    const events = new EventTarget();
+    frame.addEventListener = events.addEventListener.bind(events);
+    frame.removeEventListener = events.removeEventListener.bind(events);
+    const img = image();
+    frame.querySelector = () => img;
+  }
+  const paint = () => {
+    const batch = [...paints.values()];
+    paints.clear();
+    for (const fn of batch) fn();
+  };
+  runInNewContext(prepare + coverage + decode, context);
+  context.autoplayIndex = 0;
+  context.updateScroll();
+  const staged = context.stageOpeningFrame(1, 1);
+  let ready = false;
+  staged.then((value) => { ready = value; });
+  await flush();
+  assert.equal(context.frames[0].style.opacity, "1", "old photo stays opaque during staging");
+  assert.equal(context.frames[1].style.visibility, "visible");
+  assert.equal(context.frames[1].style.zIndex, "0", "next photo is prepared below the current one");
+  paint();
+  await flush();
+  assert.equal(ready, false, "decode alone cannot promote the next photo");
+  assert.equal(context.frames[1].style.visibility, "visible", "coverage cleanup must preserve staging");
+  paint();
+  await staged;
+  assert.equal(ready, true);
+  context.autoplayIndex = 1;
+  context.updateScroll();
+  assert.equal(context.frames[1].dataset.staged, undefined);
+  assert.equal(context.frames[1].style.opacity, "1");
+  assert.equal(context.frames[1].style.transition, "", "promotion restores the existing fade");
+  assert.equal(context.frames[0].style.opacity, "1", "previous photo remains until coverage cleanup");
+  paint();
+  assert.equal(context.frames[0].style.visibility, "hidden");
+
+  const cancelled = context.stageOpeningFrame(2, 1);
+  await flush();
+  context.playbackRun++;
+  context.clearStagedOpeningFrames();
+  assert.equal(context.frames[2].style.visibility, "hidden", "skip/replay removes staged layers");
+  paint();
+  paint();
+  assert.equal(await cancelled, false, "an old run cannot promote a late paint");
 }
-console.log("PASS: decode fallback/timeout, broken and replaced sources, automatic photo progression with reduced motion, runtime preference changes, all-frame preparation, cancellation and cover loading feedback.");
+console.log("PASS: bounded decode refresh/fallback, staged paint before promotion, coverage cleanup, cancellation, reduced-motion progression, all-frame preparation and cover loading feedback.");
