@@ -59,24 +59,30 @@
   const photoUrl = (photo) => typeof photo === "string" ? photo : photo?.src;
 
   const openingImagePreparations = new WeakMap();
-  function prepareOpeningImage(image) {
+  function prepareOpeningImage(image, refresh = false) {
     const source = image.currentSrc;
     const usable = () => image.complete && image.naturalWidth > 0 && image.currentSrc === source;
     if (!usable()) return Promise.resolve(false);
     const cached = openingImagePreparations.get(image);
-    if (cached?.source === source) return cached.promise;
+    if (cached?.source === source && (!refresh || !cached.decoded)) return cached.promise;
     // Some webviews reject or never settle decode() for an already loaded image.
     // Allow native rendering, but never accept a broken or replaced source.
-    const entry = { source, promise: null };
+    const entry = { source, promise: null, decoded: false };
     entry.promise = new Promise((resolve) => {
-      const finish = () => {
+      let settled = false;
+      const finish = (decoded = false) => {
+        if (settled) return;
+        settled = true;
+        entry.decoded = decoded;
         clearTimeout(timer);
         const ready = usable();
         if (!ready && openingImagePreparations.get(image) === entry) openingImagePreparations.delete(image);
         resolve(ready);
       };
-      const timer = setTimeout(finish, 1200);
-      Promise.resolve().then(() => image.decode?.()).then(finish, finish);
+      const timer = setTimeout(finish, refresh ? 120 : 1200);
+      Promise.resolve().then(() => image.decode?.()).then(
+        () => finish(typeof image.decode === "function"), () => finish()
+      );
     });
     openingImagePreparations.set(image, entry);
     return entry.promise;
@@ -110,7 +116,8 @@
       }
       if (kind === "opening") img.hidden = true;
       else img.classList.add("is-loading");
-      img.decoding = "async";
+      // Safari must paint the photograph with its frame, not its blur alone.
+      img.decoding = kind === "opening" ? "sync" : "async";
       img.alt = kind === "opening" ? "" : `두 사람의 사진 ${index + 1}`;
       if (kind === "gallery") img.loading = "lazy";
       if (kind === "opening") img.fetchPriority = index === 0 ? "high" : "low";
@@ -1405,9 +1412,10 @@
           if (cancelled || document.hidden || next !== frames[paintedScene]) { checkCoverage(); return; }
           if (Number(getComputedStyle(next).opacity) < 1) { checkCoverage(); return; }
           for (const frame of frames) {
-            if (frame === next) continue;
+            if (frame === next || frame.dataset.staged === "true") continue;
             frame.style.opacity = "0";
             frame.style.visibility = "hidden";
+            frame.classList.remove("is-rendering");
           }
           cleanup();
         });
@@ -1429,11 +1437,43 @@
     checkCoverage();
   }
 
-  function decodeOpeningForPlayback(index) {
+  function decodeOpeningForPlayback(index, refresh = true) {
     const frame = frames[index];
     const image = frame?.querySelector("img");
     if (frame?.dataset.status !== "ready" || !image?.complete || !image.naturalWidth) return Promise.resolve(false);
-    return prepareOpeningImage(image);
+    // Successful preload decodes may be evicted while the envelope is open.
+    // Refresh those at playback; retain the fallback for broken decode() APIs.
+    return prepareOpeningImage(image, refresh);
+  }
+
+  async function stageOpeningFrame(index, run) {
+    if (!autoplayActive || run !== playbackRun) return false;
+    const frame = frames[index];
+    if (frame?.dataset.status !== "ready") return false;
+    if (index !== paintedScene) {
+      // Give Safari a visible render layer below the current photo before fading in.
+      frame.dataset.staged = "true";
+      frame.style.transition = "none";
+      frame.style.zIndex = "0";
+      frame.style.visibility = "visible";
+      frame.style.opacity = "1";
+      frame.classList.add("is-rendering");
+    }
+    const ready = await decodeOpeningForPlayback(index);
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    if (!ready && run === playbackRun) clearStagedOpeningFrames();
+    return ready && autoplayActive && run === playbackRun;
+  }
+
+  function clearStagedOpeningFrames() {
+    for (const frame of frames) {
+      if (frame.dataset.staged !== "true") continue;
+      delete frame.dataset.staged;
+      frame.style.opacity = "0";
+      frame.style.visibility = "hidden";
+      frame.style.transition = "";
+      frame.classList.remove("is-rendering");
+    }
   }
 
   function updateScroll() {
@@ -1474,6 +1514,14 @@
         ? sceneIndex : paintedScene;
       if (displayIndex !== paintedScene) {
         const next = frames[displayIndex];
+        if (next.dataset.staged === "true") {
+          // Establish the fade's start while this layer is still below the old photo.
+          next.style.opacity = "0";
+          void getComputedStyle(next).opacity;
+          next.style.transition = "";
+          delete next.dataset.staged;
+        }
+        next.classList.add("is-rendering");
         next.style.zIndex = String(++frameLayer);
         next.style.visibility = "visible";
         next.style.opacity = "1";
@@ -1573,6 +1621,7 @@
     if (!autoplayActive) return;
     playbackRun += 1;
     cancelFrameCleanup();
+    clearStagedOpeningFrames();
     autoplayActive = false;
     setOpeningLocked(false);
     playbackComplete = true;
@@ -1596,6 +1645,7 @@
     else startBgm();
     playbackRun += 1;
     cancelFrameCleanup();
+    clearStagedOpeningFrames();
     autoplayActive = true;
     playbackComplete = false;
     hasLeftOpening = false;
@@ -1691,25 +1741,24 @@
     preloadGallery();
     const preparedNext = new Map();
     const warmNext = (index) => {
-      if (index < frames.length && !preparedNext.has(index)) preparedNext.set(index, decodeOpeningForPlayback(index));
+      if (index < frames.length && !preparedNext.has(index)) preparedNext.set(index, stageOpeningFrame(index, run));
     };
     warmNext(0);
     for (let index = 0; index < frames.length && autoplayActive && run === playbackRun; index += 1) {
       await waitUntilActive(run);
       if (!autoplayActive || run !== playbackRun) return;
-      // Prepare the next photo while the current one stays visible, then recheck
-      // decoding at handoff instead of relying on a much earlier preload.
+      // Prepare and render the next photo while the current one stays visible.
       warmNext(index);
       const prepared = await preparedNext.get(index);
-      const ready = prepared && await decodeOpeningForPlayback(index);
+      const ready = prepared && await decodeOpeningForPlayback(index, false);
       await waitUntilActive(run);
       if (!autoplayActive || run !== playbackRun) return;
-      warmNext(index + 1);
       if (ready) {
         if (index === 0) startBgm();
         autoplayIndex = index;
         updateScroll();
       }
+      warmNext(index + 1);
       if (index === frames.length - 1) {
         // Let the last photo settle before revealing the closing line.
         await waitPlayback(500, run);
