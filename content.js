@@ -5,7 +5,7 @@ window.WEDDING_CONTENT = {
   coverCardCaption: "Our pace.",
   coverMessage: "우리의 시작을 함께해 주세요",
   coverAction: "봉투를 열어 주세요",
-  coverHint: "누르면 음악과 함께 시작됩니다",
+  coverHint: "누르거나 위로 밀면 음악과 함께 시작됩니다",
   coverLoading: "첫 장면을 준비하고 있어요",
   couple: "백민규 · 박지해",
   groomName: "백민규",

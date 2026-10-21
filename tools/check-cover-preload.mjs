@@ -181,4 +181,70 @@ for (const phase of ["envelope", "unfolding", "expanding"]) {
   assert.equal(t.context.coverDialog.open, undefined);
   assert.equal(t.context.frameHost.parentElement, t.context.openingStage);
 }
-console.log("PASS: all-photo progress before envelope, no early audio, no second loader, reduced motion, skip cancellation, failed/cached photos, animation fallback and deep links.");
+const finger = (x, y, identifier = 1) => ({ clientX: x, clientY: y, identifier });
+function touch(t, type, touches, changedTouches = touches) {
+  const event = { touches, changedTouches, cancelable: true, prevented: false,
+    preventDefault() { this.prevented = true; } };
+  t.context.coverDialog.dispatch(type, event);
+  return event;
+}
+for (const reduced of [false, true]) {
+  const t = setup({ cached: true, reduced });
+  await flush();
+  touch(t, "touchstart", [finger(180, 600)]);
+  const move = touch(t, "touchmove", [finger(190, 500)]);
+  assert.equal(move.prevented, true, "an upward swipe should not scroll the cover away");
+  assert.equal(t.calls.music, 0, "wait for the release event before requesting audio");
+  const end = touch(t, "touchend", [], [finger(190, 500)]);
+  assert.equal(end.prevented, true, "swipes suppress the following compatibility click");
+  assert.equal(t.calls.music, 1, "music is requested synchronously in touchend");
+  t.click();
+  await flush();
+  if (!reduced) {
+    t.run(1050);
+    t.calls.animations[0].onfinish();
+  }
+  assert.equal(t.calls.music, 1);
+  assert.equal(t.calls.replay, 1, "swiping follows the same cover-to-intro path as tapping");
+  assert.equal(t.context.openingLoader.hidden, true);
+}
+for (const [x, y] of [[180, 570], [280, 500], [180, 690]]) {
+  const t = setup({ cached: true });
+  await flush();
+  touch(t, "touchstart", [finger(180, 600)]);
+  touch(t, "touchmove", [finger(x, y)]);
+  touch(t, "touchend", [], [finger(x, y)]);
+  t.context.coverButton.dispatch("click", { detail: 1, preventDefault() {} });
+  assert.equal(t.calls.music, 0, "short, horizontal/diagonal and downward drags must not open the cover");
+  touch(t, "touchstart", [finger(180, 600)]);
+  touch(t, "touchend", [], [finger(182, 598)]);
+  t.click();
+  assert.equal(t.calls.music, 1, "a later normal tap still opens the cover");
+}
+for (const cancel of ["touchcancel", "multitouch"]) {
+  const t = setup({ cached: true });
+  await flush();
+  touch(t, "touchstart", [finger(180, 600)]);
+  if (cancel === "touchcancel") touch(t, "touchcancel", []);
+  else touch(t, "touchstart", [finger(180, 600), finger(240, 600, 2)]);
+  touch(t, "touchend", [], [finger(180, 400)]);
+  t.context.coverButton.dispatch("click", { detail: 1, preventDefault() {} });
+  assert.equal(t.calls.music, 0, "cancelled gestures and pinch zoom must not open the cover");
+  t.context.coverButton.dispatch("click", { detail: 0 });
+  assert.equal(t.calls.music, 1, "keyboard/assistive activation remains available after a cancelled swipe");
+}
+{
+  const t = setup({ cached: true });
+  await flush();
+  touch(t, "touchstart", [finger(180, 600)]);
+  touch(t, "touchmove", [finger(180, 596)]);
+  touch(t, "touchend", [], [finger(180, 596)]);
+  assert.equal(t.calls.music, 1, "minor finger jitter must not swallow a normal tap");
+}
+{
+  const t = setup();
+  touch(t, "touchstart", [finger(180, 600)]);
+  touch(t, "touchend", [], [finger(180, 400)]);
+  assert.equal(t.calls.music, 0, "swiping cannot bypass initial photo preparation");
+}
+console.log("PASS: cover preparation, tap/swipe with synchronous audio, gesture filtering/cancellation, keyboard activation, no second loader, reduced motion and cover animation fallback.");
