@@ -1769,7 +1769,7 @@
       // Reduced motion changes the pace and effects, never whether photos advance.
       // Read the preference at each handoff so changing it does not stop playback.
       const middleFrameMs = motionReduced.matches ? 1800 : 200;
-      await waitPlayback(index === 0 ? 1300 : index === frames.length - 1 ? 2000 : middleFrameMs, run);
+      await waitPlayback(index === 0 ? 500 : index === frames.length - 1 ? 2000 : middleFrameMs, run);
     }
     if (run === playbackRun) finishOpening();
   }
