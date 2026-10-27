@@ -1050,6 +1050,7 @@
   const invitationUrl = new URL(window.location.href);
   invitationUrl.hash = "";
   invitationUrl.searchParams.delete("calendarDebug");
+  invitationUrl.searchParams.delete("introDebug");
   const calendarSave = document.getElementById("calendar-save");
   calendarSave.hidden = !eventReady;
   const calendarPicker = document.getElementById("calendar-picker");
@@ -1322,6 +1323,7 @@
   const maxConcurrentLoads = 3;
   let openingLocked = false;
   let invitationScrollFrame = 0;
+  const introDiagnostics = createIntroDiagnostics();
   const openingInertState = new Map();
   const bodySections = [...document.querySelectorAll("main > :not(#opening), .footer, .side-nav, #gallery-dialog")];
   const instantOpeningTop = () => window.scrollTo({ top: 0, left: 0, behavior: "instant" });
@@ -1641,6 +1643,7 @@
   function replayOpening({ fromCover = false } = {}) {
     if (galleryDialog.open) return;
     cancelInvitationScroll();
+    introDiagnostics?.reset();
     opening.hidden = false;
     // Keep audio continuous across the cover transition and intro replays.
     if (bgmStarted) playBgm();
@@ -1684,6 +1687,7 @@
   });
 
   function cancelInvitationScroll() {
+    if (invitationScrollFrame) introDiagnostics?.mark("scroll-cancelled");
     cancelAnimationFrame(invitationScrollFrame);
     invitationScrollFrame = 0;
   }
@@ -1696,20 +1700,26 @@
 
   function navigateToInvitation() {
     cancelInvitationScroll();
+    introDiagnostics?.mark("scroll-request");
     firstSection.tabIndex = -1;
     firstSection.focus({ preventScroll: true });
     if (motionReduced.matches) {
       firstSection.scrollIntoView({ behavior: "instant" });
+      introDiagnostics?.mark("scroll-start");
+      introDiagnostics?.mark("scroll-end");
       return;
     }
     const from = window.scrollY;
     const started = performance.now();
     const tick = (now) => {
+      introDiagnostics?.frame(now);
       const progress = motionReduced.matches ? 1 : Math.min(1, Math.max(0, (now - started) / 200));
       const eased = 1 - (1 - progress) ** 3;
       // Recompute the destination as mobile browser chrome changes viewport height.
       const to = window.scrollY + firstSection.getBoundingClientRect().top;
       window.scrollTo({ top: from + (to - from) * eased, behavior: "instant" });
+      if (Math.abs(window.scrollY - from) > 1) introDiagnostics?.mark("scroll-start");
+      if (progress === 1) introDiagnostics?.mark("scroll-end");
       invitationScrollFrame = progress < 1 ? requestAnimationFrame(tick) : 0;
     };
     invitationScrollFrame = requestAnimationFrame(tick);
@@ -1739,19 +1749,101 @@
     }
   }
 
-  function waitPaintedPlayback(milliseconds, run) {
+  function createIntroDiagnostics() {
+    if (new URLSearchParams(location.search).get("introDebug") !== "1") return null;
+    const panel = document.createElement("details");
+    panel.className = "intro-diagnostics";
+    const summary = document.createElement("summary");
+    summary.textContent = "인트로 시간 확인";
+    const output = document.createElement("pre");
+    const copy = document.createElement("button");
+    copy.type = "button";
+    copy.textContent = "결과 복사";
+    copy.addEventListener("click", () => copyText(output.textContent));
+    panel.append(summary, output, copy);
+    document.body.append(panel);
+    const asset = document.currentScript?.src.split("/").pop() || "확인 불가";
+    const marks = new Map();
+    let previousFrame = null;
+    let longestFrame = 0;
+    let hiddenCount = 0;
+    const elapsed = (from, to) => marks.has(from) && marks.has(to)
+      ? `${((marks.get(to) - marks.get(from)) / 1000).toFixed(2)}초` : "—";
+    const render = () => {
+      output.textContent = [
+        "진단 코드: intro-timing-1",
+        `실행 파일: ${asset}`,
+        "설정: 선 완성 후 0.5초 / 이동 0.2초",
+        `마지막 사진 → 문구: ${elapsed("last-photo", "final-visible")}`,
+        `문구 → 선 완성: ${elapsed("final-visible", "line-complete")}`,
+        `선 완성 → 대기 종료: ${elapsed("line-complete", "hold-end")}`,
+        `대기 종료 → 이동 시작: ${elapsed("hold-end", "scroll-start")}`,
+        `선 완성 → 이동 시작: ${elapsed("line-complete", "scroll-start")}`,
+        `화면 이동: ${elapsed("scroll-start", "scroll-end")}`,
+        `선 완성 → 이동 완료: ${elapsed("line-complete", "scroll-end")}`,
+        `최대 프레임 간격: ${Math.round(longestFrame)}ms`,
+        `화면 비활성 전환: ${hiddenCount}회`,
+        marks.has("scroll-cancelled") ? "자동 이동 취소됨" : "",
+        navigator.userAgent
+      ].filter(Boolean).join("\n");
+    };
+    document.addEventListener("visibilitychange", () => {
+      previousFrame = null;
+      if (document.hidden) hiddenCount += 1;
+      render();
+    });
+    render();
+    return {
+      reset() {
+        marks.clear();
+        previousFrame = null;
+        longestFrame = 0;
+        hiddenCount = 0;
+        panel.open = false;
+        render();
+      },
+      mark(name) {
+        if (marks.has(name)) return;
+        marks.set(name, performance.now());
+        if (name === "scroll-end" || name === "scroll-cancelled") panel.open = true;
+        render();
+      },
+      frame(now) {
+        if (previousFrame !== null) longestFrame = Math.max(longestFrame, now - previousFrame);
+        previousFrame = now;
+      }
+    };
+  }
+
+  function holdClosingMessage(run) {
+    const paths = [...openingFinal.querySelectorAll(".pace-mark path")];
     return new Promise((resolve) => {
-      let remaining = milliseconds;
+      let drawn = false;
+      let remaining = 500;
       let previous = null;
       const resetClock = () => { previous = null; };
       document.addEventListener("visibilitychange", resetClock);
       const tick = (now) => {
+        if (!autoplayActive || run !== playbackRun) {
+          document.removeEventListener("visibilitychange", resetClock);
+          resolve();
+          return;
+        }
         if (!document.hidden) {
-          if (previous !== null) remaining -= now - previous;
+          introDiagnostics?.frame(now);
+          if (!drawn) {
+            // Read the rendered stroke rather than waiting for a potentially late
+            // Animation.finished notification and then adding another full hold.
+            drawn = Number(getComputedStyle(openingFinal).opacity) >= .999 &&
+              (motionReduced.matches || paths.every((path) =>
+                Math.abs(parseFloat(getComputedStyle(path).strokeDashoffset)) <= .00001));
+            if (drawn) introDiagnostics?.mark("line-complete");
+          } else if (previous !== null) remaining -= now - previous;
           previous = now;
         } else previous = null;
-        if (remaining <= 0 || !autoplayActive || run !== playbackRun) {
+        if (drawn && remaining <= 0) {
           document.removeEventListener("visibilitychange", resetClock);
+          introDiagnostics?.mark("hold-end");
           resolve();
           return;
         }
@@ -1759,22 +1851,6 @@
       };
       requestAnimationFrame(tick);
     });
-  }
-
-  async function holdClosingMessage(run) {
-    const paths = [...openingFinal.querySelectorAll(".pace-mark path")];
-    if (!motionReduced.matches) {
-      if (paths.every((path) => typeof path.getAnimations === "function")) {
-        const drawing = paths.flatMap((path) => path.getAnimations())
-          .filter((animation) => animation.animationName === "pace-draw");
-        await Promise.all(drawing.map((animation) => animation.finished.catch(() => {})));
-      } else {
-        await waitPaintedPlayback(700, run);
-      }
-    }
-    if (!autoplayActive || run !== playbackRun) return;
-    // Count visible frames after the actual drawing, avoiding short-timer throttling.
-    await waitPaintedPlayback(500, run);
   }
 
   async function prepareOpeningFrames(isCurrent) {
@@ -1826,11 +1902,13 @@
       }
       warmNext(index + 1);
       if (index === frames.length - 1) {
+        introDiagnostics?.mark("last-photo");
         // Let the last photo settle before revealing the closing line.
         await waitPlayback(500, run);
         if (!autoplayActive || run !== playbackRun) return;
         finalMessageReady = true;
         updateScroll();
+        introDiagnostics?.mark("final-visible");
         await holdClosingMessage(run);
         break;
       }
