@@ -961,3 +961,9 @@ html.parking-map-open, html.parking-map-open body { overflow: hidden; }
 /* Text and meaningful action icons share one spacing rule. */
 .inline-action, .calendar-picker__web, .calendar-diagnostics a { display: inline-flex; align-items: center; justify-content: center; gap: var(--icon-gap); }
 .inline-action > [aria-hidden="true"] { flex-shrink: 0; }
+
+/* Opt-in device timing diagnostics; absent from ordinary invitation visits. */
+.intro-diagnostics { position: fixed; z-index: 100; bottom: calc(12px + env(safe-area-inset-bottom)); left: 12px; width: min(360px, calc(100vw - 24px)); max-height: 65dvh; overflow: auto; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); box-shadow: var(--soft-shadow); text-align: left; }
+.intro-diagnostics summary { min-height: 44px; align-content: center; cursor: pointer; font-size: 13px; }
+.intro-diagnostics pre { margin: 8px 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 11px; line-height: 1.6; }
+.intro-diagnostics button { min-height: 44px; width: 100%; border: 1px solid var(--line); border-radius: 8px; background: var(--accent-soft); color: var(--accent); cursor: pointer; }
