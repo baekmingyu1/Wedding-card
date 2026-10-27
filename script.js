@@ -1769,8 +1769,8 @@
       // Reduced motion changes the pace and effects, never whether photos advance.
       // Read the preference at each handoff so changing it does not stop playback.
       const middleFrameMs = motionReduced.matches ? 1800 : 200;
-      // The closing line draws for 700ms, then stays visible for another 1000ms.
-      await waitPlayback(index === 0 ? 500 : index === frames.length - 1 ? 1700 : middleFrameMs, run);
+      // The closing line draws for 700ms, then stays visible for another 700ms.
+      await waitPlayback(index === 0 ? 500 : index === frames.length - 1 ? 1400 : middleFrameMs, run);
     }
     if (run === playbackRun) finishOpening();
   }
