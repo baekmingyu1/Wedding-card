@@ -1321,6 +1321,7 @@
   let loadsEnabled = true;
   const maxConcurrentLoads = 3;
   let openingLocked = false;
+  let invitationScrollFrame = 0;
   const openingInertState = new Map();
   const bodySections = [...document.querySelectorAll("main > :not(#opening), .footer, .side-nav, #gallery-dialog")];
   const instantOpeningTop = () => window.scrollTo({ top: 0, left: 0, behavior: "instant" });
@@ -1639,6 +1640,7 @@
 
   function replayOpening({ fromCover = false } = {}) {
     if (galleryDialog.open) return;
+    cancelInvitationScroll();
     opening.hidden = false;
     // Keep audio continuous across the cover transition and intro replays.
     if (bgmStarted) playBgm();
@@ -1681,10 +1683,36 @@
     });
   });
 
+  function cancelInvitationScroll() {
+    cancelAnimationFrame(invitationScrollFrame);
+    invitationScrollFrame = 0;
+  }
+  window.addEventListener("wheel", cancelInvitationScroll, { passive: true });
+  window.addEventListener("touchstart", cancelInvitationScroll, { passive: true });
+  window.addEventListener("pagehide", cancelInvitationScroll);
+  document.addEventListener("keydown", (event) => {
+    if (["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "].includes(event.key)) cancelInvitationScroll();
+  });
+
   function navigateToInvitation() {
+    cancelInvitationScroll();
     firstSection.tabIndex = -1;
     firstSection.focus({ preventScroll: true });
-    window.requestAnimationFrame(() => firstSection.scrollIntoView({ behavior: motionReduced.matches ? "instant" : "smooth" }));
+    if (motionReduced.matches) {
+      firstSection.scrollIntoView({ behavior: "instant" });
+      return;
+    }
+    const from = window.scrollY;
+    const started = performance.now();
+    const tick = (now) => {
+      const progress = motionReduced.matches ? 1 : Math.min(1, Math.max(0, (now - started) / 200));
+      const eased = 1 - (1 - progress) ** 3;
+      // Recompute the destination as mobile browser chrome changes viewport height.
+      const to = window.scrollY + firstSection.getBoundingClientRect().top;
+      window.scrollTo({ top: from + (to - from) * eased, behavior: "instant" });
+      invitationScrollFrame = progress < 1 ? requestAnimationFrame(tick) : 0;
+    };
+    invitationScrollFrame = requestAnimationFrame(tick);
   }
   function skipOpening(event) {
     event.preventDefault();
