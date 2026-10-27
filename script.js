@@ -1711,6 +1711,44 @@
     }
   }
 
+  function waitPaintedPlayback(milliseconds, run) {
+    return new Promise((resolve) => {
+      let remaining = milliseconds;
+      let previous = null;
+      const resetClock = () => { previous = null; };
+      document.addEventListener("visibilitychange", resetClock);
+      const tick = (now) => {
+        if (!document.hidden) {
+          if (previous !== null) remaining -= now - previous;
+          previous = now;
+        } else previous = null;
+        if (remaining <= 0 || !autoplayActive || run !== playbackRun) {
+          document.removeEventListener("visibilitychange", resetClock);
+          resolve();
+          return;
+        }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+
+  async function holdClosingMessage(run) {
+    const paths = [...openingFinal.querySelectorAll(".pace-mark path")];
+    if (!motionReduced.matches) {
+      if (paths.every((path) => typeof path.getAnimations === "function")) {
+        const drawing = paths.flatMap((path) => path.getAnimations())
+          .filter((animation) => animation.animationName === "pace-draw");
+        await Promise.all(drawing.map((animation) => animation.finished.catch(() => {})));
+      } else {
+        await waitPaintedPlayback(700, run);
+      }
+    }
+    if (!autoplayActive || run !== playbackRun) return;
+    // Count visible frames after the actual drawing, avoiding short-timer throttling.
+    await waitPaintedPlayback(700, run);
+  }
+
   async function prepareOpeningFrames(isCurrent) {
     let settled = 0;
     loaderCount.textContent = `00 / ${String(frames.length).padStart(2, "0")}`;
@@ -1765,12 +1803,13 @@
         if (!autoplayActive || run !== playbackRun) return;
         finalMessageReady = true;
         updateScroll();
+        await holdClosingMessage(run);
+        break;
       }
       // Reduced motion changes the pace and effects, never whether photos advance.
       // Read the preference at each handoff so changing it does not stop playback.
       const middleFrameMs = motionReduced.matches ? 1800 : 200;
-      // The closing line draws for 700ms, then stays visible for another 700ms.
-      await waitPlayback(index === 0 ? 500 : index === frames.length - 1 ? 1400 : middleFrameMs, run);
+      await waitPlayback(index === 0 ? 500 : middleFrameMs, run);
     }
     if (run === playbackRun) finishOpening();
   }
@@ -1842,7 +1881,10 @@
           animation.addEventListener("cancel", clear, { once: true });
         }
       }, { threshold: .08, rootMargin: "0px 0px -12px 0px" });
-      document.querySelectorAll(revealTargets).forEach((element) => observer.observe(element));
+      document.querySelectorAll(revealTargets).forEach((element) => {
+        // Intro artwork has its own replayable animation and completion clock.
+        if (!element.closest(".opening__final")) observer.observe(element);
+      });
       new MutationObserver((records) => {
         for (const record of records) {
           for (const node of record.removedNodes) if (node.nodeType === 1) observer.unobserve(node);
