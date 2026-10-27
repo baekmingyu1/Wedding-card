@@ -1774,7 +1774,7 @@
     }
     if (!autoplayActive || run !== playbackRun) return;
     // Count visible frames after the actual drawing, avoiding short-timer throttling.
-    await waitPaintedPlayback(700, run);
+    await waitPaintedPlayback(500, run);
   }
 
   async function prepareOpeningFrames(isCurrent) {
